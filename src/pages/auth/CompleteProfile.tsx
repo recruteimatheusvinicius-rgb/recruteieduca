@@ -29,28 +29,32 @@ export const CompleteProfile = () => {
 
   // Verify OAuth user on component mount
   useEffect(() => {
+    let mounted = true;
+
     const verifyUser = async () => {
-      // First check if auth is already initialized and has user data
-      const currentUser = useAuthStore.getState().user;
-      const currentNeedsProfile = useAuthStore.getState().needsProfileComplete;
-      
-      if (currentUser) {
-        if (!currentNeedsProfile && currentUser.name && currentUser.name.trim()) {
-          navigate('/home', { replace: true });
-          setIsVerifying(false);
+      try {
+        // First check if auth is already initialized and has user data
+        const currentUser = useAuthStore.getState().user;
+        const currentNeedsProfile = useAuthStore.getState().needsProfileComplete;
+        
+        if (!mounted) return;
+
+        if (currentUser) {
+          if (!currentNeedsProfile && currentUser.name && currentUser.name.trim()) {
+            navigate('/home', { replace: true });
+            return;
+          }
+          if (currentUser.name) {
+            setName(currentUser.name);
+          }
           return;
         }
-        if (currentUser.name) {
-          setName(currentUser.name);
-        }
-        setIsVerifying(false);
-        return;
-      }
 
-      // If no user in store, try to verify with OAuth
-      try {
+        // If no user in store, try to verify with OAuth
         const result = await useAuthStore.getState().verifyOAuthUser();
         
+        if (!mounted) return;
+
         if (result.user && result.user.name && result.user.name.trim()) {
           navigate('/home', { replace: true });
           return;
@@ -62,7 +66,9 @@ export const CompleteProfile = () => {
       } catch (err) {
         console.error('Error verifying OAuth user:', err);
       } finally {
-        setIsVerifying(false);
+        if (mounted) {
+          setIsVerifying(false);
+        }
       }
     };
 
@@ -71,7 +77,10 @@ export const CompleteProfile = () => {
       verifyUser();
     }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      mounted = false;
+      clearTimeout(timer);
+    };
   }, [navigate]);
 
   if (isVerifying) {

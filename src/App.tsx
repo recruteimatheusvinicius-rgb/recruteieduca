@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useThemeStore } from './stores/themeStore';
 import { useAuthStore } from './stores/authStore';
@@ -61,6 +61,7 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
 
 function App() {
   const { theme } = useThemeStore();
+  const navigate = useNavigate();
   const { user, initializeAuth, isAuthInitialized, needsProfileComplete } = useAuthStore();
 
   useEffect(() => {
@@ -71,9 +72,9 @@ function App() {
 
   useEffect(() => {
     if (isAuthInitialized && user && needsProfileComplete && window.location.pathname !== '/complete-profile') {
-      window.location.href = '/complete-profile';
+      navigate('/complete-profile', { replace: true });
     }
-  }, [isAuthInitialized, user, needsProfileComplete]);
+  }, [isAuthInitialized, user, needsProfileComplete, navigate]);
 
   interface TawkAPI {
     isChatMaximized?: () => boolean;
