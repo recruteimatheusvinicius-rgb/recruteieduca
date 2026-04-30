@@ -6,7 +6,7 @@ import { BookOpen, User, ArrowRight, AlertCircle } from 'lucide-react';
 
 export const CompleteProfile = () => {
   const navigate = useNavigate();
-  const { completeProfile, isLoading, error, clearError, user, verifyOAuthUser } = useAuthStore();
+  const { completeProfile, isLoading, error, clearError, user } = useAuthStore();
   const [name, setName] = useState('');
   const [isVerifying, setIsVerifying] = useState(true);
 
@@ -30,19 +30,32 @@ export const CompleteProfile = () => {
   // Verify OAuth user on component mount
   useEffect(() => {
     const verifyUser = async () => {
-      setIsVerifying(true);
+      // First check if auth is already initialized and has user data
+      const currentUser = useAuthStore.getState().user;
+      const currentNeedsProfile = useAuthStore.getState().needsProfileComplete;
       
+      if (currentUser) {
+        if (!currentNeedsProfile && currentUser.name && currentUser.name.trim()) {
+          navigate('/home', { replace: true });
+          setIsVerifying(false);
+          return;
+        }
+        if (currentUser.name) {
+          setName(currentUser.name);
+        }
+        setIsVerifying(false);
+        return;
+      }
+
+      // If no user in store, try to verify with OAuth
       try {
-        // First check for OAuth callback
-        const result = await verifyOAuthUser();
+        const result = await useAuthStore.getState().verifyOAuthUser();
         
         if (result.user && result.user.name && result.user.name.trim()) {
-          // User already has a name, redirect to home
           navigate('/home', { replace: true });
           return;
         }
         
-        // Pre-fill name from user data if available
         if (result.user && result.user.name) {
           setName(result.user.name);
         }
@@ -53,13 +66,13 @@ export const CompleteProfile = () => {
       }
     };
 
-    // Give session time to be established (important for OAuth callback)
+    // Small delay to allow session to be established, but not too long
     const timer = setTimeout(() => {
       verifyUser();
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
-  }, [navigate, verifyOAuthUser]);
+  }, [navigate]);
 
   if (isVerifying) {
     return (

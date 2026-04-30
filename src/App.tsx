@@ -61,7 +61,19 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
 
 function App() {
   const { theme } = useThemeStore();
-  const { user } = useAuthStore();
+  const { user, initializeAuth, isAuthInitialized, needsProfileComplete } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthInitialized) {
+      initializeAuth();
+    }
+  }, [initializeAuth, isAuthInitialized]);
+
+  useEffect(() => {
+    if (isAuthInitialized && user && needsProfileComplete && window.location.pathname !== '/complete-profile') {
+      window.location.href = '/complete-profile';
+    }
+  }, [isAuthInitialized, user, needsProfileComplete]);
 
   interface TawkAPI {
     isChatMaximized?: () => boolean;
@@ -95,29 +107,11 @@ function App() {
       s1.src = 'https://embed.tawk.to/69d6fed9b927021c2d6b6ba5/1jmm90isg';
       s1.charset = 'UTF-8';
       s1.setAttribute('crossorigin', '*');
-      s0.parentNode.insertBefore(s1, s0);
+s0.parentNode.insertBefore(s1, s0);
     }
   }, []);
 
-  const tawkWindow = window as unknown as { Tawk_API?: TawkAPI };
-
   useEffect(() => {
-    const handleClickOutside = () => {
-      if (tawkWindow.Tawk_API?.isChatMaximized && tawkWindow.Tawk_API?.minimize) {
-        if (tawkWindow.Tawk_API.isChatMaximized()) {
-          tawkWindow.Tawk_API.minimize();
-        }
-      }
-    };
-
-    document.addEventListener('click', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
-useEffect(() => {
     if (!isSupabaseConfigured()) {
       return;
     }

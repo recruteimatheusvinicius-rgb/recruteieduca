@@ -85,52 +85,44 @@ export const useAuthStore = create<AuthState>()(
         }
 
         set({ isLoading: true });
-        
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Tempo limite excedido na inicialização.')), 5000);
-        });
 
         try {
-          const initPromise = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session } } = await supabase.auth.getSession();
 
-            if (!session) {
-              set({ user: null, isAuthenticated: false });
-              localStorage.removeItem('auth-storage');
-              return;
-            }
+          if (!session) {
+            set({ user: null, isAuthenticated: false });
+            localStorage.removeItem('auth-storage');
+            return;
+          }
 
-            const profileResponse = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-            const profile = profileResponse.data as SupabaseProfile | null;
+          const profileResponse = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          const profile = profileResponse.data as SupabaseProfile | null;
 
-            if (profile) {
-              const mappedUser = mapProfileRowToUser(profile);
+          if (profile) {
+            const mappedUser = mapProfileRowToUser(profile);
 
-              set({
-                user: mappedUser,
-                isAuthenticated: true,
-                needsProfileComplete: !profile.name || profile.name.trim() === '',
-              });
-            } else {
-              set({
-                user: {
-                  id: session.user.id,
-                  name: session.user.email?.split('@')[0] || 'Usuário',
-                  email: session.user.email || '',
-                  role: 'student',
-                  status: 'active',
-                } as User,
-                isAuthenticated: true,
-                needsProfileComplete: true,
-              });
-            }
-          };
-
-          await Promise.race([initPromise(), timeoutPromise]);
+            set({
+              user: mappedUser,
+              isAuthenticated: true,
+              needsProfileComplete: !profile.name || profile.name.trim() === '',
+            });
+          } else {
+            set({
+              user: {
+                id: session.user.id,
+                name: session.user.email?.split('@')[0] || 'Usuário',
+                email: session.user.email || '',
+                role: 'student',
+                status: 'active',
+              } as User,
+              isAuthenticated: true,
+              needsProfileComplete: true,
+            });
+          }
         } catch (error) {
           console.error('Auth initialization error:', error);
           set({ user: null, isAuthenticated: false });
@@ -216,14 +208,9 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
-        
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Tempo limite excedido. Verifique sua conexão e tente novamente.')), 10000);
-        });
 
         try {
-          const loginPromise = async (): Promise<{ success: boolean; needsProfile: boolean }> => {
-            if (isSupabaseConfigured()) {
+          if (isSupabaseConfigured()) {
               const { data, error } = await supabase.auth.signInWithPassword({
                 email,
                 password,
@@ -278,17 +265,16 @@ export const useAuthStore = create<AuthState>()(
                 throw new Error('Email ou senha inválidos');
               }
             }
-            // This should never be reached, but to satisfy TypeScript
-            throw new Error('Unexpected error');
-          };
+          }
+          catch (error) {
+            const err = error as AuthError;
+            set({ error: err.message || 'Erro ao fazer login', isLoading: false });
+            return { success: false, needsProfile: false };
+          }
 
-          return await Promise.race([loginPromise(), timeoutPromise]);
-        } catch (error) {
-          const err = error as AuthError;
-          set({ error: err.message || 'Erro ao fazer login', isLoading: false });
-          return { success: false, needsProfile: false };
-        }
-      },
+        set({ isLoading: false });
+        return { success: false, needsProfile: false };
+        },
 
       register: async (name: string, email: string, password: string) => {
         set({ isLoading: true, error: null });
@@ -446,32 +432,24 @@ export const useAuthStore = create<AuthState>()(
 
       signInWithGoogle: async () => {
         set({ isLoading: true, error: null });
-        
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Tempo limite excedido. Verifique sua conexão e tente novamente.')), 10000);
-        });
 
         try {
-          const googleLoginPromise = async () => {
-            if (isSupabaseConfigured()) {
-              const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                  redirectTo: `${window.location.origin}/complete-profile`,
-                },
-              });
+          if (isSupabaseConfigured()) {
+            const { error } = await supabase.auth.signInWithOAuth({
+              provider: 'google',
+              options: {
+                redirectTo: `${window.location.origin}/complete-profile`,
+              },
+            });
 
-              if (error) {
-                throw new Error(error.message);
-              }
-
-              return true;
-            } else {
-              throw new Error('Supabase não configurado');
+            if (error) {
+              throw new Error(error.message);
             }
-          };
 
-          return await Promise.race([googleLoginPromise(), timeoutPromise]);
+            return true;
+          } else {
+            throw new Error('Supabase não configurado');
+          }
         } catch (error) {
           const err = error as AuthError;
           set({ error: err.message || 'Erro ao entrar com Google', isLoading: false });
