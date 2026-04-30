@@ -81,6 +81,7 @@ export const useAuthStore = create<AuthState>()(
 
       initializeAuth: async () => {
         if (!isSupabaseConfigured()) {
+          set({ isAuthInitialized: true });
           return;
         }
 
