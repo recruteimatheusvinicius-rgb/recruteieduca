@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useThemeStore } from './stores/themeStore';
 import { useAuthStore } from './stores/authStore';
 import { useDataStore } from './stores/dataStore';
@@ -63,12 +63,33 @@ function App() {
   const { theme } = useThemeStore();
   const navigate = useNavigate();
   const { user, initializeAuth, isAuthInitialized, needsProfileComplete } = useAuthStore();
+  const [isAppLoading, setIsAppLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthInitialized) {
       initializeAuth();
     }
   }, [initializeAuth, isAuthInitialized]);
+
+  useEffect(() => {
+    if (isAuthInitialized) {
+      const timer = setTimeout(() => {
+        setIsAppLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthInitialized]);
+
+  if (isAppLoading) {
+    return (
+      <div className="min-h-screen bg-[#111827] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (isAuthInitialized && user && needsProfileComplete && window.location.pathname !== '/complete-profile') {
