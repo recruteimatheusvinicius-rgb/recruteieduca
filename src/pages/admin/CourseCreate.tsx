@@ -12,8 +12,14 @@ import {
 } from 'lucide-react';
 import type { Course, CourseLevel, CourseStatus, Module, Lesson, LessonType, QuizQuestion, CertificateConfig, AssessmentConfig } from '../../types';
 
+
+const sanitizeHtml = (html: string): string => {
+  // Remove any <script> tags to prevent XSS.
+  return html.replace(/<script[\s\S]*?<\/script>/gi, '');
+};
+
 const createEmptyModule = (order: number): Module => ({
-  id: `module-${Date.now()}-${order}`,
+  id: crypto.randomUUID(),
   title: '',
   description: '',
   order,
@@ -21,7 +27,7 @@ const createEmptyModule = (order: number): Module => ({
 });
 
 const createEmptyLesson = (order: number, type: LessonType): Lesson => ({
-  id: `lesson-${Date.now()}-${order}`,
+  id: crypto.randomUUID(),
   title: '',
   type,
   order,
@@ -35,7 +41,7 @@ const createEmptyLesson = (order: number, type: LessonType): Lesson => ({
 });
 
 const createEmptyQuizQuestion = (): QuizQuestion => ({
-  id: `q-${Date.now()}`,
+  id: crypto.randomUUID(),
   question: '',
   options: ['', '', '', ''],
   correctIndex: 0,
@@ -114,10 +120,15 @@ export const CourseCreate = () => {
       toast.error('O título do curso é obrigatório');
       return;
     }
-    if (!formData.category?.trim()) {
-      toast.error('A categoria do curso é obrigatória');
-      return;
-    }
+if (!formData.category?.trim()) {
+  toast.error('A categoria do curso é obrigatória');
+  return;
+}
+
+if (formData.modules.length === 0) {
+  toast.error('Adicione ao menos um módulo ao curso');
+  return;
+}
 
     setIsLoading(true);
     
@@ -134,6 +145,7 @@ export const CourseCreate = () => {
       
       const courseToSave: Course = {
         ...formData,
+        description: sanitizeHtml(formData.description),
         duration: totalDuration > 0 ? `${Math.floor(totalDuration / 60)}h ${totalDuration % 60}min` : formData.duration,
         updatedAt: new Date().toISOString(),
       };
