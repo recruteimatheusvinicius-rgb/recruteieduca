@@ -57,6 +57,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "postinstall": "npm config set loglevel=error",
     "@eslint/js": "^9.39.4",
     "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^24.12.2",
@@ -74,6 +75,12 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
     "vite": "^8.0.4",
-    "wrangler": "^4.86.0"
+    "wrangler": "^4.86.0",
+    "overrides": {
+      "node-domexception": "2.0.0"
+    }
+  },
+  "engines": {
+    "node": ">=16"
   }
 }
