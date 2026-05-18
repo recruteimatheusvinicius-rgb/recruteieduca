@@ -32,6 +32,14 @@ import { FormationManagement } from './pages/admin/FormationManagement';
 import { FormationCreate } from './pages/admin/FormationCreate';
 import { CompanyManagement } from './pages/admin/CompanyManagement';
 
+interface TawkAPI {
+  isChatMaximized?: () => boolean;
+  minimize?: () => void;
+  setVisitor?: (v: { name: string; email: string }) => void;
+  toggle?: () => void;
+  onLoad?: () => void;
+}
+
 function RootRedirect() {
   return <Navigate to="/login" replace />;
 }
@@ -45,22 +53,19 @@ function ProtectedRoute({ children, requireAdmin = false }: { children: React.Re
       initialize();
     }
   }, [isAuthenticated, user, initialize]);
-  
+
   if (!isAuthenticated || !user) {
     return <Navigate to="/" replace />;
   }
-  
+
   if (requireAdmin && user.role !== 'admin') {
     return <Navigate to="/" replace />;
   }
-  
+
   return <>{children}</>;
 }
 
-
-
-function App() {
-  const { theme } = useThemeStore();
+function AppContent() {
   const navigate = useNavigate();
   const { user, initializeAuth, isAuthInitialized, needsProfileComplete } = useAuthStore();
   const [isAppLoading, setIsAppLoading] = useState(true);
@@ -80,6 +85,14 @@ function App() {
     }
   }, [isAuthInitialized]);
 
+  useEffect(() => {
+    if (isAuthInitialized && user && needsProfileComplete && window.location.pathname !== '/complete-profile') {
+      navigate('/complete-profile', { replace: true });
+    }
+  }, [isAuthInitialized, user, needsProfileComplete, navigate]);
+
+  const Navbar = user?.role === 'admin' ? AdminNavbar : StudentNavbar;
+
   if (isAppLoading) {
     return (
       <div className="min-h-screen bg-[#111827] flex items-center justify-center">
@@ -91,19 +104,162 @@ function App() {
     );
   }
 
-  useEffect(() => {
-    if (isAuthInitialized && user && needsProfileComplete && window.location.pathname !== '/complete-profile') {
-      navigate('/complete-profile', { replace: true });
-    }
-  }, [isAuthInitialized, user, needsProfileComplete, navigate]);
+  return (
+    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
+      <PageTransition>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/invite/:token" element={<InviteSetup />} />
+          <Route path="/complete-profile" element={<CompleteProfile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
-  interface TawkAPI {
-    isChatMaximized?: () => boolean;
-    minimize?: () => void;
-    setVisitor?: (v: { name: string; email: string }) => void;
-    toggle?: () => void;
-    onLoad?: () => void;
-  }
+          <Route path="/home" element={
+            <>
+              <Navbar />
+              <StudentHome />
+              <Footer />
+            </>
+          } />
+
+          <Route path="/course/:id" element={
+            <>
+              <Navbar />
+              <CourseDetail />
+            </>
+          } />
+
+          <Route path="/lesson/:id" element={
+            <>
+              <Navbar />
+              <LessonViewer />
+            </>
+          } />
+
+          <Route path="/help" element={
+            <>
+              <Navbar />
+              <HelpCenter />
+              <Footer />
+            </>
+          } />
+
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Navbar />
+              <StudentProfile />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/my-courses" element={
+            <ProtectedRoute>
+              <Navbar />
+              <MyCourses />
+              <Footer />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <Navbar />
+              <Settings />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/courses" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <CourseManagement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/courses/create" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <CourseCreate />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/courses/:id" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <CourseCreate />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/users" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <UserManagement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/plans" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <PlanManagement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/categories" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <CategoryManagement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/formations" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <FormationManagement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/formations/create" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <FormationCreate />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/formations/:id" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <FormationCreate />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/manage" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <AdminManage />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin/companies" element={
+            <ProtectedRoute requireAdmin>
+              <AdminNavbar />
+              <CompanyManagement />
+            </ProtectedRoute>
+          } />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </PageTransition>
+    </div>
+  );
+}
+
+function App() {
+  const { theme } = useThemeStore();
 
   useEffect(() => {
     document.documentElement.classList.remove('dark', 'light');
@@ -129,7 +285,7 @@ function App() {
       s1.src = 'https://embed.tawk.to/69d6fed9b927021c2d6b6ba5/1jmm90isg';
       s1.charset = 'UTF-8';
       s1.setAttribute('crossorigin', '*');
-s0.parentNode.insertBefore(s1, s0);
+      s0.parentNode.insertBefore(s1, s0);
     }
   }, []);
 
@@ -137,30 +293,30 @@ s0.parentNode.insertBefore(s1, s0);
     if (!isSupabaseConfigured()) {
       return;
     }
-    
+
     const setTawkVisitor = (name: string, email: string) => {
       const win = window as unknown as { Tawk_API?: { setVisitor?: (v: { name: string; email: string }) => void } };
       if (win.Tawk_API?.setVisitor) {
         win.Tawk_API.setVisitor({ name, email });
       }
     };
-    
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const { isLoggingOut } = useAuthStore.getState();
-      
+
       if (isLoggingOut) {
         return;
       }
-      
+
       if (session) {
         await new Promise(resolve => setTimeout(resolve, 100));
-        
+
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
-        
+
         if (profile) {
           const currentUser = useAuthStore.getState().user;
           const mergedUser = {
@@ -168,7 +324,7 @@ s0.parentNode.insertBefore(s1, s0);
             name: currentUser?.name && currentUser.name.trim() ? currentUser.name : profile.name
           };
           useAuthStore.setState({ user: mergedUser, isAuthenticated: true });
-          
+
           if (profile.name && profile.email) {
             setTawkVisitor(profile.name, profile.email);
           }
@@ -183,162 +339,11 @@ s0.parentNode.insertBefore(s1, s0);
     return () => subscription.unsubscribe();
   }, []);
 
-  const Navbar = user?.role === 'admin' ? AdminNavbar : StudentNavbar;
-
   return (
     <>
       <ToastProvider />
       <Router>
-      <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
-        <PageTransition>
-          <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/invite/:token" element={<InviteSetup />} />
-          <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          
-          <Route path="/home" element={
-            <>
-              <Navbar />
-              <StudentHome />
-              <Footer />
-            </>
-          } />
-          
-          <Route path="/course/:id" element={
-            <>
-              <Navbar />
-              <CourseDetail />
-            </>
-          } />
-          
-          <Route path="/lesson/:id" element={
-            <>
-              <Navbar />
-              <LessonViewer />
-            </>
-          } />
-          
-          <Route path="/help" element={
-            <>
-              <Navbar />
-              <HelpCenter />
-              <Footer />
-            </>
-          } />
-          
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Navbar />
-              <StudentProfile />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/my-courses" element={
-            <ProtectedRoute>
-              <Navbar />
-              <MyCourses />
-              <Footer />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/settings" element={
-            <ProtectedRoute>
-              <Navbar />
-              <Settings />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/courses" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <CourseManagement />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/courses/create" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <CourseCreate />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/courses/:id" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <CourseCreate />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/users" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <UserManagement />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/plans" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <PlanManagement />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/categories" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <CategoryManagement />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/formations" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <FormationManagement />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/formations/create" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <FormationCreate />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/formations/:id" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <FormationCreate />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/manage" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <AdminManage />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/admin/companies" element={
-            <ProtectedRoute requireAdmin>
-              <AdminNavbar />
-              <CompanyManagement />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </PageTransition>
-      </div>
+        <AppContent />
       </Router>
     </>
   );
