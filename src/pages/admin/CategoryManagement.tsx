@@ -9,7 +9,12 @@ import { Plus, Edit2, Trash2, Tag, BookOpen } from 'lucide-react';
 import type { Category } from '../../types';
 
 export const CategoryManagement = () => {
-  const { categories, addCategory, updateCategory, deleteCategory } = useDataStore();
+  const { categories, courses, addCategory, updateCategory, deleteCategory } = useDataStore();
+  // Contagem real de cursos por categoria, em vez de courseCount estático na tabela
+  const courseCountByCategory = courses.reduce<Record<string, number>>((acc, c) => {
+    if (c.category) acc[c.category] = (acc[c.category] || 0) + 1;
+    return acc;
+  }, {});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
@@ -133,7 +138,10 @@ export const CategoryManagement = () => {
                 
                 <div className="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-300 mb-4">
                   <BookOpen size={16} />
-                  <span>{category.courseCount} cursos</span>
+                  <span>
+                    {courseCountByCategory[category.name] || 0}{' '}
+                    {(courseCountByCategory[category.name] || 0) === 1 ? 'curso' : 'cursos'}
+                  </span>
                 </div>
 
                 <div className="flex gap-2">

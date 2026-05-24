@@ -1,62 +1,62 @@
 import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { BookOpen, Users, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { BookOpen, Users, GraduationCap, Tag } from 'lucide-react';
 
-const mockChartData = [
-  { name: 'Jan', alunos: 400 },
-  { name: 'Fev', alunos: 300 },
-  { name: 'Mar', alunos: 600 },
-  { name: 'Abr', alunos: 800 },
-  { name: 'Mai', alunos: 650 },
-  { name: 'Jun', alunos: 900 },
-];
-
-const recentCourses = [
-  { id: '1', title: 'React Avançado', students: 245, completion: 78, status: 'active' },
-  { id: '2', title: 'TypeScript Fundamentals', students: 189, completion: 65, status: 'active' },
-  { id: '3', title: 'Node.js API', students: 156, completion: 82, status: 'active' },
-];
-
-const recentUsers = [
-  { id: '1', name: 'Maria Santos', course: 'React Avançado', date: '2 horas atrás' },
-  { id: '2', name: 'Pedro Oliveira', course: 'TypeScript', date: '5 horas atrás' },
-  { id: '3', name: 'Ana Costa', course: 'Node.js', date: '1 dia atrás' },
-];
+const formatRelativeTime = (iso?: string): string => {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const diff = Date.now() - date.getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'agora';
+  if (min < 60) return `${min} min atrás`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h}h atrás`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d} ${d === 1 ? 'dia' : 'dias'} atrás`;
+  return date.toLocaleDateString('pt-BR');
+};
 
 export const AdminDashboard = () => {
-  const stats = [
-    { 
-      label: 'Total de Alunos', 
-      value: '1,250', 
-      change: '+12%', 
-      isPositive: true,
-      icon: Users 
-    },
-    { 
-      label: 'Cursos Ativos', 
-      value: '15', 
-      change: '+3', 
-      isPositive: true,
-      icon: BookOpen 
-    },
-    { 
-      label: 'Receita Mensal', 
-      value: 'R$ 45,000', 
-      change: '+8%', 
-      isPositive: true,
-      icon: DollarSign 
-    },
-    { 
-      label: 'Taxa de Conclusão', 
-      value: '78%', 
-      change: '-2%', 
-      isPositive: false,
-      icon: TrendingUp 
-    },
-  ];
+  const { courses, users, categories, formations } = useDataStore();
+
+  // Estatísticas reais agregadas do dataStore
+  const stats = useMemo(() => {
+    const students = users.filter(u => u.role === 'student').length;
+    const publishedCourses = courses.filter(c => c.status === 'published').length;
+    const totalEnrollments = courses.reduce((acc, c) => acc + (c.enrolled || 0), 0);
+
+    return [
+      { label: 'Total de Alunos',     value: students,          icon: Users },
+      { label: 'Cursos Publicados',   value: publishedCourses,  icon: BookOpen },
+      { label: 'Matrículas',          value: totalEnrollments,  icon: GraduationCap },
+      { label: 'Categorias',          value: categories.length, icon: Tag },
+    ];
+  }, [courses, users, categories]);
+
+  // Top 5 cursos com mais alunos matriculados (publicados)
+  const popularCourses = useMemo(() => {
+    return [...courses]
+      .filter(c => c.status === 'published')
+      .sort((a, b) => (b.enrolled || 0) - (a.enrolled || 0))
+      .slice(0, 5);
+  }, [courses]);
+
+  // Últimos 5 alunos registrados (ordem por createdAt desc)
+  const recentStudents = useMemo(() => {
+    return [...users]
+      .filter(u => u.role === 'student')
+      .sort((a, b) => {
+        const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return db - da;
+      })
+      .slice(0, 5);
+  }, [users]);
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
@@ -91,44 +91,19 @@ export const AdminDashboard = () => {
 
       <div className="container-app py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index} className="p-4">
+          {stats.map((stat) => (
+            <Card key={stat.label} className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
                   <stat.icon size={20} className="text-primary-600 dark:text-primary-400" />
                 </div>
-                <div className={`flex items-center gap-1 text-sm ${stat.isPositive ? 'text-emerald-600' : 'text-red-600'}`}>
-                  {stat.isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                  {stat.change}
-                </div>
               </div>
-              <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{stat.value}</p>
+              <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">
+                {stat.value.toLocaleString('pt-BR')}
+              </p>
               <p className="text-sm text-surface-500 dark:text-surface-300">{stat.label}</p>
             </Card>
           ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">
-              Evolução de Alunos
-            </h2>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={mockChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-                <XAxis dataKey="name" stroke="#71717a" fontSize={12} />
-                <YAxis stroke="#71717a" fontSize={12} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#fff', 
-                    border: '1px solid #e4e4e7',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Bar dataKey="alunos" fill="#16a34a" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -141,20 +116,44 @@ export const AdminDashboard = () => {
                 Ver todos
               </Link>
             </div>
-            <div className="space-y-4">
-              {recentCourses.map((course) => (
-                <div key={course.id} className="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg">
-                  <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                    <BookOpen size={18} className="text-primary-600 dark:text-primary-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-surface-900 dark:text-surface-100 truncate">{course.title}</p>
-                    <p className="text-sm text-surface-500 dark:text-surface-300">{course.students} alunos</p>
-                  </div>
-                  <Badge variant="success">{course.completion}%</Badge>
-                </div>
-              ))}
-            </div>
+            {popularCourses.length === 0 ? (
+              <div className="text-center py-8">
+                <BookOpen size={32} className="mx-auto text-surface-300 dark:text-surface-600 mb-2" />
+                <p className="text-sm text-surface-500 dark:text-surface-300">
+                  Nenhum curso publicado ainda.
+                </p>
+                <Link to="/admin/courses/create">
+                  <Button size="sm" variant="secondary" className="mt-3">
+                    Criar primeiro curso
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {popularCourses.map((course) => (
+                  <Link
+                    key={course.id}
+                    to={`/admin/courses/${course.id}`}
+                    className="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
+                  >
+                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                      <BookOpen size={18} className="text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
+                        {course.title}
+                      </p>
+                      <p className="text-sm text-surface-500 dark:text-surface-300">
+                        {course.enrolled || 0} {(course.enrolled || 0) === 1 ? 'aluno' : 'alunos'}
+                      </p>
+                    </div>
+                    {course.rating ? (
+                      <Badge variant="success">{course.rating.toFixed(1)}★</Badge>
+                    ) : null}
+                  </Link>
+                ))}
+              </div>
+            )}
           </Card>
 
           <Card className="p-6">
@@ -166,22 +165,79 @@ export const AdminDashboard = () => {
                 Ver todos
               </Link>
             </div>
-            <div className="space-y-4">
-              {recentUsers.map((user) => (
-                <div key={user.id} className="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg">
-                  <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-                    <Users size={18} className="text-primary-600 dark:text-primary-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-surface-900 dark:text-surface-100 truncate">{user.name}</p>
-                    <p className="text-sm text-surface-500 dark:text-surface-300">{user.course}</p>
-                  </div>
-                  <span className="text-xs text-surface-400">{user.date}</span>
-                </div>
+            {recentStudents.length === 0 ? (
+              <div className="text-center py-8">
+                <Users size={32} className="mx-auto text-surface-300 dark:text-surface-600 mb-2" />
+                <p className="text-sm text-surface-500 dark:text-surface-300">
+                  Nenhum aluno cadastrado ainda.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentStudents.map((user) => (
+                  <Link
+                    key={user.id}
+                    to={`/admin/users/${user.id}?mode=view`}
+                    className="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
+                  >
+                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="w-10 h-10 rounded-full object-cover"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      ) : (
+                        <Users size={18} className="text-primary-600 dark:text-primary-400" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-sm text-surface-500 dark:text-surface-300 truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                    <span className="text-xs text-surface-400 dark:text-surface-500 shrink-0">
+                      {formatRelativeTime(user.createdAt)}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {formations.length > 0 && (
+          <Card className="p-6 mt-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
+                Formações ({formations.length})
+              </h2>
+              <Link to="/admin/formations" className="text-sm text-primary-600 hover:text-primary-700 cursor-pointer">
+                Gerenciar
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {formations.slice(0, 6).map((f) => (
+                <Link
+                  key={f.id}
+                  to={`/admin/formations/${f.id}`}
+                  className="p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
+                >
+                  <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
+                    {f.title}
+                  </p>
+                  <p className="text-xs text-surface-500 dark:text-surface-300 mt-1">
+                    {f.courses?.length || 0} cursos · {f.level}
+                  </p>
+                </Link>
               ))}
             </div>
           </Card>
-        </div>
+        )}
       </div>
     </div>
   );

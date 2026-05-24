@@ -198,11 +198,31 @@ export const CourseManagement = () => {
     return matchesSearch && matchesCategory;
   });
 
+  // Agrega métricas reais a partir dos cursos carregados do banco
+  const totalEnrolled = courses.reduce((acc, c) => acc + (c.enrolled || 0), 0);
+
+  const totalMinutes = courses.reduce((acc, c) => {
+    if (!c.duration) return acc;
+    // duration vem como string tipo "5h 30min" ou "45min"; extrai e soma
+    const hourMatch = c.duration.match(/(\d+)\s*h/);
+    const minMatch = c.duration.match(/(\d+)\s*min/);
+    const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+    const mins = minMatch ? parseInt(minMatch[1], 10) : 0;
+    return acc + hours * 60 + mins;
+  }, 0);
+
+  const totalHours = Math.round(totalMinutes / 60);
+
+  const ratedCourses = courses.filter(c => typeof c.rating === 'number' && c.rating > 0);
+  const avgRating = ratedCourses.length
+    ? (ratedCourses.reduce((acc, c) => acc + (c.rating || 0), 0) / ratedCourses.length).toFixed(1)
+    : '—';
+
   const stats = [
-    { label: 'Total de Cursos', value: courses.length, icon: BookOpen },
-    { label: 'Total de Alunos', value: '1,250', icon: Users },
-    { label: 'Horas de Conteúdo', value: '120h', icon: Clock },
-    { label: 'Nota Média', value: '4.5', icon: Star },
+    { label: 'Total de Cursos',   value: courses.length.toLocaleString('pt-BR'), icon: BookOpen },
+    { label: 'Total de Alunos',   value: totalEnrolled.toLocaleString('pt-BR'),  icon: Users },
+    { label: 'Horas de Conteúdo', value: totalHours > 0 ? `${totalHours}h` : '—', icon: Clock },
+    { label: 'Nota Média',        value: avgRating,                              icon: Star },
   ];
 
   return (
