@@ -451,6 +451,38 @@ export const CourseCreate = () => {
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
+            Capa do curso (URL da imagem)
+          </label>
+          <div className="flex flex-col md:flex-row gap-4">
+            <input
+              type="url"
+              value={formData.thumbnail || ''}
+              onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+              className="flex-1 px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+              placeholder="https://exemplo.com/imagem-curso.jpg"
+            />
+            {formData.thumbnail ? (
+              <div className="w-40 h-24 rounded-lg overflow-hidden border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 flex-shrink-0">
+                <img
+                  src={formData.thumbnail}
+                  alt="Pré-visualização da capa"
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.2'; }}
+                />
+              </div>
+            ) : (
+              <div className="w-40 h-24 rounded-lg border-2 border-dashed border-surface-200 dark:border-surface-700 flex items-center justify-center text-xs text-surface-400 flex-shrink-0">
+                Sem capa
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-surface-500 dark:text-surface-400 mt-1.5">
+            Cole o link de uma imagem (JPG/PNG/WebP). Proporção recomendada 16:9.
+          </p>
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
             Descrição *
           </label>
 <TipTapEditor
@@ -1101,6 +1133,90 @@ export const CourseCreate = () => {
               </p>
             </div>
           )}
+
+          {/* HTML personalizado do certificado */}
+          <div className="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
+            <label className="block text-sm font-semibold text-surface-900 dark:text-surface-100 mb-1">
+              Template HTML personalizado <span className="text-surface-500 dark:text-surface-400 font-normal">(opcional)</span>
+            </label>
+            <p className="text-xs text-surface-500 dark:text-surface-300 mb-3">
+              Cole HTML completo para gerar um certificado customizado. Quando preenchido,
+              substitui o modelo padrão. O aluno pode baixar como PDF via Imprimir.
+            </p>
+
+            <div className="mb-3">
+              <p className="text-xs font-medium text-surface-700 dark:text-surface-300 mb-1.5">Variáveis disponíveis:</p>
+              <div className="flex flex-wrap gap-1.5 text-[11px]">
+                {['{{aluno}}', '{{curso}}', '{{instrutor}}', '{{data}}', '{{duracao}}'].map((v) => (
+                  <code
+                    key={v}
+                    onClick={() => navigator.clipboard?.writeText(v).then(() => toast.success(`${v} copiado`))}
+                    className="px-2 py-1 bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200 rounded cursor-pointer hover:bg-surface-300 dark:hover:bg-surface-600"
+                    title="Clique para copiar"
+                  >
+                    {v}
+                  </code>
+                ))}
+              </div>
+            </div>
+
+            <textarea
+              rows={12}
+              value={formData.certificateConfig.customHtml || ''}
+              onChange={(e) => setFormData({
+                ...formData,
+                certificateConfig: { ...formData.certificateConfig, customHtml: e.target.value },
+              })}
+              className="w-full px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 font-mono text-xs resize-y"
+              placeholder={`<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Certificado</title></head>
+  <body style="font-family: serif; text-align: center; padding: 60px;">
+    <h1>Certificamos que</h1>
+    <h2>{{aluno}}</h2>
+    <p>concluiu o curso <strong>{{curso}}</strong> em {{data}}.</p>
+    <p>Duração total: {{duracao}}</p>
+    <p style="margin-top:80px;">Instrutor(a): {{instrutor}}</p>
+  </body>
+</html>`}
+            />
+
+            {formData.certificateConfig.customHtml ? (
+              <div className="mt-3 flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = formData.certificateConfig.customHtml || '';
+                    const html = sample
+                      .replace(/\{\{aluno\}\}/g, 'Aluno de Exemplo')
+                      .replace(/\{\{curso\}\}/g, formData.title || 'Curso Exemplo')
+                      .replace(/\{\{instrutor\}\}/g, formData.instructor || 'Instrutor')
+                      .replace(/\{\{data\}\}/g, new Date().toLocaleDateString('pt-BR'))
+                      .replace(/\{\{duracao\}\}/g, formData.duration || '—');
+                    const w = window.open('', '_blank', 'width=900,height=700');
+                    if (w) {
+                      w.document.open();
+                      w.document.write(html);
+                      w.document.close();
+                    }
+                  }}
+                  className="text-sm text-primary-600 dark:text-primary-400 hover:underline cursor-pointer"
+                >
+                  Pré-visualizar em nova aba
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({
+                    ...formData,
+                    certificateConfig: { ...formData.certificateConfig, customHtml: undefined },
+                  })}
+                  className="text-sm text-red-500 hover:underline cursor-pointer"
+                >
+                  Limpar e usar modelo padrão
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
       )}
 

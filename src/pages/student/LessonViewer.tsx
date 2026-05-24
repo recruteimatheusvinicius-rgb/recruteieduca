@@ -522,7 +522,87 @@ export const LessonViewer = () => {
     );
   };
 
-  const renderCertificate = () => (
+  const renderCertificate = () => {
+    const cfg = currentCourse.certificateConfig;
+    const customHtml = cfg?.customHtml?.trim();
+
+    // Se o admin definiu HTML personalizado, substitui variáveis e renderiza num iframe
+    // sandbox (assim @media print do template é honrado e o CSS interno não vaza pra app).
+    if (customHtml) {
+      const studentName = user?.name || 'Estudante';
+      const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      const filled = customHtml
+        .replace(/\{\{aluno\}\}/g, sanitizeHtml(studentName))
+        .replace(/\{\{curso\}\}/g, sanitizeHtml(currentCourse.title || ''))
+        .replace(/\{\{instrutor\}\}/g, sanitizeHtml(currentCourse.instructor || ''))
+        .replace(/\{\{data\}\}/g, today)
+        .replace(/\{\{duracao\}\}/g, sanitizeHtml(currentCourse.duration || '—'));
+
+      const printCustom = () => {
+        const w = window.open('', '_blank', 'width=1100,height=850');
+        if (!w) return;
+        w.document.open();
+        w.document.write(filled);
+        w.document.close();
+        w.addEventListener('load', () => {
+          w.focus();
+          w.print();
+        }, { once: true });
+      };
+
+      return (
+        <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex flex-col">
+          <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700 px-4 py-3 flex items-center justify-between">
+            <button
+              onClick={() => {
+                setShowCertificate(false);
+                navigate(`/course/${currentCourse.id}`);
+              }}
+              className="flex items-center gap-2 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 cursor-pointer"
+            >
+              <ArrowLeft size={20} />
+              <span className="text-sm font-medium">Voltar para o curso</span>
+            </button>
+            <div className="flex gap-2">
+              <Button onClick={printCustom}>
+                <Download size={18} />
+                Baixar PDF
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={async () => {
+                  try {
+                    if (navigator.share) {
+                      await navigator.share({
+                        title: `Certificado — ${currentCourse.title}`,
+                        url: window.location.href,
+                      });
+                    } else {
+                      await navigator.clipboard.writeText(window.location.href);
+                    }
+                  } catch { /* cancelado */ }
+                }}
+              >
+                <Share2 size={18} />
+                Compartilhar
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 p-4 md:p-8 flex justify-center">
+            <iframe
+              srcDoc={filled}
+              title="Certificado personalizado"
+              className="w-full max-w-5xl aspect-[1.414/1] bg-white rounded-xl shadow-lg border border-surface-200 dark:border-surface-700"
+              sandbox="allow-same-origin"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // Template padrão (sem customHtml)
+    return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center p-6">
       <div className="max-w-2xl w-full">
         <Card className="p-8 bg-gradient-to-br from-white to-surface-50 dark:from-surface-800 dark:to-surface-900 border-4 border-primary-200 dark:border-primary-800">
@@ -587,7 +667,8 @@ export const LessonViewer = () => {
         </Card>
       </div>
     </div>
-  );
+    );
+  };
 
   const renderContentArea = () => {
     switch (currentLesson.type) {

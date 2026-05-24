@@ -27,16 +27,25 @@ export const CourseCard = ({ course, progress = 0, showProgress = false }: Cours
     >
       <div className="relative aspect-video bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-700 dark:to-surface-800 overflow-hidden">
         {course.thumbnail ? (
-          <img 
-            src={course.thumbnail} 
+          <img
+            src={course.thumbnail}
             alt={course.title}
+            loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              const img = e.currentTarget as HTMLImageElement;
+              img.style.display = 'none';
+              const fb = img.nextElementSibling as HTMLElement | null;
+              if (fb) fb.style.display = 'flex';
+            }}
           />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <BookOpen size={40} className="text-surface-300 dark:text-surface-600" />
-          </div>
-        )}
+        ) : null}
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ display: course.thumbnail ? 'none' : 'flex' }}
+        >
+          <BookOpen size={40} className="text-surface-300 dark:text-surface-600" />
+        </div>
         
         <div className="absolute top-3 left-3">
           <Badge variant={categoryVariant}>{course.category}</Badge>

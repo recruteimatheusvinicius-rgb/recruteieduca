@@ -68,6 +68,12 @@ export interface CertificateConfig {
   requireCompletion: boolean;
   requirePassingGrade: boolean;
   passingGrade?: number;
+  /**
+   * HTML completo do certificado personalizado. Quando preenchido,
+   * substitui o template padrão. Variáveis suportadas:
+   *   {{aluno}}, {{curso}}, {{instrutor}}, {{data}}, {{duracao}}
+   */
+  customHtml?: string;
 }
 
 export interface User {

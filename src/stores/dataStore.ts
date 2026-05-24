@@ -24,6 +24,7 @@ interface CourseRow {
   restricted_plans: string[] | null;
   modules: unknown;
   certificate_config: unknown;
+  thumbnail: string | null;
   status: string | null;
   created_at: string | null;
   updated_at: string | null;
@@ -45,6 +46,7 @@ const toDbCourse = (c: Partial<Course>): Record<string, unknown> => {
   if (c.restrictedPlans !== undefined) row.restricted_plans = c.restrictedPlans;
   if (c.modules !== undefined) row.modules = c.modules;
   if (c.certificateConfig !== undefined) row.certificate_config = c.certificateConfig;
+  if (c.thumbnail !== undefined) row.thumbnail = c.thumbnail;
   if (c.status !== undefined) row.status = c.status;
   if (c.createdAt !== undefined) row.created_at = c.createdAt;
   if (c.updatedAt !== undefined) row.updated_at = c.updatedAt;
@@ -87,6 +89,7 @@ const fromDbCourse = (row: CourseRow): Course => ({
     requirePassingGrade: false,
     passingGrade: 70,
   },
+  thumbnail: row.thumbnail ?? undefined,
   status: (row.status as Course['status']) ?? 'draft',
   createdAt: row.created_at ?? undefined,
   updatedAt: row.updated_at ?? undefined,
