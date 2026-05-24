@@ -51,6 +51,22 @@ const toDbCourse = (c: Partial<Course>): Record<string, unknown> => {
   return row;
 };
 
+interface HelpArticleRow {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  video_url: string | null;
+}
+
+const fromDbHelpArticle = (row: HelpArticleRow): HelpArticle => ({
+  id: row.id,
+  title: row.title,
+  content: row.content,
+  category: row.category,
+  videoUrl: row.video_url ?? undefined,
+});
+
 const fromDbCourse = (row: CourseRow): Course => ({
   id: row.id,
   title: row.title,
@@ -153,11 +169,11 @@ export const useDataStore = create<DataState>((set, get) => ({
 
         set({
           courses: ((coursesRes.data || []) as CourseRow[]).map(fromDbCourse),
+          helpArticles: ((helpArticlesRes.data || []) as HelpArticleRow[]).map(fromDbHelpArticle),
           users: (usersRes.data || []) as User[],
           categories: (categoriesRes.data || []) as Category[],
           plans: (plansRes.data || []) as Plan[],
           formations: (formationsRes.data || []) as Formation[],
-          helpArticles: (helpArticlesRes.data || []) as HelpArticle[],
           initialized: true,
         });
       } else {

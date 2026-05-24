@@ -1,25 +1,34 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
+import { useDebounce } from '../../hooks/useDebounce';
+import { stripHtml } from '../../lib/sanitize';
 import { Search, HelpCircle, BookOpen, Video, ChevronRight, MessageCircle } from 'lucide-react';
 
 export const HelpCenter = () => {
   const { helpArticles } = useDataStore();
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 200);
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const categories = [
-    { name: 'Recrutei', icon: BookOpen, count: helpArticles.filter(a => a.category === 'Recrutei').length || 5 },
-    { name: 'RecruteiEduca', icon: BookOpen, count: helpArticles.filter(a => a.category === 'RecruteiEduca').length || 8 },
-  ];
+  // Categorias e contagens derivadas dinamicamente dos artigos do banco
+  const categories = useMemo(() => {
+    const counts = helpArticles.reduce<Record<string, number>>((acc, a) => {
+      acc[a.category] = (acc[a.category] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.entries(counts).map(([name, count]) => ({ name, count, icon: BookOpen }));
+  }, [helpArticles]);
 
   const filteredArticles = helpArticles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(search.toLowerCase()) ||
-     article.content.toLowerCase().includes(search.toLowerCase());
+    const q = debouncedSearch.trim().toLowerCase();
+    const matchesSearch = !q ||
+      article.title.toLowerCase().includes(q) ||
+      stripHtml(article.content).toLowerCase().includes(q);
     const matchesCategory = !selectedCategory || article.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -28,12 +37,11 @@ export const HelpCenter = () => {
     setSelectedCategory(selectedCategory === categoryName ? null : categoryName);
   };
 
-  const popularQuestions = [
-    'Como acessar meu certificado?',
-    'Como acompanhar meu progresso?',
-    'Como baixar materiais complementares?',
-    'Como entrar em contato com o suporte?',
-  ];
+  // Top 4 títulos de artigos como "perguntas frequentes"; clicar busca pelo termo
+  const popularQuestions = useMemo(
+    () => helpArticles.slice(0, 4).map(a => a.title),
+    [helpArticles]
+  );
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
@@ -60,28 +68,32 @@ export const HelpCenter = () => {
       </div>
 
       <div className="container-app py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-2xl mx-auto">
-          {categories.map((category, index) => (
-            <button
-              key={index}
-              onClick={() => handleCategoryClick(category.name)}
-              className={`flex items-center gap-4 p-4 bg-white dark:bg-surface-800 rounded-xl border hover:shadow-card transition-all text-left ${
-                selectedCategory === category.name
-                  ? 'border-primary-500 dark:border-primary-400'
-                  : 'border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700'
-              }`}
-            >
-              <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
-                <category.icon size={24} className="text-primary-600 dark:text-primary-400" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-surface-900 dark:text-surface-100">{category.name}</p>
-                <p className="text-sm text-surface-500 dark:text-surface-300">{category.count} artigos</p>
-              </div>
-              <ChevronRight size={20} className="text-surface-400" />
-            </button>
-          ))}
-        </div>
+        {categories.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-2xl mx-auto">
+            {categories.map((category) => (
+              <button
+                key={category.name}
+                onClick={() => handleCategoryClick(category.name)}
+                className={`flex items-center gap-4 p-4 bg-white dark:bg-surface-800 rounded-xl border hover:shadow-card transition-all text-left cursor-pointer ${
+                  selectedCategory === category.name
+                    ? 'border-primary-500 dark:border-primary-400'
+                    : 'border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700'
+                }`}
+              >
+                <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+                  <category.icon size={24} className="text-primary-600 dark:text-primary-400" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-surface-900 dark:text-surface-100">{category.name}</p>
+                  <p className="text-sm text-surface-500 dark:text-surface-300">
+                    {category.count} {category.count === 1 ? 'artigo' : 'artigos'}
+                  </p>
+                </div>
+                <ChevronRight size={20} className="text-surface-400" />
+              </button>
+            ))}
+          </div>
+        )}
 
         {search ? (
           <div className="mb-8">
@@ -135,46 +147,65 @@ export const HelpCenter = () => {
           </div>
         ) : (
           <>
-            <div className="mb-12">
-              <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-6">
-                Perguntas Frequentes
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {popularQuestions.map((question, index) => (
-                  <button
-                    key={index}
-                    className="flex items-center gap-3 p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-card transition-all text-left"
-                  >
-                    <Search size={18} className="text-primary-500 flex-shrink-0" />
-                    <span className="text-surface-700 dark:text-surface-300">{question}</span>
-                  </button>
-                ))}
+            {popularQuestions.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-6">
+                  Perguntas Frequentes
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {popularQuestions.map((question) => (
+                    <button
+                      key={question}
+                      onClick={() => setSearch(question)}
+                      className="flex items-center gap-3 p-4 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-card transition-all text-left cursor-pointer"
+                    >
+                      <Search size={18} className="text-primary-500 flex-shrink-0" />
+                      <span className="text-surface-700 dark:text-surface-300">{question}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-6">
-                Todos os Artigos
+                {selectedCategory ? `Artigos em ${selectedCategory}` : 'Todos os Artigos'}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {helpArticles.map(article => (
-                  <Card key={article.id} hover className="cursor-pointer">
-                    <Badge variant="info" className="mb-3">{article.category}</Badge>
-                    <h3 className="font-medium text-surface-900 dark:text-surface-100 mb-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-sm text-surface-500 dark:text-surface-300 line-clamp-2 mb-4">
-                      {article.content.replace(/<[^>]*>/g, '').substring(0, 100)}...
-                    </p>
-                    {article.videoUrl && (
-                      <div className="flex items-center gap-2 text-sm text-primary-600 dark:text-primary-400">
-                        <Video size={16} />
-                        <span>Com vídeo</span>
-                      </div>
-                    )}
-                  </Card>
-                ))}
-              </div>
+              {filteredArticles.length === 0 ? (
+                <div className="text-center py-12">
+                  <BookOpen size={48} className="mx-auto text-surface-300 dark:text-surface-600 mb-4" />
+                  <p className="text-surface-500 dark:text-surface-300">
+                    {helpArticles.length === 0
+                      ? 'Ainda não há artigos disponíveis.'
+                      : 'Nenhum artigo nesta categoria.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredArticles.map(article => (
+                    <Card
+                      key={article.id}
+                      hover
+                      className="cursor-pointer"
+                      onClick={() => setExpandedArticle(expandedArticle === article.id ? null : article.id)}
+                    >
+                      <Badge variant="info" className="mb-3">{article.category}</Badge>
+                      <h3 className="font-medium text-surface-900 dark:text-surface-100 mb-2">
+                        {article.title}
+                      </h3>
+                      <p className={`text-sm text-surface-500 dark:text-surface-300 mb-4 ${expandedArticle === article.id ? '' : 'line-clamp-2'}`}>
+                        {stripHtml(article.content)}
+                      </p>
+                      {article.videoUrl && (
+                        <div className="flex items-center gap-2 text-sm text-primary-600 dark:text-primary-400">
+                          <Video size={16} />
+                          <span>Com vídeo</span>
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}
