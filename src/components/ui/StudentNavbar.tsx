@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -9,12 +9,28 @@ import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, Log
 export const StudentNavbar = () => {
   const { theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
-  const { unreadCount, togglePanel, isOpen } = useNotificationStore();
+  const { unreadCount, togglePanel, isOpen, closePanel } = useNotificationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
+        setIsUserMenuOpen(false);
+      }
+      if (isOpen && notifRef.current && !notifRef.current.contains(target)) {
+        closePanel();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, closePanel]);
 
   const navLinks = [
     { path: '/home', label: 'Início', icon: Home },
@@ -77,6 +93,7 @@ export const StudentNavbar = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
+              aria-label="Pesquisar"
               className="md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               <Search size={20} />
@@ -94,14 +111,15 @@ export const StudentNavbar = () => {
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
-              aria-label="Alternar tema"
+              aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
             >
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
 
-            <div className="relative">
-              <button 
+            <div className="relative" ref={notifRef}>
+              <button
                 onClick={togglePanel}
+                aria-label="Notificações"
                 className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer relative"
               >
                 <Bell size={20} />
@@ -116,8 +134,8 @@ export const StudentNavbar = () => {
               )}
             </div>
 
-            <div className="relative hidden md:block">
-              <button 
+            <div className="relative hidden md:block" ref={userMenuRef}>
+              <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
               >
@@ -168,6 +186,7 @@ export const StudentNavbar = () => {
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
               className="md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}

@@ -70,9 +70,9 @@ export const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-surface-50 dark:bg-surface-900">
       {/* Painel Esquerdo - Branding/Hero (Desktop only) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0f1f14] to-[#1a2e1a] flex-col relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-700 to-primary-900 dark:from-[#0f1f14] dark:to-[#1a2e1a] flex-col relative overflow-hidden">
         {/* Background decorative elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl" />
@@ -102,21 +102,21 @@ export const Login = () => {
       </div>
 
       {/* Painel Direito - Formulário */}
-      <div className="w-full lg:w-1/2 bg-[#111827] flex items-center justify-center p-8 lg:p-12">
+      <div className="w-full lg:w-1/2 bg-white dark:bg-[#111827] flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md">
           {/* Logo - Mobile only */}
           <Link to="/" className="flex items-center gap-2 lg:hidden mb-8 justify-center">
             <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center">
               <BookOpen size={20} className="text-white" />
             </div>
-            <span className="font-heading font-bold text-xl text-white">
-              Recrutei<span className="text-primary-400">Educa</span>
+            <span className="font-heading font-bold text-xl text-surface-900 dark:text-white">
+              Recrutei<span className="text-primary-500 dark:text-primary-400">Educa</span>
             </span>
           </Link>
 
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Entrar</h2>
-            <p className="text-[#9CA3AF]">
+            <h2 className="text-2xl font-bold text-surface-900 dark:text-white mb-2">Entrar</h2>
+            <p className="text-surface-500 dark:text-[#9CA3AF]">
               Entre na sua conta para continuar aprendendo
             </p>
           </div>
@@ -130,17 +130,17 @@ export const Login = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-[#9CA3AF] mb-1.5">
+              <label className="block text-sm font-medium text-surface-600 dark:text-[#9CA3AF] mb-1.5">
                 E-mail
               </label>
               <div className="relative">
-                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]" />
+                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 dark:text-[#6B7280]" />
                 <input
                   type="email"
                   placeholder="seu@email.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-[#374151] bg-[#1f2937] text-white placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 transition-all"
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-surface-200 dark:border-[#374151] bg-white dark:bg-[#1f2937] text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 transition-all"
                   disabled={isLoading}
                   required
                 />
@@ -149,28 +149,29 @@ export const Login = () => {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-[#9CA3AF]">
+                <label className="block text-sm font-medium text-surface-600 dark:text-[#9CA3AF]">
                   Senha
                 </label>
-                <Link to="/forgot-password" className="text-sm text-primary-500 hover:text-primary-400">
+                <Link to="/forgot-password" className="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-500 dark:hover:text-primary-400 cursor-pointer">
                   Esqueci minha senha
                 </Link>
               </div>
               <div className="relative">
-                <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]" />
+                <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 dark:text-[#6B7280]" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-10 pr-12 py-3.5 rounded-xl border border-[#374151] bg-[#1f2937] text-white placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 transition-all"
+                  className="w-full pl-10 pr-12 py-3.5 rounded-xl border border-surface-200 dark:border-[#374151] bg-white dark:bg-[#1f2937] text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 transition-all"
                   disabled={isLoading}
                   required
                 />
                 <button
                   type="button"
+                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-white cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-700 dark:text-[#6B7280] dark:hover:text-white cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -183,18 +184,18 @@ export const Login = () => {
                 id="rememberMe"
                 checked={formData.rememberMe}
                 onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                className="w-4 h-4 rounded border-[#374151] bg-[#1f2937] text-primary-500 focus:ring-primary-500/25 cursor-pointer"
+                className="w-4 h-4 rounded border-surface-300 dark:border-[#374151] bg-white dark:bg-[#1f2937] text-primary-500 focus:ring-primary-500/25 cursor-pointer"
                 disabled={isLoading}
               />
-              <label htmlFor="rememberMe" className="text-sm text-[#9CA3AF] cursor-pointer">
+              <label htmlFor="rememberMe" className="text-sm text-surface-600 dark:text-[#9CA3AF] cursor-pointer">
                 Lembrar-me
               </label>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading}
-              className="w-full py-4 px-6 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary-500/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-4 px-6 bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary-500/25 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#111827] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -210,7 +211,7 @@ export const Login = () => {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-[#9CA3AF]">
+          <p className="mt-8 text-center text-surface-600 dark:text-[#9CA3AF]">
             Entre em contato com o administrador para obter acesso ao sistema{' '}
             <button
               type="button"
@@ -221,7 +222,7 @@ export const Login = () => {
                   alert('Chat não está disponível no momento. Tente novamente em alguns segundos.');
                 }
               }}
-              className="text-primary-500 hover:text-primary-400 underline cursor-pointer"
+              className="text-primary-600 hover:text-primary-500 dark:text-primary-500 dark:hover:text-primary-400 underline cursor-pointer"
             >
               clicando aqui
             </button>

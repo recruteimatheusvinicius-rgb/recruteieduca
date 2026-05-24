@@ -5,6 +5,77 @@ import { mockUsers, mockPlans, mockCategories, mockFormations } from '../data/us
 import { mockHelpArticles } from '../data/helpArticles';
 import type { Course, User, HelpArticle, Plan, Category, Formation, CourseLevel } from '../types';
 
+// ---- Mapping helpers para a tabela `courses` ----
+// Schema do banco usa snake_case; o tipo Course usa camelCase.
+// Sem isto, INSERT/UPDATE rejeita colunas (`instructorPhoto` não existe) e SELECT
+// retorna campos vazios no front.
+interface CourseRow {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  instructor: string | null;
+  instructor_photo: string | null;
+  instructor_bio: string | null;
+  duration: string | null;
+  level: string | null;
+  rating: number | null;
+  enrolled: number | null;
+  restricted_plans: string[] | null;
+  modules: unknown;
+  certificate_config: unknown;
+  status: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+const toDbCourse = (c: Partial<Course>): Record<string, unknown> => {
+  const row: Record<string, unknown> = {};
+  if (c.id !== undefined) row.id = c.id;
+  if (c.title !== undefined) row.title = c.title;
+  if (c.description !== undefined) row.description = c.description;
+  if (c.category !== undefined) row.category = c.category;
+  if (c.instructor !== undefined) row.instructor = c.instructor;
+  if (c.instructorPhoto !== undefined) row.instructor_photo = c.instructorPhoto;
+  if (c.instructorBio !== undefined) row.instructor_bio = c.instructorBio;
+  if (c.duration !== undefined) row.duration = c.duration;
+  if (c.level !== undefined) row.level = c.level;
+  if (c.rating !== undefined) row.rating = c.rating;
+  if (c.enrolled !== undefined) row.enrolled = c.enrolled;
+  if (c.restrictedPlans !== undefined) row.restricted_plans = c.restrictedPlans;
+  if (c.modules !== undefined) row.modules = c.modules;
+  if (c.certificateConfig !== undefined) row.certificate_config = c.certificateConfig;
+  if (c.status !== undefined) row.status = c.status;
+  if (c.createdAt !== undefined) row.created_at = c.createdAt;
+  if (c.updatedAt !== undefined) row.updated_at = c.updatedAt;
+  return row;
+};
+
+const fromDbCourse = (row: CourseRow): Course => ({
+  id: row.id,
+  title: row.title,
+  description: row.description ?? '',
+  category: row.category ?? '',
+  instructor: row.instructor ?? '',
+  instructorPhoto: row.instructor_photo ?? undefined,
+  instructorBio: row.instructor_bio ?? undefined,
+  duration: row.duration ?? '',
+  level: (row.level as Course['level']) ?? 'iniciante',
+  rating: row.rating ?? 0,
+  enrolled: row.enrolled ?? 0,
+  restrictedPlans: row.restricted_plans ?? [],
+  modules: (row.modules as Course['modules']) ?? [],
+  certificateConfig: (row.certificate_config as Course['certificateConfig']) ?? {
+    enableCertificate: false,
+    requireCompletion: true,
+    requirePassingGrade: false,
+    passingGrade: 70,
+  },
+  status: (row.status as Course['status']) ?? 'draft',
+  createdAt: row.created_at ?? undefined,
+  updatedAt: row.updated_at ?? undefined,
+});
+
 interface DataState {
   courses: Course[];
   users: User[];
@@ -81,7 +152,7 @@ export const useDataStore = create<DataState>((set, get) => ({
         ]);
 
         set({
-          courses: (coursesRes.data || []) as Course[],
+          courses: ((coursesRes.data || []) as CourseRow[]).map(fromDbCourse),
           users: (usersRes.data || []) as User[],
           categories: (categoriesRes.data || []) as Category[],
           plans: (plansRes.data || []) as Plan[],
@@ -121,14 +192,17 @@ export const useDataStore = create<DataState>((set, get) => ({
   // Course operations
   addCourse: async (course) => {
     if (isSupabaseConfigured()) {
+      const now = new Date().toISOString();
+      const row = toDbCourse({ ...course, createdAt: course.createdAt ?? now, updatedAt: now });
       const { data, error } = await supabase
         .from('courses')
-        .insert([{ ...course, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }])
+        .insert([row])
         .select()
         .single();
-      
+
       if (!error && data) {
-        set((state) => ({ courses: [data as Course, ...state.courses] }));
+        const mapped = fromDbCourse(data as CourseRow);
+        set((state) => ({ courses: [mapped, ...state.courses] }));
         return true;
       }
 
@@ -141,19 +215,20 @@ export const useDataStore = create<DataState>((set, get) => ({
   },
 
   updateCourse: async (id, course) => {
-    const updatedCourse = { ...course, updated_at: new Date().toISOString() };
-    
+    const patch = toDbCourse({ ...course, updatedAt: new Date().toISOString() });
+
     if (isSupabaseConfigured()) {
       const { data, error } = await supabase
         .from('courses')
-        .update(updatedCourse)
+        .update(patch)
         .eq('id', id)
         .select()
         .single();
-      
+
       if (!error && data) {
+        const mapped = fromDbCourse(data as CourseRow);
         set((state) => ({
-          courses: state.courses.map((c) => (c.id === id ? (data as Course) : c)),
+          courses: state.courses.map((c) => (c.id === id ? mapped : c)),
         }));
         return true;
       }
@@ -162,7 +237,7 @@ export const useDataStore = create<DataState>((set, get) => ({
       return false;
     } else {
       set((state) => ({
-        courses: state.courses.map((c) => (c.id === id ? { ...c, ...updatedCourse } : c)),
+        courses: state.courses.map((c) => (c.id === id ? { ...c, ...course, updatedAt: new Date().toISOString() } : c)),
       }));
       return true;
     }

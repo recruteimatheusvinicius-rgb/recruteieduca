@@ -3,17 +3,22 @@ import { useDataStore } from '../../stores/dataStore';
 import { CourseCard } from '../../components/ui/CourseCard';
 import { Input } from '../../components/ui/Input';
 import { Search, Sparkles } from 'lucide-react';
+import { stripHtml } from '../../lib/sanitize';
+import { useDebounce } from '../../hooks/useDebounce';
 
 export const StudentHome = () => {
   const { courses } = useDataStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 200);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
 
   const categories = ['Todos', ...new Set(courses.map(c => c.category))];
 
   const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = debouncedQuery.trim().toLowerCase();
+    if (!q) return selectedCategory === 'Todos' || course.category === selectedCategory;
+    const haystack = `${course.title} ${stripHtml(course.description)} ${course.instructor ?? ''}`.toLowerCase();
+    const matchesSearch = haystack.includes(q);
     const matchesCategory = selectedCategory === 'Todos' || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });

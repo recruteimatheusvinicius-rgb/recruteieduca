@@ -3,6 +3,7 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
+import { useConfirm } from '../../hooks/useConfirm';
 import { toast } from 'sonner';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { 
@@ -95,24 +96,22 @@ export const CompanyManagement = () => {
     }
   };
 
-  const handleDelete = async (companyId: string) => {
+  const confirm = useConfirm();
+
+  const handleDelete = (companyId: string) => {
     const company = companies.find(c => c.id === companyId);
     const userCount = usersCount[companyId] || 0;
 
-    if (userCount > 0) {
-      toast.warning(
-        `ATENÇÃO: A empresa "${company?.name}" tem ${userCount} usuário(s) vinculado(s). Ao excluir a empresa, todos os usuários também serão excluídos automaticamente.`,
-        {
-          action: {
-            label: 'Excluir',
-            onClick: () => confirmDelete(companyId),
-          },
-          duration: 8000,
-        }
-      );
-    } else {
-      confirmDelete(companyId);
-    }
+    confirm({
+      title: userCount > 0 ? 'Excluir empresa e usuários vinculados' : 'Excluir empresa',
+      message:
+        userCount > 0
+          ? `A empresa "${company?.name}" tem ${userCount} usuário(s) vinculado(s). Ao excluir, todos os usuários também serão removidos. Esta ação não pode ser desfeita.`
+          : `Tem certeza que deseja excluir a empresa "${company?.name}"? Esta ação não pode ser desfeita.`,
+      confirmText: 'Excluir',
+      variant: 'danger',
+      onConfirm: () => confirmDelete(companyId),
+    });
   };
 
   const confirmDelete = async (companyId: string) => {

@@ -1,15 +1,16 @@
 import { Toaster } from 'sonner';
+import { useThemeStore } from '../../stores/themeStore';
 
-export const ToastProvider = () => (
-  <Toaster 
-    position="top-right" 
-    richColors 
-    toastOptions={{
-      style: {
-        background: 'var(--surface-800)',
-        color: 'var(--surface-100)',
-        border: '1px solid var(--surface-700)',
-      },
-    }}
-  />
-);
+export const ToastProvider = () => {
+  const { theme } = useThemeStore();
+  return (
+    <Toaster
+      theme={theme}
+      position="top-right"
+      richColors
+      closeButton
+      expand={false}
+      duration={4000}
+    />
+  );
+};

@@ -6,9 +6,10 @@ import { progressService } from '../../hooks/useProgress';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import type { Course, Lesson } from '../../types';
-import { 
-  Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Maximize, 
-  Settings, ChevronLeft, ChevronRight, CheckCircle, Clock, 
+import { sanitizeHtml } from '../../lib/sanitize';
+import { parseEmbed } from '../../lib/embed';
+import {
+  Play, ChevronLeft, ChevronRight, CheckCircle, Clock,
   ChevronDown, ChevronUp, Menu, X, Circle, ArrowLeft, FileText,
   BookOpen, HelpCircle, Award, Download, Share2, RotateCcw,
   XCircle, AlertCircle, Lock
@@ -20,10 +21,6 @@ export const LessonViewer = () => {
   const { courses } = useDataStore();
   const { user } = useAuthStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress] = useState(0);
-  const [volume, setVolume] = useState(80);
-  const [isMuted, setIsMuted] = useState(false);
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [showCertificate, setShowCertificate] = useState(false);
@@ -91,12 +88,6 @@ export const LessonViewer = () => {
   const isCourseComplete = completedLessons.length === allLessons.length;
   const hasCertificate = currentCourse.certificateConfig?.enableCertificate;
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const isLessonCompleted = (lessonId: string) => completedLessons.includes(lessonId);
 
   const toggleLessonComplete = async (lessonId: string) => {
@@ -146,17 +137,17 @@ export const LessonViewer = () => {
     }
   };
 
-  const handleQuizSubmit = () => {
-    if (!currentLesson.questions || currentLesson.questions.length === 0) return;
-    
+  const handleQuizSubmit = (questions: { correctIndex: number }[]) => {
+    if (!questions.length) return;
+
     let correct = 0;
-    currentLesson.questions.forEach((q, index) => {
+    questions.forEach((q, index) => {
       if (quizAnswers[index] === q.correctIndex) {
         correct++;
       }
     });
-    
-    const score = Math.round((correct / currentLesson.questions.length) * 100);
+
+    const score = Math.round((correct / questions.length) * 100);
     setQuizScore(score);
     setQuizSubmitted(true);
   };
@@ -260,100 +251,53 @@ export const LessonViewer = () => {
     </div>
   );
 
-  const renderVideoPlayer = () => (
-    <div className="relative aspect-video bg-surface-900">
-      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-surface-800 to-surface-900">
-        <div className="text-center">
-          <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-4 cursor-pointer hover:bg-white/20 transition-colors" onClick={() => setIsPlaying(!isPlaying)}>
-            {isPlaying ? (
-              <Pause size={40} className="text-white" />
-            ) : (
-              <Play size={40} className="text-white ml-1" />
-            )}
-          </div>
-          <p className="text-white/60 text-sm">Player de vídeo</p>
-          <p className="text-white/40 text-xs mt-1">{currentLesson.duration}</p>
-        </div>
-      </div>
-      
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-16">
-        <div className="space-y-3">
-          <div className="relative h-1.5 bg-white/20 rounded-full cursor-pointer group">
-            <div 
-              className="absolute h-full bg-primary-500 rounded-full group-hover:bg-primary-400"
-              style={{ width: `${progress}%` }}
-            />
-            <div 
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-              style={{ left: `${progress}%` }}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between text-white text-sm">
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => setIsPlaying(!isPlaying)}
-                className="hover:text-primary-400 transition-colors cursor-pointer"
-              >
-                {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-              </button>
-              <button 
-                onClick={handlePrevious}
-                disabled={!prevLesson}
-                className={`hover:text-primary-400 transition-colors cursor-pointer ${!prevLesson ? 'opacity-40 cursor-not-allowed' : ''}`}
-              >
-                <SkipBack size={18} />
-              </button>
-              <button 
-                onClick={handleNext}
-                disabled={!nextLesson}
-                className={`hover:text-primary-400 transition-colors cursor-pointer ${!nextLesson ? 'opacity-40 cursor-not-allowed' : ''}`}
-              >
-                <SkipForward size={18} />
-              </button>
-              
-              <div className="flex items-center gap-2 ml-2">
-                <button 
-                  onClick={() => setIsMuted(!isMuted)}
-                  className="hover:text-primary-400 transition-colors cursor-pointer"
-                >
-                  {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
-                </button>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="100" 
-                  value={isMuted ? 0 : volume}
-                  onChange={(e) => {
-                    setVolume(Number(e.target.value));
-                    setIsMuted(false);
-                  }}
-                  className="w-20 h-1 bg-white/20 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
-                />
-              </div>
-              
-              <span className="text-white/80 ml-3">
-                {formatTime(Math.floor(progress * 3))} / {currentLesson.duration}
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button className="hover:text-primary-400 transition-colors cursor-pointer" title="Velocidade">
-                <Settings size={18} />
-              </button>
-              <button className="hover:text-primary-400 transition-colors cursor-pointer" title="Tela cheia">
-                <Maximize size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const renderVideoPlayer = () => {
+    const embed = parseEmbed(currentLesson.videoUrl);
 
-  const renderQuizContent = () => {
-    const questions = currentLesson.questions || [];
-    
+    if (!embed) {
+      return (
+        <div className="relative aspect-video bg-surface-900 flex items-center justify-center">
+          <div className="text-center p-6">
+            <FileText size={40} className="mx-auto text-white/40 mb-3" />
+            <p className="text-white/70 text-sm">Vídeo não disponível</p>
+            <p className="text-white/40 text-xs mt-1">O instrutor ainda não anexou o vídeo desta aula.</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (embed.kind === 'video') {
+      return (
+        <div className="relative aspect-video bg-black">
+          <video
+            key={embed.src}
+            src={embed.src}
+            controls
+            controlsList="nodownload"
+            className="absolute inset-0 w-full h-full"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative aspect-video bg-black">
+        <iframe
+          key={embed.src}
+          src={embed.src}
+          title={currentLesson.title}
+          className="absolute inset-0 w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen
+        />
+      </div>
+    );
+  };
+
+  const renderQuizContent = (
+    questions: import('../../types').QuizQuestion[] = currentLesson.questions || [],
+    passingGrade: number = 70
+  ) => {
     if (questions.length === 0) {
       return (
         <div className="text-center py-12">
@@ -363,8 +307,18 @@ export const LessonViewer = () => {
       );
     }
 
-    const currentQuestion = questions[currentQuizQuestion];
-    const isLastQuestion = currentQuizQuestion === questions.length - 1;
+    const safeIndex = Math.min(Math.max(currentQuizQuestion, 0), questions.length - 1);
+    const currentQuestion = questions[safeIndex];
+    const isLastQuestion = safeIndex === questions.length - 1;
+
+    if (!currentQuestion) {
+      return (
+        <div className="text-center py-12">
+          <HelpCircle size={48} className="mx-auto text-surface-300 mb-4" />
+          <p className="text-surface-500 dark:text-surface-300">Pergunta indisponível</p>
+        </div>
+      );
+    }
 
     return (
       <div className="max-w-3xl mx-auto">
@@ -467,11 +421,14 @@ export const LessonViewer = () => {
 
             {!quizSubmitted ? (
               isLastQuestion ? (
-                <Button onClick={handleQuizSubmit} disabled={Object.keys(quizAnswers).length < questions.length}>
-                  Finalizar Quiz
+                <Button
+                  onClick={() => handleQuizSubmit(questions)}
+                  disabled={Object.keys(quizAnswers).length < questions.length}
+                >
+                  Finalizar
                 </Button>
               ) : (
-                <Button 
+                <Button
                   onClick={() => setCurrentQuizQuestion(currentQuizQuestion + 1)}
                   disabled={quizAnswers[currentQuizQuestion] === undefined}
                 >
@@ -481,8 +438,8 @@ export const LessonViewer = () => {
               )
             ) : (
               <div className="flex items-center gap-3">
-                <div className={`px-4 py-2 rounded-lg font-medium ${quizScore >= 70 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                  {quizScore >= 70 ? 'Aprovado' : 'Reprovado'} - {quizScore}%
+                <div className={`px-4 py-2 rounded-lg font-medium ${quizScore >= passingGrade ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                  {quizScore >= passingGrade ? 'Aprovado' : 'Reprovado'} - {quizScore}%
                 </div>
                 <Button 
                   variant="secondary"
@@ -509,7 +466,7 @@ export const LessonViewer = () => {
       <Card className="p-8">
         <div className="prose dark:prose-invert max-w-none">
           {currentLesson.content ? (
-            <div dangerouslySetInnerHTML={{ __html: currentLesson.content }} />
+            <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentLesson.content) }} />
           ) : (
             <div className="text-center py-12">
               <FileText size={48} className="mx-auto text-surface-300 mb-4" />
@@ -522,9 +479,9 @@ export const LessonViewer = () => {
   );
 
   const renderGuideContent = () => {
-    const embedUrl = currentLesson.videoUrl || currentLesson.embedCode;
-    
-    if (!embedUrl) {
+    const embed = parseEmbed(currentLesson.embedCode || currentLesson.videoUrl);
+
+    if (!embed) {
       return (
         <div className="text-center py-12">
           <BookOpen size={48} className="mx-auto text-surface-300 mb-4" />
@@ -533,45 +490,37 @@ export const LessonViewer = () => {
       );
     }
 
-    const isYouTube = embedUrl.includes('youtube.com') || embedUrl.includes('youtu.be');
-    const isVimeo = embedUrl.includes('vimeo.com');
-
-    let videoId = '';
-    let embedSrc = '';
-
-    if (isYouTube) {
-      const match = embedUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
-      videoId = match ? match[1] : '';
-      embedSrc = `https://www.youtube.com/embed/${videoId}`;
-    } else if (isVimeo) {
-      const match = embedUrl.match(/vimeo\.com\/(\d+)/);
-      videoId = match ? match[1] : '';
-      embedSrc = `https://player.vimeo.com/video/${videoId}`;
-    } else {
-      embedSrc = embedUrl;
-    }
-
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="relative aspect-video bg-surface-900 rounded-xl overflow-hidden">
-          <iframe
-            src={embedSrc}
-            className="absolute inset-0 w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+        <div className="relative aspect-video bg-black rounded-xl overflow-hidden">
+          {embed.kind === 'video' ? (
+            <video
+              key={embed.src}
+              src={embed.src}
+              controls
+              controlsList="nodownload"
+              className="absolute inset-0 w-full h-full"
+            />
+          ) : (
+            <iframe
+              key={embed.src}
+              src={embed.src}
+              title={currentLesson.title}
+              className="absolute inset-0 w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+            />
+          )}
         </div>
-        {currentLesson.description && (
-          <Card className="mt-6 p-6">
-            <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-2">Descrição</h3>
-            <p className="text-surface-600 dark:text-surface-300">{currentLesson.description}</p>
-          </Card>
-        )}
       </div>
     );
   };
 
   const renderAssessmentContent = () => {
+    const cfg = currentLesson.assessmentConfig;
+    const questions = cfg?.questions || [];
+    const passingGrade = cfg?.passingGrade ?? 70;
+
     return (
       <div className="max-w-3xl mx-auto">
         <Card className="p-6 mb-6">
@@ -582,15 +531,15 @@ export const LessonViewer = () => {
             <div>
               <h3 className="font-semibold text-surface-900 dark:text-surface-100">Avaliação Final</h3>
               <p className="text-sm text-surface-500 dark:text-surface-300">
-                Nota mínima para aprovação: {currentLesson.assessmentConfig?.passingGrade || 70}%
+                Nota mínima para aprovação: {passingGrade}%
               </p>
             </div>
           </div>
           <p className="text-surface-600 dark:text-surface-300">
-            Complete esta avaliação para obter o certificado do curso. Você tem direito a {currentLesson.assessmentConfig?.maxAttempts || 3} tentativas.
+            Complete esta avaliação para obter o certificado do curso. Você tem direito a {cfg?.maxAttempts ?? 3} tentativas.
           </p>
         </Card>
-        {renderQuizContent()}
+        {renderQuizContent(questions, passingGrade)}
       </div>
     );
   };
@@ -618,11 +567,29 @@ export const LessonViewer = () => {
           </div>
 
           <div className="flex justify-center gap-4 mt-8">
-            <Button>
+            <Button onClick={() => window.print()}>
               <Download size={18} />
-              Baixar PDF
+              Imprimir / Salvar PDF
             </Button>
-            <Button variant="secondary">
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const shareData = {
+                  title: `Certificado — ${currentCourse.title}`,
+                  text: `Concluí o curso "${currentCourse.title}" na RecruteiEduca!`,
+                  url: window.location.href,
+                };
+                try {
+                  if (navigator.share) {
+                    await navigator.share(shareData);
+                  } else {
+                    await navigator.clipboard.writeText(shareData.url);
+                  }
+                } catch {
+                  /* usuário cancelou */
+                }
+              }}
+            >
               <Share2 size={18} />
               Compartilhar
             </Button>
@@ -759,24 +726,23 @@ export const LessonViewer = () => {
                   </div>
                 </div>
 
-                {/* Material Content */}
-                <div className="p-6">
-                  <div className="prose max-w-none dark:prose-invert">
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">
-                      Sobre esta aula
-                    </h3>
-                    <p className="text-surface-600 dark:text-surface-300 leading-relaxed">
-                      {currentLesson.description || 'Nesta aula você aprenderá conceitos importantes sobre o tema abordado. Assista ao vídeo com atenção e pratique os exercícios propostos.'}
-                    </p>
-                    
-                    {currentLesson.content && (
-                      <div className="mt-6 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
-                        <h4 className="font-medium text-surface-900 dark:text-surface-100 mb-2">Conteúdo adicional</h4>
-                        <p className="text-surface-600 dark:text-surface-300">{currentLesson.content}</p>
-                      </div>
-                    )}
+                {/* Material Content — texto complementar inserido pelo admin */}
+                {(currentLesson.videoText || currentLesson.description) && (
+                  <div className="p-6">
+                    <div className="prose max-w-none dark:prose-invert text-surface-700 dark:text-surface-200">
+                      <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">
+                        Sobre esta aula
+                      </h3>
+                      {currentLesson.videoText ? (
+                        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentLesson.videoText) }} />
+                      ) : (
+                        <p className="text-surface-600 dark:text-surface-300 leading-relaxed">
+                          {currentLesson.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             )}
 
@@ -893,6 +859,10 @@ export const LessonViewer = () => {
                             setQuizAnswers({});
                             setQuizSubmitted(false);
                             setCurrentQuizQuestion(0);
+                            // Fecha a sidebar no mobile ao escolher uma aula
+                            if (window.matchMedia('(max-width: 1024px)').matches) {
+                              setIsSidebarOpen(false);
+                            }
                           }}
                           className={`
                             flex items-center gap-3 p-2.5 rounded-lg transition-all cursor-pointer

@@ -3,12 +3,14 @@ import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
+import { useConfirm } from '../../hooks/useConfirm';
 import { toast } from 'sonner';
 import { Plus, Edit2, Trash2, GraduationCap, Clock, BookOpen } from 'lucide-react';
 
 export const FormationManagement = () => {
   const navigate = useNavigate();
   const { formations, deleteFormation } = useDataStore();
+  const confirm = useConfirm();
 
   const getLevelBadge = (level: string) => {
     const variants: Record<string, 'success' | 'warning' | 'error'> = {
@@ -86,15 +88,15 @@ export const FormationManagement = () => {
                     size="sm" 
                     className="!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20"
                     onClick={() => {
-                      toast.warning(`Tem certeza que deseja excluir a formação "${formation.title}"?`, {
-                        action: {
-                          label: 'Excluir',
-                          onClick: () => {
-                            deleteFormation(formation.id);
-                            toast.success('Formação excluída com sucesso!');
-                          },
+                      confirm({
+                        title: 'Excluir formação',
+                        message: `Tem certeza que deseja excluir a formação "${formation.title}"?`,
+                        confirmText: 'Excluir',
+                        variant: 'danger',
+                        onConfirm: () => {
+                          deleteFormation(formation.id);
+                          toast.success('Formação excluída com sucesso!');
                         },
-                        duration: 5000,
                       });
                     }}
                   >

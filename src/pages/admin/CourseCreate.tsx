@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
@@ -11,12 +11,7 @@ import {
   ListChecks, BookOpen, CheckCircle, Image, User
 } from 'lucide-react';
 import type { Course, CourseLevel, CourseStatus, Module, Lesson, LessonType, QuizQuestion, CertificateConfig, AssessmentConfig } from '../../types';
-
-
-const sanitizeHtml = (html: string): string => {
-  // Remove any <script> tags to prevent XSS.
-  return html.replace(/<script[\s\S]*?<\/script>/gi, '');
-};
+import { sanitizeHtml } from '../../lib/sanitize';
 
 const createEmptyModule = (order: number): Module => ({
   id: crypto.randomUUID(),
@@ -77,7 +72,7 @@ export const CourseCreate = () => {
   const [formData, setFormData] = useState<Course>(() => {
     if (existingCourse) return existingCourse;
     return {
-      id: `course-${Date.now()}`,
+      id: crypto.randomUUID(),
       title: '',
       description: '',
       category: '',
@@ -107,6 +102,43 @@ export const CourseCreate = () => {
     }
   }, [id, existingCourse, formData.id]);
 
+  // Marca como dirty quando o usuário edita.
+  // Compara cada novo formData com o existingCourse (ou estado inicial); na primeira
+  // renderização não considera dirty pra evitar warnings falsos.
+  const [isDirty, setIsDirty] = useState(false);
+  const initialFormRef = useRef<string>(JSON.stringify(formData));
+  useEffect(() => {
+    initialFormRef.current = JSON.stringify(existingCourse ?? formData);
+    setIsDirty(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existingCourse?.id]);
+
+  useEffect(() => {
+    if (JSON.stringify(formData) !== initialFormRef.current) {
+      setIsDirty(true);
+    }
+  }, [formData]);
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
+
+  const confirmExit = (target: () => void) => {
+    if (!isDirty) {
+      target();
+      return;
+    }
+    if (window.confirm('Você tem alterações não salvas. Deseja sair mesmo assim?')) {
+      target();
+    }
+  };
+
   const handleNext = () => {
     if (currentStep < 3) setCurrentStep(currentStep + 1);
   };
@@ -118,33 +150,69 @@ export const CourseCreate = () => {
   const handleSave = async () => {
     if (!formData.title?.trim()) {
       toast.error('O título do curso é obrigatório');
+      setCurrentStep(1);
       return;
     }
-if (!formData.category?.trim()) {
-  toast.error('A categoria do curso é obrigatória');
-  return;
-}
+    if (!formData.category?.trim()) {
+      toast.error('A categoria do curso é obrigatória');
+      setCurrentStep(1);
+      return;
+    }
+    if (!formData.instructor?.trim()) {
+      toast.error('O instrutor é obrigatório');
+      setCurrentStep(1);
+      return;
+    }
+    if (formData.modules.length === 0) {
+      toast.error('Adicione ao menos um módulo ao curso');
+      setCurrentStep(2);
+      return;
+    }
 
-if (formData.modules.length === 0) {
-  toast.error('Adicione ao menos um módulo ao curso');
-  return;
-}
+    // Validar conteúdo dos módulos/aulas
+    for (let i = 0; i < formData.modules.length; i++) {
+      const mod = formData.modules[i];
+      if (!mod.title?.trim()) {
+        toast.error(`O módulo ${i + 1} está sem título`);
+        setCurrentStep(2);
+        return;
+      }
+      if (!mod.lessons.length) {
+        toast.error(`O módulo "${mod.title}" precisa de ao menos uma aula`);
+        setCurrentStep(2);
+        return;
+      }
+      for (let j = 0; j < mod.lessons.length; j++) {
+        const lesson = mod.lessons[j];
+        if (!lesson.title?.trim()) {
+          toast.error(`A aula ${j + 1} do módulo "${mod.title}" está sem título`);
+          setCurrentStep(2);
+          return;
+        }
+      }
+    }
 
     setIsLoading(true);
-    
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
-      const totalDuration = formData.modules.reduce((acc, mod) => {
+      // Recalcula a ordem para evitar gaps após remoções
+      const normalizedModules = formData.modules.map((mod, mi) => ({
+        ...mod,
+        order: mi + 1,
+        lessons: mod.lessons.map((l, li) => ({ ...l, order: li + 1 })),
+      }));
+
+      const totalDuration = normalizedModules.reduce((acc, mod) => {
         const modDuration = mod.lessons.reduce((a, lesson) => {
-          const mins = parseInt(lesson.duration || '0') || 0;
-          return a + mins;
+          const mins = parseInt(lesson.duration || '0', 10);
+          return a + (Number.isFinite(mins) && mins > 0 ? mins : 0);
         }, 0);
         return acc + modDuration;
       }, 0);
       
       const courseToSave: Course = {
         ...formData,
+        modules: normalizedModules,
         description: sanitizeHtml(formData.description),
         duration: totalDuration > 0 ? `${Math.floor(totalDuration / 60)}h ${totalDuration % 60}min` : formData.duration,
         updatedAt: new Date().toISOString(),
@@ -160,6 +228,8 @@ if (formData.modules.length === 0) {
       }
 
       toast.success(isEditing ? 'Curso atualizado com sucesso!' : 'Curso criado com sucesso!');
+      setIsDirty(false);
+      initialFormRef.current = JSON.stringify(courseToSave);
       navigate('/admin/courses');
     } catch (error) {
       console.error('handleSave error:', error);
@@ -584,7 +654,8 @@ if (formData.modules.length === 0) {
                 </span>
                 <button
                   onClick={() => removeModule(module.id)}
-                  className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  aria-label="Remover módulo"
+                  className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -632,14 +703,14 @@ if (formData.modules.length === 0) {
                         <>
                           <div>
                             <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-                              Link do YouTube
+                              URL do vídeo (YouTube, Vimeo ou MP4 direto)
                             </label>
                             <input
                               type="text"
                               value={lesson.videoUrl}
                               onChange={(e) => updateLesson(module.id, lesson.id, { videoUrl: e.target.value })}
                               className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
-                              placeholder="https://www.youtube.com/embed/..."
+                              placeholder="https://www.youtube.com/watch?v=… ou https://vimeo.com/…"
                             />
                           </div>
                           <div>
@@ -745,15 +816,18 @@ if (formData.modules.length === 0) {
                       {lesson.type === 'guide' && (
                         <div>
                           <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
-                            Código Embed ( slides, interactivos, etc)
+                            URL ou código embed (slides, interativos, etc)
                           </label>
                           <textarea
-                            rows={4}
+                            rows={3}
                             value={lesson.embedCode}
                             onChange={(e) => updateLesson(module.id, lesson.id, { embedCode: e.target.value })}
                             className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 font-mono text-sm resize-none"
-                            placeholder="<iframe src='https://...'></iframe>"
+                            placeholder="https://docs.google.com/presentation/d/.../embed  ou  &lt;iframe src='...'&gt;&lt;/iframe&gt;"
                           />
+                          <p className="text-xs text-surface-500 dark:text-surface-400 mt-1">
+                            Cole a URL do conteúdo embed. Se colar um &lt;iframe&gt;, o src será extraído automaticamente.
+                          </p>
                         </div>
                       )}
 
@@ -1070,8 +1144,9 @@ if (formData.modules.length === 0) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate('/admin/courses')}
-                className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700"
+                onClick={() => confirmExit(() => navigate('/admin/courses'))}
+                aria-label="Voltar"
+                className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
               >
                 <ArrowLeft size={20} />
               </button>

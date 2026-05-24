@@ -3,6 +3,7 @@ import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
+import { useConfirm } from '../../hooks/useConfirm';
 import { toast } from 'sonner';
 import { Plus, Edit2, Trash2, Tag, BookOpen } from 'lucide-react';
 import type { Category } from '../../types';
@@ -50,7 +51,7 @@ export const CategoryManagement = () => {
         toast.success('Categoria atualizada com sucesso!');
       } else {
         addCategory({
-          id: Date.now().toString(),
+          id: crypto.randomUUID(),
           name: formData.name,
           description: formData.description,
           color: formData.color,
@@ -64,17 +65,19 @@ export const CategoryManagement = () => {
     }
   };
 
+  const confirm = useConfirm();
+
   const handleDelete = (id: string) => {
     const category = categories.find(c => c.id === id);
-    toast.warning(`Tem certeza que deseja excluir a categoria "${category?.name}"?`, {
-      action: {
-        label: 'Excluir',
-        onClick: () => {
-          deleteCategory(id);
-          toast.success('Categoria excluída com sucesso!');
-        },
+    confirm({
+      title: 'Excluir categoria',
+      message: `Tem certeza que deseja excluir a categoria "${category?.name}"?`,
+      confirmText: 'Excluir',
+      variant: 'danger',
+      onConfirm: () => {
+        deleteCategory(id);
+        toast.success('Categoria excluída com sucesso!');
       },
-      duration: 5000,
     });
   };
 

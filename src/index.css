@@ -2,6 +2,10 @@
 
 @import "tailwindcss";
 
+/* Habilita o variante dark: baseado em classe (.dark no <html>),
+   em vez do default do Tailwind v4 que usa prefers-color-scheme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-heading: 'Outfit', system-ui, sans-serif;
@@ -279,15 +283,51 @@ iframe[src*="tawk.to"] {
   background: #111827 !important;
 }
 
-/* Prevent flash of blue on page load */
-html, body {
-  background-color: #111827 !important;
+/* Transição entre rotas: fade suave sem flash */
+@keyframes pageEnter {
+  from {
+    opacity: 0.85;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Remove any blue focus outline flash on inputs on load */
-input:not(:focus) {
-  outline: none !important;
-  box-shadow: none !important;
+.page-enter {
+  animation: pageEnter 180ms ease-out;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}
+
+/* Theme-aware base background (no !important — let tema controlar) */
+html.dark, html.dark body {
+  background-color: #111827;
+}
+
+html:not(.dark), html:not(.dark) body {
+  background-color: var(--color-surface-50);
+}
+
+/* Universal pointer cursor for interactive controls */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href],
+label[for],
+summary,
+select:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
 /* Custom Scrollbar - Plataforma RecruteiEduca */

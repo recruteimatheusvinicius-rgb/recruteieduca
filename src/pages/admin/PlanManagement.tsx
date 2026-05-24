@@ -3,6 +3,7 @@ import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
+import { useConfirm } from '../../hooks/useConfirm';
 import { toast } from 'sonner';
 import { Plus, Edit2, Trash2, Tag } from 'lucide-react';
 import type { Plan } from '../../types';
@@ -60,7 +61,7 @@ export const PlanManagement = () => {
         toast.success('Plano atualizado com sucesso!');
       } else {
         addPlan({
-          id: Date.now().toString(),
+          id: crypto.randomUUID(),
           name: formData.name,
           features: [],
           courseRestrictions: formData.courseRestrictions,
@@ -76,17 +77,19 @@ export const PlanManagement = () => {
     }
   };
 
+  const confirm = useConfirm();
+
   const handleDelete = (id: string) => {
     const plan = plans.find(p => p.id === id);
-    toast.warning(`Tem certeza que deseja excluir o plano "${plan?.name}"?`, {
-      action: {
-        label: 'Excluir',
-        onClick: () => {
-          deletePlan(id);
-          toast.success('Plano excluído com sucesso!');
-        },
+    confirm({
+      title: 'Excluir plano',
+      message: `Tem certeza que deseja excluir o plano "${plan?.name}"? Esta ação não pode ser desfeita.`,
+      confirmText: 'Excluir',
+      variant: 'danger',
+      onConfirm: () => {
+        deletePlan(id);
+        toast.success('Plano excluído com sucesso!');
       },
-      duration: 5000,
     });
   };
 

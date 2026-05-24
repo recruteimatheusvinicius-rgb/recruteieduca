@@ -373,7 +373,9 @@ export const Settings = () => {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
-                  <Button>Salvar Preferências</Button>
+                  <Button onClick={() => toast.info('Preferências de notificação chegam em breve')}>
+                    Salvar Preferências
+                  </Button>
                 </div>
               </Card>
             )}
@@ -448,7 +450,13 @@ export const Settings = () => {
                       <p className="font-medium text-surface-900 dark:text-surface-100">Exportar dados</p>
                       <p className="text-sm text-surface-500 dark:text-surface-300">Baixe todos os seus dados</p>
                     </div>
-                    <Button variant="secondary" size="sm">Exportar</Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => toast.info('Exportação de dados disponível em breve')}
+                    >
+                      Exportar
+                    </Button>
                   </div>
                 </div>
               </Card>

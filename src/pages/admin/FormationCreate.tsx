@@ -38,7 +38,7 @@ export const FormationCreate = () => {
   const [formData, setFormData] = useState<Formation & { certificateConfig: CertificateConfig }>(() => {
     if (existingFormation) return { ...existingFormation, certificateConfig: existingFormation.certificateConfig || createEmptyCertificateConfig() };
     return {
-      id: `formation-${Date.now()}`,
+      id: crypto.randomUUID(),
       title: '',
       description: '',
       duration: '',

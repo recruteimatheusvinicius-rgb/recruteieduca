@@ -9,12 +9,13 @@ import { useState, useEffect, useRef } from 'react';
 export const AdminNavbar = () => {
   const { theme, toggleTheme } = useThemeStore();
   const { user, logout } = useAuthStore();
-  const { unreadCount, togglePanel, isOpen } = useNotificationStore();
+  const { unreadCount, togglePanel, isOpen, closePanel } = useNotificationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { path: '/admin', label: 'Dashboard', icon: Settings },
@@ -27,13 +28,17 @@ export const AdminNavbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
         setIsUserMenuOpen(false);
+      }
+      if (isOpen && notifRef.current && !notifRef.current.contains(target)) {
+        closePanel();
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [isOpen, closePanel]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -95,25 +100,29 @@ export const AdminNavbar = () => {
 
             <button
               onClick={toggleTheme}
+              aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
               className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
 
-            <button
-              onClick={togglePanel}
-              className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 relative cursor-pointer"
-            >
-              <Bell size={20} />
-              {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={togglePanel}
+                aria-label="Notificações"
+                className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 relative cursor-pointer"
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              {isOpen && (
+                <NotificationPanel />
               )}
-            </button>
-            {isOpen && (
-              <NotificationPanel />
-            )}
+            </div>
 
             <div className="hidden md:flex items-center gap-2" ref={userMenuRef}>
               <div className="relative">
@@ -151,7 +160,8 @@ export const AdminNavbar = () => {
 
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800"
+              aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+              className="md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>

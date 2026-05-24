@@ -4,6 +4,8 @@ import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
+import { useConfirm } from '../../hooks/useConfirm';
+import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { 
   Search, Plus, Edit, Trash2, Eye, 
@@ -28,16 +30,33 @@ export const AdminManage = () => {
     { id: 'plans', label: 'Planos', icon: DollarSign },
   ];
 
+  const confirm = useConfirm();
+
   const handleDelete = (type: string, id: string) => {
-    if (!confirm(`Tem certeza que deseja excluir este ${type}?`)) return;
-    
-    switch (type) {
-      case 'course': deleteCourse(id); break;
-      case 'user': deleteUser(id); break;
-      case 'plan': deletePlan(id); break;
-      case 'formation': deleteFormation(id); break;
-      case 'category': deleteCategory(id); break;
-    }
+    const labels: Record<string, string> = {
+      course: 'curso',
+      user: 'usuário',
+      plan: 'plano',
+      formation: 'formação',
+      category: 'categoria',
+    };
+    const label = labels[type] ?? 'item';
+    confirm({
+      title: `Excluir ${label}`,
+      message: `Tem certeza que deseja excluir este ${label}? Esta ação não pode ser desfeita.`,
+      confirmText: 'Excluir',
+      variant: 'danger',
+      onConfirm: async () => {
+        switch (type) {
+          case 'course': await deleteCourse(id); break;
+          case 'user': deleteUser(id); break;
+          case 'plan': deletePlan(id); break;
+          case 'formation': deleteFormation(id); break;
+          case 'category': deleteCategory(id); break;
+        }
+        toast.success(`${label[0].toUpperCase()}${label.slice(1)} excluído(a) com sucesso`);
+      },
+    });
   };
 
   const renderDashboard = () => (
@@ -49,7 +68,7 @@ export const AdminManage = () => {
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{courses.length}</p>
-            <p className="text-sm text-surface-500">Cursos</p>
+            <p className="text-sm text-surface-500 dark:text-surface-400">Cursos</p>
           </div>
         </div>
       </Card>
@@ -60,7 +79,7 @@ export const AdminManage = () => {
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{formations.length}</p>
-            <p className="text-sm text-surface-500">Formações</p>
+            <p className="text-sm text-surface-500 dark:text-surface-400">Formações</p>
           </div>
         </div>
       </Card>
@@ -71,7 +90,7 @@ export const AdminManage = () => {
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{users.length}</p>
-            <p className="text-sm text-surface-500">Usuários</p>
+            <p className="text-sm text-surface-500 dark:text-surface-400">Usuários</p>
           </div>
         </div>
       </Card>
@@ -82,7 +101,7 @@ export const AdminManage = () => {
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{categories.length}</p>
-            <p className="text-sm text-surface-500">Categorias</p>
+            <p className="text-sm text-surface-500 dark:text-surface-400">Categorias</p>
           </div>
         </div>
       </Card>
@@ -93,7 +112,7 @@ export const AdminManage = () => {
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{plans.length}</p>
-            <p className="text-sm text-surface-500">Planos</p>
+            <p className="text-sm text-surface-500 dark:text-surface-400">Planos</p>
           </div>
         </div>
       </Card>
@@ -113,11 +132,11 @@ export const AdminManage = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-surface-200 dark:border-surface-700">
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500">Curso</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500">Categoria</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500">Nível</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500">Status</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-surface-500">Ações</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Curso</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Categoria</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Nível</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Status</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -130,7 +149,7 @@ export const AdminManage = () => {
                       </div>
                       <div>
                         <p className="font-medium text-surface-900 dark:text-surface-100">{course.title}</p>
-                        <p className="text-sm text-surface-500">{course.duration}</p>
+                        <p className="text-sm text-surface-500 dark:text-surface-400">{course.duration}</p>
                       </div>
                     </div>
                   </td>
@@ -143,10 +162,10 @@ export const AdminManage = () => {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center justify-end gap-1">
-                      <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 text-surface-500 cursor-pointer">
+                      <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 cursor-pointer">
                         <Eye size={16} />
                       </Link>
-                      <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 text-surface-500 cursor-pointer">
+                      <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 cursor-pointer">
                         <Edit size={16} />
                       </Link>
                       <button onClick={() => handleDelete('course', course.id)} className="p-2 rounded-lg hover:bg-surface-100 text-red-500 cursor-pointer">
@@ -159,7 +178,7 @@ export const AdminManage = () => {
             </tbody>
           </table>
         </div>
-        {filtered.length === 0 && <p className="text-center py-8 text-surface-500">Nenhum curso encontrado</p>}
+        {filtered.length === 0 && <p className="text-center py-8 text-surface-500 dark:text-surface-400">Nenhum curso encontrado</p>}
       </div>
     );
   };
@@ -177,20 +196,28 @@ export const AdminManage = () => {
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-semibold text-surface-900 dark:text-surface-100">{formation.title}</h3>
                 <div className="flex gap-1">
-                  <button onClick={() => navigate('/admin/formations')} className="p-1 rounded hover:bg-surface-100 text-surface-500">
+                  <button
+                    onClick={() => navigate(`/admin/formations/${formation.id}`)}
+                    aria-label="Editar formação"
+                    className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400"
+                  >
                     <Edit size={14} />
                   </button>
-                  <button onClick={() => handleDelete('formation', formation.id)} className="p-1 rounded hover:bg-surface-100 text-red-500">
+                  <button
+                    onClick={() => handleDelete('formation', formation.id)}
+                    aria-label="Excluir formação"
+                    className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
+                  >
                     <Trash2 size={14} />
                   </button>
                 </div>
               </div>
-              <p className="text-sm text-surface-500 mb-2">{formation.courses.length} cursos • {formation.duration}</p>
+              <p className="text-sm text-surface-500 dark:text-surface-400 mb-2">{formation.courses.length} cursos • {formation.duration}</p>
               <Badge variant="primary">{formation.level}</Badge>
             </Card>
           ))}
         </div>
-        {filtered.length === 0 && <p className="text-center py-8 text-surface-500">Nenhuma formação encontrada</p>}
+        {filtered.length === 0 && <p className="text-center py-8 text-surface-500 dark:text-surface-400">Nenhuma formação encontrada</p>}
       </div>
     );
   };
@@ -206,10 +233,10 @@ export const AdminManage = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-surface-200 dark:border-surface-700">
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500">Usuário</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500">Papel</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500">Status</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-surface-500">Ações</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Usuário</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Papel</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Status</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -218,7 +245,7 @@ export const AdminManage = () => {
                   <td className="py-3 px-4">
                     <div>
                       <p className="font-medium text-surface-900 dark:text-surface-100">{user.name}</p>
-                      <p className="text-sm text-surface-500">{user.email}</p>
+                      <p className="text-sm text-surface-500 dark:text-surface-400">{user.email}</p>
                     </div>
                   </td>
                   <td className="py-3 px-4">
@@ -229,13 +256,25 @@ export const AdminManage = () => {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => navigate('/admin/users')} className="p-2 rounded-lg hover:bg-surface-100 text-surface-500">
+                      <button
+                        onClick={() => navigate(`/admin/users/${user.id}?mode=view`)}
+                        aria-label="Ver detalhes do usuário"
+                        className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400"
+                      >
                         <Eye size={16} />
                       </button>
-                      <button onClick={() => navigate('/admin/users')} className="p-2 rounded-lg hover:bg-surface-100 text-surface-500">
+                      <button
+                        onClick={() => navigate(`/admin/users/${user.id}`)}
+                        aria-label="Editar usuário"
+                        className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400"
+                      >
                         <Edit size={16} />
                       </button>
-                      <button onClick={() => handleDelete('user', user.id)} className="p-2 rounded-lg hover:bg-surface-100 text-red-500">
+                      <button
+                        onClick={() => handleDelete('user', user.id)}
+                        aria-label="Excluir usuário"
+                        className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -263,10 +302,10 @@ export const AdminManage = () => {
                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: category.color }} />
                 <h3 className="font-semibold text-surface-900 dark:text-surface-100">{category.name}</h3>
               </div>
-              <p className="text-sm text-surface-500 mb-2">{category.description}</p>
-              <p className="text-sm text-surface-500">{category.courseCount} cursos</p>
+              <p className="text-sm text-surface-500 dark:text-surface-400 mb-2">{category.description}</p>
+              <p className="text-sm text-surface-500 dark:text-surface-400">{category.courseCount} cursos</p>
               <div className="flex gap-1 mt-3">
-                <button onClick={() => navigate('/admin/categories')} className="p-1 rounded hover:bg-surface-100 text-surface-500">
+                <button onClick={() => navigate('/admin/categories')} className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400">
                   <Edit size={14} />
                 </button>
                 <button onClick={() => handleDelete('category', category.id)} className="p-1 rounded hover:bg-surface-100 text-red-500">
@@ -294,11 +333,11 @@ export const AdminManage = () => {
                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: plan.color }} />
                 <h3 className="font-semibold text-surface-900 dark:text-surface-100">{plan.name}</h3>
               </div>
-              <p className="text-sm text-surface-500">
+              <p className="text-sm text-surface-500 dark:text-surface-400">
                 {plan.courseRestrictions?.length === 0 ? 'Acesso livre' : `${plan.courseRestrictions?.length} cursos restritos`}
               </p>
               <div className="flex gap-1 mt-3">
-                <button onClick={() => navigate('/admin/plans')} className="p-1 rounded hover:bg-surface-100 text-surface-500">
+                <button onClick={() => navigate('/admin/plans')} className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400">
                   <Edit size={14} />
                 </button>
                 <button onClick={() => handleDelete('plan', plan.id)} className="p-1 rounded hover:bg-surface-100 text-red-500">

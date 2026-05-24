@@ -4,6 +4,8 @@ import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
+import { useConfirm } from '../../hooks/useConfirm';
+import { useDebounce } from '../../hooks/useDebounce';
 import { toast } from 'sonner';
 import {
   DndContext,
@@ -19,7 +21,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  horizontalListSortingStrategy,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { 
@@ -107,10 +109,10 @@ const SortableRow = ({ course, onDelete, onToggleStatus }: SortableRowProps) => 
       </td>
       <td className="py-3 px-4">
         <div className="flex items-center justify-end gap-1">
-          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer">
+          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
             <Eye size={16} />
           </Link>
-          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer">
+          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
             <Edit size={16} />
           </Link>
           <button onClick={onDelete} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer">
@@ -125,6 +127,7 @@ const SortableRow = ({ course, onDelete, onToggleStatus }: SortableRowProps) => 
 export const CourseManagement = () => {
   const { courses, deleteCourse, updateCourseStatus, reorderCourses } = useDataStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 200);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [courseList, setCourseList] = useState(courses);
 
@@ -143,33 +146,36 @@ export const CourseManagement = () => {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (over && active.id !== over.id) {
       const oldIndex = courseList.findIndex(c => c.id === active.id);
       const newIndex = courseList.findIndex(c => c.id === over.id);
-      
+
       const newOrder = arrayMove(courseList, oldIndex, newIndex);
       setCourseList(newOrder);
       reorderCourses(oldIndex, newIndex);
-      toast.success('Ordem dos cursos atualizada');
+      // Reorder é apenas local — não há coluna `order` na tabela de cursos no Supabase.
+      // Não exibimos toast de sucesso para não enganar o admin.
     }
   };
 
+  const confirm = useConfirm();
+
   const handleDelete = (id: string) => {
     const course = courses.find(c => c.id === id);
-    toast.warning(`Tem certeza que deseja excluir o curso "${course?.title}"?`, {
-      action: {
-        label: 'Excluir',
-        onClick: async () => {
-          const deleted = await deleteCourse(id);
-          if (deleted) {
-            toast.success('Curso excluído com sucesso!');
-          } else {
-            toast.error('Não foi possível excluir o curso. Tente novamente.');
-          }
-        },
+    confirm({
+      title: 'Excluir curso',
+      message: `Tem certeza que deseja excluir o curso "${course?.title}"? Esta ação não pode ser desfeita.`,
+      confirmText: 'Excluir',
+      variant: 'danger',
+      onConfirm: async () => {
+        const deleted = await deleteCourse(id);
+        if (deleted) {
+          toast.success('Curso excluído com sucesso!');
+        } else {
+          toast.error('Não foi possível excluir o curso. Tente novamente.');
+        }
       },
-      duration: 5000,
     });
   };
 
@@ -187,7 +193,7 @@ export const CourseManagement = () => {
   };
 
   const filteredCourses = courseList.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = course.title.toLowerCase().includes(debouncedQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || course.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -295,7 +301,7 @@ export const CourseManagement = () => {
                 <tbody>
                   <SortableContext
                     items={filteredCourses.map(c => c.id)}
-                    strategy={horizontalListSortingStrategy}
+                    strategy={verticalListSortingStrategy}
                   >
                     {filteredCourses.map((course) => (
                       <SortableRow

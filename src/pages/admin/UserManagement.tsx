@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
+import { useConfirm } from '../../hooks/useConfirm';
+import { useDebounce } from '../../hooks/useDebounce';
 import { toast } from 'sonner';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { 
@@ -12,10 +15,15 @@ import {
 import type { User, Company } from '../../types';
 
 export const UserManagement = () => {
+  const { id: routeUserId } = useParams<{ id?: string }>();
+  const [searchParams] = useSearchParams();
+  const isViewOnly = searchParams.get('mode') === 'view';
+  const navigate = useNavigate();
   const { users, addUser, updateUser, deleteUser } = useDataStore();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyNames, setCompanyNames] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedQuery = useDebounce(searchQuery, 200);
   const [selectedRole, setSelectedRole] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,6 +44,23 @@ export const UserManagement = () => {
   useEffect(() => {
     loadCompanies();
   }, []);
+
+  useEffect(() => {
+    if (!routeUserId) return;
+    const target = users.find(u => u.id === routeUserId);
+    if (target) {
+      openModal(target);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeUserId, users]);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingUser(null);
+    if (routeUserId) {
+      navigate('/admin/users', { replace: true });
+    }
+  };
 
   const loadCompanies = async () => {
     if (!isSupabaseConfigured()) {
@@ -62,8 +87,9 @@ export const UserManagement = () => {
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = debouncedQuery.toLowerCase();
+    const matchesSearch = user.name.toLowerCase().includes(q) ||
+                          user.email.toLowerCase().includes(q);
     const matchesRole = selectedRole === 'all' || user.role === selectedRole;
     const matchesStatus = selectedStatus === 'all' || user.status === selectedStatus;
     return matchesSearch && matchesRole && matchesStatus;
@@ -164,29 +190,31 @@ export const UserManagement = () => {
         toast.success('Usuário atualizado com sucesso!');
       } else {
         addUser({
-          id: Date.now().toString(),
+          id: crypto.randomUUID(),
           ...formData,
           createdAt: new Date().toISOString(),
         });
         toast.success('Usuário criado com sucesso!');
       }
-      setIsModalOpen(false);
+      closeModal();
     } catch {
       toast.error('Erro ao salvar usuário');
     }
   };
 
+  const confirm = useConfirm();
+
   const handleDelete = (id: string) => {
     const user = users.find(u => u.id === id);
-    toast.warning(`Tem certeza que deseja excluir o usuário "${user?.name}"?`, {
-      action: {
-        label: 'Excluir',
-        onClick: () => {
-          deleteUser(id);
-          toast.success('Usuário excluído com sucesso!');
-        },
+    confirm({
+      title: 'Excluir usuário',
+      message: `Tem certeza que deseja excluir "${user?.name}"? Esta ação não pode ser desfeita.`,
+      confirmText: 'Excluir',
+      variant: 'danger',
+      onConfirm: () => {
+        deleteUser(id);
+        toast.success('Usuário excluído com sucesso!');
       },
-      duration: 5000,
     });
   };
 
@@ -310,16 +338,20 @@ export const UserManagement = () => {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button 
-                          onClick={() => window.location.href = `mailto:${user.email}`}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer" 
-                          title="Enviar e-mail"
+                        <button
+                          onClick={() => {
+                            if (user.email) window.location.href = `mailto:${user.email}`;
+                          }}
+                          disabled={!user.email}
+                          aria-label="Enviar e-mail"
+                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                          title={user.email ? `Enviar e-mail para ${user.email}` : 'Este usuário não tem e-mail cadastrado'}
                         >
                           <Mail size={16} />
                         </button>
                         <button 
                           onClick={() => openModal(user)}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer" 
+                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer" 
                           title="Editar"
                         >
                           <Edit size={16} />
@@ -432,8 +464,8 @@ export const UserManagement = () => {
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          title={editingUser ? 'Editar Usuário' : 'Novo Usuário'}
+          onClose={closeModal}
+          title={isViewOnly ? 'Detalhes do Usuário' : editingUser ? 'Editar Usuário' : 'Novo Usuário'}
         >
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -444,7 +476,8 @@ export const UserManagement = () => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                readOnly={isViewOnly}
+                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 read-only:bg-surface-50 dark:read-only:bg-surface-900 read-only:cursor-default"
                 required
               />
             </div>
@@ -457,7 +490,8 @@ export const UserManagement = () => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                readOnly={isViewOnly}
+                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 read-only:bg-surface-50 dark:read-only:bg-surface-900 read-only:cursor-default"
                 required
               />
             </div>
@@ -470,7 +504,8 @@ export const UserManagement = () => {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as 'student' | 'admin' })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                  disabled={isViewOnly}
+                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 disabled:bg-surface-50 dark:disabled:bg-surface-900 disabled:cursor-default"
                 >
                   <option value="student">Estudante</option>
                   <option value="admin">Administrador</option>
@@ -483,7 +518,8 @@ export const UserManagement = () => {
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                  disabled={isViewOnly}
+                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 disabled:bg-surface-50 dark:disabled:bg-surface-900 disabled:cursor-default"
                 >
                   <option value="active">Ativo</option>
                   <option value="inactive">Inativo</option>
@@ -492,12 +528,29 @@ export const UserManagement = () => {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button type="button" variant="secondary" className="flex-1" onClick={() => setIsModalOpen(false)}>
-                Cancelar
-              </Button>
-              <Button type="submit" className="flex-1">
-                {editingUser ? 'Salvar' : 'Criar'}
-              </Button>
+              {isViewOnly ? (
+                <>
+                  <Button type="button" variant="secondary" className="flex-1" onClick={closeModal}>
+                    Fechar
+                  </Button>
+                  <Button
+                    type="button"
+                    className="flex-1"
+                    onClick={() => navigate(`/admin/users/${routeUserId}`)}
+                  >
+                    Editar
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button type="button" variant="secondary" className="flex-1" onClick={closeModal}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" className="flex-1">
+                    {editingUser ? 'Salvar' : 'Criar'}
+                  </Button>
+                </>
+              )}
             </div>
           </form>
         </Modal>

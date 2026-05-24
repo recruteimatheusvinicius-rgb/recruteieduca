@@ -8,6 +8,7 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { toast } from 'sonner';
 import { Play, User, BookOpen, Clock, Star, CheckCircle, ArrowLeft, Share2, Heart, ChevronDown } from 'lucide-react';
+import { sanitizeHtml } from '../../lib/sanitize';
 
 export const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -129,7 +130,7 @@ export const CourseDetail = () => {
               </h1>
               
               <div className="prose dark:prose-invert max-w-2xl mb-6">
-                <div dangerouslySetInnerHTML={{ __html: course.description }} className="dark:text-surface-200" />
+                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(course.description) }} className="dark:text-surface-200" />
               </div>
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-surface-600 dark:text-surface-300 mb-6">
@@ -318,16 +319,25 @@ export const CourseDetail = () => {
                 </h3>
                 <div className="flex items-center gap-3 mb-3">
                   {course.instructorPhoto ? (
-                    <img 
-                      src={course.instructorPhoto} 
+                    <img
+                      src={course.instructorPhoto}
                       alt={course.instructor}
                       className="w-12 h-12 rounded-full object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        // Esconde a <img> quebrada e mostra o fallback ao lado
+                        const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+                        e.currentTarget.style.display = 'none';
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
                     />
-                  ) : (
-                    <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-                      <User size={20} className="text-primary-600 dark:text-primary-400" />
-                    </div>
-                  )}
+                  ) : null}
+                  <div
+                    className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center"
+                    style={{ display: course.instructorPhoto ? 'none' : 'flex' }}
+                  >
+                    <User size={20} className="text-primary-600 dark:text-primary-400" />
+                  </div>
                   <div>
                     <p className="font-medium text-surface-900 dark:text-surface-100">{course.instructor}</p>
                     <p className="text-sm text-surface-500 dark:text-surface-300">Especialista</p>
@@ -335,7 +345,7 @@ export const CourseDetail = () => {
                 </div>
                 {course.instructorBio && (
                   <div className="prose dark:prose-invert text-sm">
-                    <div dangerouslySetInnerHTML={{ __html: course.instructorBio }} />
+                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(course.instructorBio) }} />
                   </div>
                 )}
               </Card>
