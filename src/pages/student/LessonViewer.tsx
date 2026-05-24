@@ -115,28 +115,6 @@ export const LessonViewer = () => {
     return Math.round((completed / allLessons.length) * 100);
   };
 
-  const handlePrevious = () => {
-    if (prevLesson) {
-      navigate(`/lesson/${prevLesson.id}`);
-      setQuizAnswers({});
-      setQuizSubmitted(false);
-      setCurrentQuizQuestion(0);
-    }
-  };
-
-  const handleNext = () => {
-    if (nextLesson) {
-      navigate(`/lesson/${nextLesson.id}`);
-      setQuizAnswers({});
-      setQuizSubmitted(false);
-      setCurrentQuizQuestion(0);
-    } else if (isLastLesson && isCourseComplete) {
-      if (hasCertificate) {
-        setShowCertificate(true);
-      }
-    }
-  };
-
   const handleQuizSubmit = (questions: { correctIndex: number }[]) => {
     if (!questions.length) return;
 
