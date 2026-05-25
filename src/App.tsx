@@ -96,13 +96,14 @@ function PersistentChrome({ position }: { position: 'top' | 'bottom' }) {
 
 function CompleteProfileRedirect() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthInitialized, needsProfileComplete } = useAuthStore();
 
   useEffect(() => {
-    if (isAuthInitialized && user && needsProfileComplete && window.location.pathname !== '/complete-profile') {
+    if (isAuthInitialized && user && needsProfileComplete && location.pathname !== '/complete-profile') {
       navigate('/complete-profile', { replace: true });
     }
-  }, [isAuthInitialized, user, needsProfileComplete, navigate]);
+  }, [isAuthInitialized, user, needsProfileComplete, navigate, location.pathname]);
 
   return null;
 }
@@ -181,7 +182,7 @@ function App() {
       s1.src = 'https://embed.tawk.to/69d6fed9b927021c2d6b6ba5/1jmm90isg';
       s1.charset = 'UTF-8';
       s1.setAttribute('crossorigin', '*');
-s0.parentNode.insertBefore(s1, s0);
+      s0.parentNode.insertBefore(s1, s0);
     }
   }, []);
 
