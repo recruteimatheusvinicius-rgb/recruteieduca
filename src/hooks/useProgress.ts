@@ -12,26 +12,46 @@ export interface EnrollmentData {
   status: string;
 }
 
+/**
+ * Helper: conta o total de aulas de um curso lendo do JSONB courses.modules.
+ * O admin grava o curso inteiro (módulos + aulas aninhadas) no campo `modules`,
+ * então NÃO podemos usar `SELECT FROM lessons WHERE course_id=...` (tabela vazia).
+ */
+async function countCourseLessons(courseId: string): Promise<number> {
+  if (!isSupabaseConfigured()) return 0;
+  try {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('modules')
+      .eq('id', courseId)
+      .single();
+    if (error || !data) return 0;
+    const modules = (data.modules as Array<{ lessons?: unknown[] }> | null) ?? [];
+    return modules.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0);
+  } catch (err) {
+    console.error('countCourseLessons error:', err);
+    return 0;
+  }
+}
+
 export const progressService = {
   async getEnrollment(userId: string, courseId: string): Promise<EnrollmentData | null> {
-    if (!isSupabaseConfigured()) {
-      return null;
-    }
+    if (!isSupabaseConfigured()) return null;
 
     try {
+      // maybeSingle: retorna null em vez de erro quando não há linha
       const { data, error } = await supabase
-        .from('enrollments')
+        .from('user_enrollments')
         .select('progress, last_lesson_id, enrolled_at, status')
         .eq('user_id', userId)
         .eq('course_id', courseId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching enrollment:', error);
         return null;
       }
-
-      return data as EnrollmentData;
+      return (data as EnrollmentData) ?? null;
     } catch (error) {
       console.error('Error fetching enrollment:', error);
       return null;
@@ -39,9 +59,7 @@ export const progressService = {
   },
 
   async getCompletedLessons(userId: string, courseId: string): Promise<string[]> {
-    if (!isSupabaseConfigured()) {
-      return [];
-    }
+    if (!isSupabaseConfigured()) return [];
 
     try {
       const { data, error } = await supabase
@@ -55,8 +73,7 @@ export const progressService = {
         console.error('Error fetching completed lessons:', error);
         return [];
       }
-
-      return data?.map(item => item.lesson_id) || [];
+      return data?.map((item) => item.lesson_id as string) ?? [];
     } catch (error) {
       console.error('Error fetching completed lessons:', error);
       return [];
@@ -67,27 +84,25 @@ export const progressService = {
     userId: string,
     courseId: string,
     lessonId: string,
-    completed: boolean
+    completed: boolean,
   ): Promise<boolean> {
-    if (!isSupabaseConfigured()) {
-      return false;
-    }
+    if (!isSupabaseConfigured()) return false;
 
     try {
       const now = new Date().toISOString();
-      
+      const payload: Record<string, unknown> = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        course_id: courseId,
+        lesson_id: lessonId,
+        completed,
+        completed_at: completed ? now : null,
+        updated_at: now,
+      };
+
       const { error } = await supabase
         .from('user_progress')
-        .upsert({
-          user_id: userId,
-          course_id: courseId,
-          lesson_id: lessonId,
-          completed: completed,
-          completed_at: completed ? now : null,
-          updated_at: now,
-        }, {
-          onConflict: 'user_id,lesson_id',
-        });
+        .upsert(payload, { onConflict: 'user_id,lesson_id', ignoreDuplicates: false });
 
       if (error) {
         console.error('Error saving lesson progress:', error);
@@ -103,16 +118,12 @@ export const progressService = {
   },
 
   async updateCourseProgress(userId: string, courseId: string): Promise<boolean> {
-    if (!isSupabaseConfigured()) {
-      return false;
-    }
+    if (!isSupabaseConfigured()) return false;
 
     try {
-      const [lessonsRes, progressRes] = await Promise.all([
-        supabase
-          .from('lessons')
-          .select('id')
-          .eq('course_id', courseId),
+      // Total de aulas vem do JSONB do curso, NÃO da tabela `lessons` (sempre vazia)
+      const [totalLessons, completedRes] = await Promise.all([
+        countCourseLessons(courseId),
         supabase
           .from('user_progress')
           .select('lesson_id')
@@ -121,32 +132,30 @@ export const progressService = {
           .eq('completed', true),
       ]);
 
-      const totalLessons = lessonsRes.data?.length || 0;
-      const completedLessons = progressRes.data?.length || 0;
-
-      const progressPercentage = totalLessons > 0 
-        ? Math.round((completedLessons / totalLessons) * 100) 
-        : 0;
-
+      const completedLessons = completedRes.data?.length ?? 0;
+      const progressPercentage =
+        totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
       const status = progressPercentage >= 100 ? 'completed' : 'in_progress';
 
+      const now = new Date().toISOString();
+      const payload: Record<string, unknown> = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        course_id: courseId,
+        progress: progressPercentage,
+        status,
+        updated_at: now,
+        ...(progressPercentage >= 100 ? { completed_at: now } : {}),
+      };
+
       const { error } = await supabase
-        .from('enrollments')
-        .upsert({
-          user_id: userId,
-          course_id: courseId,
-          progress: progressPercentage,
-          status: status,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id,course_id',
-        });
+        .from('user_enrollments')
+        .upsert(payload, { onConflict: 'user_id,course_id', ignoreDuplicates: false });
 
       if (error) {
         console.error('Error updating course progress:', error);
         return false;
       }
-
       return true;
     } catch (error) {
       console.error('Error updating course progress:', error);
@@ -155,27 +164,25 @@ export const progressService = {
   },
 
   async updateLastLesson(userId: string, courseId: string, lessonId: string): Promise<boolean> {
-    if (!isSupabaseConfigured()) {
-      return false;
-    }
+    if (!isSupabaseConfigured()) return false;
 
     try {
+      const payload: Record<string, unknown> = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        course_id: courseId,
+        last_lesson_id: lessonId,
+        updated_at: new Date().toISOString(),
+      };
+
       const { error } = await supabase
-        .from('enrollments')
-        .upsert({
-          user_id: userId,
-          course_id: courseId,
-          last_lesson_id: lessonId,
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id,course_id',
-        });
+        .from('user_enrollments')
+        .upsert(payload, { onConflict: 'user_id,course_id', ignoreDuplicates: false });
 
       if (error) {
         console.error('Error updating last lesson:', error);
         return false;
       }
-
       return true;
     } catch (error) {
       console.error('Error updating last lesson:', error);
@@ -183,31 +190,34 @@ export const progressService = {
     }
   },
 
-  async enrollInCourse(userId: string, courseId: string, firstLessonId: string): Promise<boolean> {
-    if (!isSupabaseConfigured()) {
-      return false;
-    }
+  async enrollInCourse(
+    userId: string,
+    courseId: string,
+    firstLessonId: string,
+  ): Promise<boolean> {
+    if (!isSupabaseConfigured()) return false;
 
     try {
+      const now = new Date().toISOString();
+      const payload: Record<string, unknown> = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        course_id: courseId,
+        progress: 0,
+        status: 'in_progress',
+        last_lesson_id: firstLessonId,
+        enrolled_at: now,
+        updated_at: now,
+      };
+
       const { error } = await supabase
-        .from('enrollments')
-        .upsert({
-          user_id: userId,
-          course_id: courseId,
-          progress: 0,
-          status: 'in_progress',
-          last_lesson_id: firstLessonId,
-          enrolled_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id,course_id',
-        });
+        .from('user_enrollments')
+        .upsert(payload, { onConflict: 'user_id,course_id', ignoreDuplicates: false });
 
       if (error) {
         console.error('Error enrolling in course:', error);
         return false;
       }
-
       return true;
     } catch (error) {
       console.error('Error enrolling in course:', error);
@@ -216,25 +226,19 @@ export const progressService = {
   },
 
   async getNextIncompleteLesson(
-    userId: string, 
-    courseId: string, 
-    allLessons: { id: string }[]
+    userId: string,
+    courseId: string,
+    allLessons: { id: string }[],
   ): Promise<string | null> {
-    if (!isSupabaseConfigured()) {
-      return allLessons[0]?.id || null;
-    }
+    if (!isSupabaseConfigured()) return allLessons[0]?.id ?? null;
 
     try {
       const completedLessons = await this.getCompletedLessons(userId, courseId);
-      
-      const nextLesson = allLessons.find(lesson => 
-        !completedLessons.includes(lesson.id)
-      );
-
-      return nextLesson?.id || null;
+      const nextLesson = allLessons.find((l) => !completedLessons.includes(l.id));
+      return nextLesson?.id ?? null;
     } catch (error) {
       console.error('Error finding next lesson:', error);
-      return allLessons[0]?.id || null;
+      return allLessons[0]?.id ?? null;
     }
   },
 };
