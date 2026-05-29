@@ -14,7 +14,7 @@ import {
 export const MyCourses = () => {
   const { courses } = useDataStore();
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'all' | 'ongoing' | 'completed' | 'favorites'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'ongoing' | 'completed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [enrollments, setEnrollments] = useState<Record<string, number>>({});
   const [statsLoaded, setStatsLoaded] = useState(false);
@@ -87,13 +87,11 @@ export const MyCourses = () => {
     return enrolledCourses.filter((course) => (enrollments[course.id] ?? 0) >= 100);
   }, [enrolledCourses, enrollments]);
 
-  const displayCourses = activeTab === 'all' 
-    ? enrolledCourses 
-    : activeTab === 'ongoing' 
-      ? ongoingCourses 
-      : activeTab === 'completed' 
-        ? completedCourses 
-        : enrolledCourses;
+  const displayCourses = activeTab === 'ongoing'
+    ? ongoingCourses
+    : activeTab === 'completed'
+      ? completedCourses
+      : enrolledCourses;
 
   const totalMinutes = enrolledCourses.reduce(
     (sum, course) => sum + parseDurationMinutes(course.duration),
@@ -152,11 +150,10 @@ export const MyCourses = () => {
               { key: 'all', label: 'Todos' },
               { key: 'ongoing', label: 'Em Andamento' },
               { key: 'completed', label: 'Concluídos' },
-              { key: 'favorites', label: 'Favoritos' },
             ].map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as 'all' | 'ongoing' | 'completed' | 'favorites')}
+                onClick={() => setActiveTab(tab.key as 'all' | 'ongoing' | 'completed')}
                 className={`
                   px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200
                   ${activeTab === tab.key
@@ -269,14 +266,11 @@ export const MyCourses = () => {
               Nenhum curso encontrado
             </h3>
             <p className="text-surface-500 dark:text-surface-300 mb-6">
-              {activeTab === 'ongoing' 
+              {activeTab === 'ongoing'
                 ? 'Você não tem cursos em andamento.'
-                : activeTab === 'completed' 
+                : activeTab === 'completed'
                   ? 'Você ainda não concluiu nenhum curso.'
-                  : activeTab === 'favorites'
-                    ? 'Você não tem cursos favoritos.'
-                    : 'Comece a aprender agora!'
-              }
+                  : 'Comece a aprender agora!'}
             </p>
             <Link to="/">
               <Button>Explorar Cursos</Button>

@@ -91,7 +91,6 @@ export const progressService = {
     try {
       const now = new Date().toISOString();
       const payload: Record<string, unknown> = {
-        id: crypto.randomUUID(),
         user_id: userId,
         course_id: courseId,
         lesson_id: lessonId,
@@ -139,7 +138,6 @@ export const progressService = {
 
       const now = new Date().toISOString();
       const payload: Record<string, unknown> = {
-        id: crypto.randomUUID(),
         user_id: userId,
         course_id: courseId,
         progress: progressPercentage,
@@ -168,7 +166,6 @@ export const progressService = {
 
     try {
       const payload: Record<string, unknown> = {
-        id: crypto.randomUUID(),
         user_id: userId,
         course_id: courseId,
         last_lesson_id: lessonId,
@@ -200,7 +197,6 @@ export const progressService = {
     try {
       const now = new Date().toISOString();
       const payload: Record<string, unknown> = {
-        id: crypto.randomUUID(),
         user_id: userId,
         course_id: courseId,
         progress: 0,

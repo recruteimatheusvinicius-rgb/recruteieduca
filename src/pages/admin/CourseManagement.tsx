@@ -110,9 +110,6 @@ const SortableRow = ({ course, onDelete, onToggleStatus }: SortableRowProps) => 
       <td className="py-3 px-4">
         <div className="flex items-center justify-end gap-1">
           <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
-            <Eye size={16} />
-          </Link>
-          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
             <Edit size={16} />
           </Link>
           <button onClick={onDelete} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer">

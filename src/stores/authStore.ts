@@ -336,7 +336,7 @@ export const useAuthStore = create<AuthState>()(
           set({ error: err.message || 'Erro ao criar conta', isLoading: false });
           return false;
         }
-        
+
         set({ isLoading: false });
         return false;
       },

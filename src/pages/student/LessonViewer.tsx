@@ -85,7 +85,7 @@ export const LessonViewer = () => {
 
   const courseModules = currentCourse.modules || [];
   const isLastLesson = currentIndex === allLessons.length - 1;
-  const isCourseComplete = completedLessons.length === allLessons.length;
+  const isCourseComplete = allLessons.length > 0 && completedLessons.length === allLessons.length;
   const hasCertificate = currentCourse.certificateConfig?.enableCertificate;
 
   const isLessonCompleted = (lessonId: string) => completedLessons.includes(lessonId);
@@ -869,8 +869,9 @@ export const LessonViewer = () => {
                     {module.lessons?.map((lesson, lessonIdx) => {
                       const isCurrentLesson = lesson.id === id;
                       const isCompleted = isLessonCompleted(lesson.id);
-                      const isLocked = !isCompleted && !isCurrentLesson && lessonIdx > 0;
-                      
+                      const isPreviousLessonCompleted = lessonIdx === 0 || isLessonCompleted(module.lessons[lessonIdx - 1]?.id);
+                      const isLocked = !isCompleted && !isCurrentLesson && lessonIdx > 0 && !isPreviousLessonCompleted;
+
                       const getTypeIcon = () => {
                         switch (lesson.type) {
                           case 'video': return <Play size={11} />;
@@ -882,9 +883,7 @@ export const LessonViewer = () => {
                         }
                       };
 
-                      const isPreviousLessonCompleted = lessonIdx === 0 || isLessonCompleted(module.lessons[lessonIdx - 1]?.id);
-                      
-                      if (isLocked && !isPreviousLessonCompleted) {
+                      if (isLocked) {
                         return (
                           <div
                             key={lesson.id}
