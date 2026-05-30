@@ -4,11 +4,11 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
-import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, ChevronDown, MessageCircle } from 'lucide-react';
+import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, Settings, ChevronDown, MessageCircle } from 'lucide-react';
 
 export const StudentNavbar = () => {
   const { theme, toggleTheme } = useThemeStore();
-  const { user, logout } = useAuthStore();
+  const { user, logout, isLoggingOut } = useAuthStore();
   const { unreadCount, togglePanel, isOpen, closePanel } = useNotificationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -45,6 +45,8 @@ export const StudentNavbar = () => {
   };
 
   const handleLogout = async () => {
+    setIsUserMenuOpen(false);
+    setIsMenuOpen(false);
     await logout();
     navigate('/login');
   };
@@ -163,21 +165,29 @@ export const StudentNavbar = () => {
                     <User size={18} />
                     <span className="text-sm">Meu Perfil</span>
                   </Link>
-                  <Link 
+                  <Link
                     to="/settings"
                     onClick={() => setIsUserMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-2 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
                   >
-                    <LogOut size={18} />
+                    <Settings size={18} />
                     <span className="text-sm">Configurações</span>
                   </Link>
                   <div className="mt-2 pt-2 border-t border-surface-200 dark:border-surface-700">
-                    <button 
+                    <button
                       onClick={handleLogout}
-                      className="flex items-center gap-3 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
+                      disabled={isLoggingOut}
+                      className="flex items-center gap-3 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <LogOut size={18} />
-                      <span className="text-sm">Sair</span>
+                      {isLoggingOut ? (
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      ) : (
+                        <LogOut size={18} />
+                      )}
+                      <span className="text-sm">{isLoggingOut ? 'Saindo...' : 'Sair'}</span>
                     </button>
                   </div>
                 </div>
@@ -241,20 +251,28 @@ export const StudentNavbar = () => {
                 <User size={20} />
                 <span className="text-sm font-medium">Meu Perfil</span>
               </Link>
-              <Link 
+              <Link
                 to="/settings"
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg cursor-pointer"
               >
-                <LogOut size={20} />
+                <Settings size={20} />
                 <span className="text-sm font-medium">Configurações</span>
               </Link>
-              <button 
+              <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg cursor-pointer"
+                disabled={isLoggingOut}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <LogOut size={20} />
-                <span className="text-sm font-medium">Sair</span>
+                {isLoggingOut ? (
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                ) : (
+                  <LogOut size={20} />
+                )}
+                <span className="text-sm font-medium">{isLoggingOut ? 'Saindo...' : 'Sair'}</span>
               </button>
             </div>
           </div>

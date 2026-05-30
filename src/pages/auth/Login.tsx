@@ -138,6 +138,7 @@ export const Login = () => {
                 <input
                   type="email"
                   placeholder="seu@email.com"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-surface-200 dark:border-[#374151] bg-white dark:bg-[#1f2937] text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 transition-all"
@@ -161,6 +162,7 @@ export const Login = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full pl-10 pr-12 py-3.5 rounded-xl border border-surface-200 dark:border-[#374151] bg-white dark:bg-[#1f2937] text-surface-900 dark:text-white placeholder:text-surface-400 dark:placeholder:text-[#6B7280] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/25 transition-all"
@@ -198,10 +200,13 @@ export const Login = () => {
               className="w-full py-4 px-6 bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-primary-500/25 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#111827] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Entrando...
+                </>
               ) : (
                 <>
                   Entrar
@@ -219,7 +224,7 @@ export const Login = () => {
                 if (window.Tawk_API?.toggle) {
                   window.Tawk_API.toggle();
                 } else {
-                  alert('Chat não está disponível no momento. Tente novamente em alguns segundos.');
+                  toast.error('Chat não está disponível no momento. Tente novamente em alguns segundos.');
                 }
               }}
               className="text-primary-600 hover:text-primary-500 dark:text-primary-500 dark:hover:text-primary-400 underline cursor-pointer"
