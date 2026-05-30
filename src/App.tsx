@@ -1,10 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useThemeStore } from './stores/themeStore';
-import { useAuthStore } from './stores/authStore';
+import { useAuthStore, mapProfileRowToUser } from './stores/authStore';
 import { useDataStore } from './stores/dataStore';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
-import { mapProfileRowToUser } from './stores/authStore';
 import { StudentNavbar } from './components/ui/StudentNavbar';
 import { Footer } from './components/ui/Footer';
 import { AdminNavbar } from './components/ui/AdminNavbar';
@@ -199,10 +198,10 @@ function App() {
       }
     };
     
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const { isLoggingOut } = useAuthStore.getState();
 
-      if (isLoggingOut || event === 'TOKEN_REFRESHED') {
+      if (isLoggingOut) {
         return;
       }
 

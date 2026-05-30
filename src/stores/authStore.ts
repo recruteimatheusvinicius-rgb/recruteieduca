@@ -37,6 +37,7 @@ export const mapProfileRowToUser = (profile: SupabaseProfile): User => ({
   avatar: profile.avatar_url ?? profile.avatar ?? undefined,
   phone: profile.phone ?? undefined,
   createdAt: profile.created_at ?? profile.createdAt ?? undefined,
+  company_id: profile.company_id ?? undefined,
 });
 
 interface AuthState {

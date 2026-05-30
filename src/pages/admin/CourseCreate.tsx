@@ -874,7 +874,7 @@ export const CourseCreate = () => {
                                 type="number"
                                 min="0"
                                 max="100"
-                                value={lesson.assessmentConfig?.passingGrade || 70}
+                                value={lesson.assessmentConfig?.passingGrade ?? 70}
                                 onChange={(e) => updateLesson(module.id, lesson.id, {
                                   assessmentConfig: {
                                     ...lesson.assessmentConfig!,
@@ -891,7 +891,7 @@ export const CourseCreate = () => {
                               <input
                                 type="number"
                                 min="1"
-                                value={lesson.assessmentConfig?.maxAttempts || 3}
+                                value={lesson.assessmentConfig?.maxAttempts ?? 3}
                                 onChange={(e) => updateLesson(module.id, lesson.id, {
                                   assessmentConfig: {
                                     ...lesson.assessmentConfig!,
@@ -1121,7 +1121,7 @@ export const CourseCreate = () => {
                 type="number"
                 min="0"
                 max="100"
-                value={formData.certificateConfig.passingGrade || 70}
+                value={formData.certificateConfig.passingGrade ?? 70}
                 onChange={(e) => setFormData({
                   ...formData,
                   certificateConfig: { ...formData.certificateConfig, passingGrade: parseInt(e.target.value) },

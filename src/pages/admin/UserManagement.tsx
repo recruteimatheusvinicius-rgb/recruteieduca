@@ -134,13 +134,13 @@ export const UserManagement = () => {
       const selectedCompany = companies.find(c => c.id === inviteFormData.company_id);
       
       // Generate invitation token
-      const token = btoa(unescape(encodeURIComponent(JSON.stringify({
+      const token = btoa(encodeURIComponent(JSON.stringify({
         email: inviteFormData.email,
         company_id: inviteFormData.company_id,
         company_name: selectedCompany?.name || '',
         role: inviteFormData.role,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      }))));
+      })));
 
       // Create invitation URL
       const inviteUrl = `${window.location.origin}/invite/${token}`;

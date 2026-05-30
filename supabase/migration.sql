@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS lessons (
 
 -- Tabela de Matrículas de Usuários
 CREATE TABLE IF NOT EXISTS user_enrollments (
-  id TEXT PRIMARY KEY,
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   user_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
   plan_id TEXT REFERENCES plans(id),
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS user_enrollments (
 
 -- Tabela de Progresso do Usuário
 CREATE TABLE IF NOT EXISTS user_progress (
-  id TEXT PRIMARY KEY,
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   user_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
   lesson_id TEXT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,

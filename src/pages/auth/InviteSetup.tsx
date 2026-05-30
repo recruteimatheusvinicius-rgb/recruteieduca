@@ -34,7 +34,7 @@ export const InviteSetup = () => {
     }
 
     try {
-      const decoded = JSON.parse(decodeURIComponent(escape(atob(token))));
+      const decoded = JSON.parse(decodeURIComponent(atob(token)));
       const expiresAt = new Date(decoded.expiresAt);
       
       if (new Date() > expiresAt) {
