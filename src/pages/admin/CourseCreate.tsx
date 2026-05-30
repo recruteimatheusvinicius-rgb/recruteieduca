@@ -1124,7 +1124,7 @@ export const CourseCreate = () => {
                 value={formData.certificateConfig.passingGrade ?? 70}
                 onChange={(e) => setFormData({
                   ...formData,
-                  certificateConfig: { ...formData.certificateConfig, passingGrade: parseInt(e.target.value) },
+                  certificateConfig: { ...formData.certificateConfig, passingGrade: parseInt(e.target.value, 10) || 0 },
                 })}
                 className="w-32 px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
               />

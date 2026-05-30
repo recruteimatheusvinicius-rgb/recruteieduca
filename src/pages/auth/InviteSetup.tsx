@@ -34,7 +34,16 @@ export const InviteSetup = () => {
     }
 
     try {
-      const decoded = JSON.parse(decodeURIComponent(atob(token)));
+      // Decodifica o token. Tokens novos usam btoa(encodeURIComponent(...)).
+      // O fallback cobre tokens antigos (ainda válidos por até 7 dias) que
+      // foram gerados com o esquema anterior btoa(unescape(encodeURIComponent(...))).
+      let json: string;
+      try {
+        json = decodeURIComponent(atob(token));
+      } catch {
+        json = decodeURIComponent(escape(atob(token)));
+      }
+      const decoded = JSON.parse(json);
       const expiresAt = new Date(decoded.expiresAt);
       
       if (new Date() > expiresAt) {
