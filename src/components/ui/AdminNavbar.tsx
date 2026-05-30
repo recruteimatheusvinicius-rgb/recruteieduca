@@ -43,10 +43,10 @@ export const AdminNavbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/login');
     setIsUserMenuOpen(false);
     setIsMenuOpen(false);
+    await logout();
+    navigate('/login');
   };
 
   const handleGoToProfile = () => {

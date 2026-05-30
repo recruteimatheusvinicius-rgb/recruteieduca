@@ -4,6 +4,7 @@ import { useThemeStore } from './stores/themeStore';
 import { useAuthStore } from './stores/authStore';
 import { useDataStore } from './stores/dataStore';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { mapProfileRowToUser } from './stores/authStore';
 import { StudentNavbar } from './components/ui/StudentNavbar';
 import { Footer } from './components/ui/Footer';
 import { AdminNavbar } from './components/ui/AdminNavbar';
@@ -198,32 +199,26 @@ function App() {
       }
     };
     
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const { isLoggingOut } = useAuthStore.getState();
-      
-      if (isLoggingOut) {
+
+      if (isLoggingOut || event === 'TOKEN_REFRESHED') {
         return;
       }
-      
+
       if (session) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', session.user.id)
           .single();
-        
+
         if (profile) {
-          const currentUser = useAuthStore.getState().user;
-          const mergedUser = {
-            ...profile,
-            name: currentUser?.name && currentUser.name.trim() ? currentUser.name : profile.name
-          };
-          useAuthStore.setState({ user: mergedUser, isAuthenticated: true });
-          
-          if (profile.name && profile.email) {
-            setTawkVisitor(profile.name, profile.email);
+          const mappedUser = mapProfileRowToUser(profile);
+          useAuthStore.setState({ user: mappedUser, isAuthenticated: true });
+
+          if (mappedUser.name && mappedUser.email) {
+            setTawkVisitor(mappedUser.name, mappedUser.email);
           }
         } else {
           useAuthStore.setState({ isAuthenticated: true });

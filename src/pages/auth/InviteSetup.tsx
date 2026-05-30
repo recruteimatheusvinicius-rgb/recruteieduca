@@ -34,7 +34,7 @@ export const InviteSetup = () => {
     }
 
     try {
-      const decoded = JSON.parse(atob(token));
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(token))));
       const expiresAt = new Date(decoded.expiresAt);
       
       if (new Date() > expiresAt) {
@@ -94,7 +94,7 @@ export const InviteSetup = () => {
         if (error) throw error;
 
         if (data.user) {
-          await supabase.from('profiles').insert([{
+          const { error: profileError } = await supabase.from('profiles').insert([{
             id: data.user.id,
             name: formData.name.trim(),
             email: inviteData!.email,
@@ -102,6 +102,11 @@ export const InviteSetup = () => {
             status: 'active',
             company_id: inviteData!.company_id,
           }]);
+
+          if (profileError) {
+            toast.error('Erro ao criar perfil. Tente novamente.');
+            throw profileError;
+          }
 
           toast.success('Conta criada com sucesso!');
           navigate('/login');

@@ -18,7 +18,6 @@ export const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false,
   });
 
   useEffect(() => {
@@ -178,20 +177,6 @@ export const Login = () => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                checked={formData.rememberMe}
-                onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                className="w-4 h-4 rounded border-surface-300 dark:border-[#374151] bg-white dark:bg-[#1f2937] text-primary-500 focus:ring-primary-500/25 cursor-pointer"
-                disabled={isLoading}
-              />
-              <label htmlFor="rememberMe" className="text-sm text-surface-600 dark:text-[#9CA3AF] cursor-pointer">
-                Lembrar-me
-              </label>
             </div>
 
             <button

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../../stores/themeStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useAuthStore, mapProfileRowToUser, type SupabaseProfile } from '../../stores/authStore';
 import type { User as UserType } from '../../types';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { Card } from '../../components/ui/Card';
@@ -68,7 +68,7 @@ export const Settings = () => {
           .single();
 
         if (updatedProfile) {
-          useAuthStore.setState({ user: updatedProfile });
+          useAuthStore.setState({ user: mapProfileRowToUser(updatedProfile as SupabaseProfile) });
         }
         
         toast.success('Perfil atualizado com sucesso!');

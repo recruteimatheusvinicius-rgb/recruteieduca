@@ -875,11 +875,11 @@ export const CourseCreate = () => {
                                 min="0"
                                 max="100"
                                 value={lesson.assessmentConfig?.passingGrade || 70}
-                                onChange={(e) => updateLesson(module.id, lesson.id, { 
-                                  assessmentConfig: { 
-                                    ...lesson.assessmentConfig!, 
-                                    passingGrade: parseInt(e.target.value) 
-                                  } as AssessmentConfig 
+                                onChange={(e) => updateLesson(module.id, lesson.id, {
+                                  assessmentConfig: {
+                                    ...lesson.assessmentConfig!,
+                                    passingGrade: parseInt(e.target.value, 10) || 0
+                                  } as AssessmentConfig
                                 })}
                                 className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                               />
@@ -892,11 +892,11 @@ export const CourseCreate = () => {
                                 type="number"
                                 min="1"
                                 value={lesson.assessmentConfig?.maxAttempts || 3}
-                                onChange={(e) => updateLesson(module.id, lesson.id, { 
-                                  assessmentConfig: { 
-                                    ...lesson.assessmentConfig!, 
-                                    maxAttempts: parseInt(e.target.value) 
-                                  } as AssessmentConfig 
+                                onChange={(e) => updateLesson(module.id, lesson.id, {
+                                  assessmentConfig: {
+                                    ...lesson.assessmentConfig!,
+                                    maxAttempts: parseInt(e.target.value, 10) || 1
+                                  } as AssessmentConfig
                                 })}
                                 className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                               />

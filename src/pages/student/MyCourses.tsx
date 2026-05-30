@@ -67,10 +67,11 @@ export const MyCourses = () => {
     loadEnrollments();
   }, [user]);
 
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+  const filteredCourses = useMemo(() => {
+    return courses.filter(course =>
+      course.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [courses, searchQuery]);
 
   const enrolledCourses = useMemo(() => {
     return filteredCourses.filter((course) => enrollments[course.id] !== undefined);

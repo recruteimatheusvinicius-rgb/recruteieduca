@@ -4,14 +4,13 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
-import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, Settings, ChevronDown, MessageCircle } from 'lucide-react';
+import { Moon, Sun, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, Settings, ChevronDown, MessageCircle } from 'lucide-react';
 
 export const StudentNavbar = () => {
   const { theme, toggleTheme } = useThemeStore();
   const { user, logout, isLoggingOut } = useAuthStore();
   const { unreadCount, togglePanel, isOpen, closePanel } = useNotificationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -93,23 +92,6 @@ export const StudentNavbar = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              aria-label="Pesquisar"
-              className="md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
-            >
-              <Search size={20} />
-            </button>
-
-            <div className="hidden md:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-64">
-              <Search size={16} className="text-surface-400" />
-              <input
-                type="text"
-                placeholder="Buscar cursos..."
-                className="bg-transparent border-none outline-none text-sm text-surface-700 dark:text-surface-300 placeholder:text-surface-400 w-full ml-2 cursor-text"
-              />
-            </div>
-
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
@@ -204,16 +186,6 @@ export const StudentNavbar = () => {
           </div>
         </div>
 
-        {isSearchOpen && (
-          <div className="md:hidden pb-4">
-            <input
-              type="text"
-              placeholder="Buscar cursos..."
-              className="w-full px-4 py-2.5 rounded-lg bg-surface-100 dark:bg-surface-800 border-none outline-none text-surface-700 dark:text-surface-300 placeholder:text-surface-400 cursor-text"
-              autoFocus
-            />
-          </div>
-        )}
       </div>
 
       {isMenuOpen && (

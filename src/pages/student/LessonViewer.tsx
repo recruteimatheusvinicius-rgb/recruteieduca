@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -31,24 +31,22 @@ export const LessonViewer = () => {
   const [quizScore, setQuizScore] = useState(0);
   const [currentQuizQuestion, setCurrentQuizQuestion] = useState(0);
 
-  let currentLesson: Lesson | null = null;
-  let currentCourse: Course | null = null;
-  
-  for (const course of courses) {
-    const allLessons = course.modules?.flatMap(m => m.lessons || []) || [];
-    const lesson = allLessons.find((l) => l.id === id);
-    if (lesson) {
-      currentLesson = lesson;
-      currentCourse = course;
-      break;
+  const { currentLesson, currentCourse } = useMemo(() => {
+    for (const course of courses) {
+      const allLessons = course.modules?.flatMap(m => m.lessons || []) || [];
+      const lesson = allLessons.find((l) => l.id === id);
+      if (lesson) {
+        return { currentLesson: lesson as Lesson, currentCourse: course as Course };
+      }
     }
-  }
+    return { currentLesson: null, currentCourse: null };
+  }, [courses, id]);
 
   useEffect(() => {
     if (currentLesson?.type === 'quiz' && currentLesson.questions) {
       setExpandedModule(currentLesson.moduleId || null);
     }
-  }, [currentLesson]);
+  }, [currentLesson?.id, currentLesson?.type]);
 
   useEffect(() => {
     const loadProgress = async () => {
