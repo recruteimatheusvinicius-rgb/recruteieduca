@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { mapProfileRowToUser, type SupabaseProfile } from './authStore';
 import { mockCourses } from '../data/courses';
 import { mockUsers, mockPlans, mockCategories, mockFormations } from '../data/users';
 import { mockHelpArticles } from '../data/helpArticles';
@@ -173,7 +174,7 @@ export const useDataStore = create<DataState>((set, get) => ({
         set({
           courses: ((coursesRes.data || []) as CourseRow[]).map(fromDbCourse),
           helpArticles: ((helpArticlesRes.data || []) as HelpArticleRow[]).map(fromDbHelpArticle),
-          users: (usersRes.data || []) as User[],
+          users: ((usersRes.data || []) as SupabaseProfile[]).map(mapProfileRowToUser),
           categories: (categoriesRes.data || []) as Category[],
           plans: (plansRes.data || []) as Plan[],
           formations: (formationsRes.data || []) as Formation[],
@@ -436,7 +437,7 @@ export const useDataStore = create<DataState>((set, get) => ({
         .single();
       
       if (!error && data) {
-        set((state) => ({ users: [...state.users, data as User] }));
+        set((state) => ({ users: [...state.users, mapProfileRowToUser(data as SupabaseProfile)] }));
       }
     } else {
       set((state) => ({ users: [...state.users, user] }));
@@ -453,7 +454,7 @@ export const useDataStore = create<DataState>((set, get) => ({
         .single();
       
       if (!error && data) {
-        set((state) => ({ users: state.users.map((u) => (u.id === id ? (data as User) : u)) }));
+        set((state) => ({ users: state.users.map((u) => (u.id === id ? mapProfileRowToUser(data as SupabaseProfile) : u)) }));
       }
     } else {
       set((state) => ({ users: state.users.map((u) => (u.id === id ? { ...u, ...user } : u)) }));
