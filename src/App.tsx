@@ -32,6 +32,9 @@ import { CategoryManagement } from './pages/admin/CategoryManagement';
 import { FormationManagement } from './pages/admin/FormationManagement';
 import { FormationCreate } from './pages/admin/FormationCreate';
 import { CompanyManagement } from './pages/admin/CompanyManagement';
+import { OnboardingTemplateManagement } from './pages/admin/OnboardingTemplateManagement';
+import { CompanyChecklistProgress } from './pages/admin/CompanyChecklistProgress';
+import { OnboardingChecklist } from './pages/student/OnboardingChecklist';
 
 function RootRedirect() {
   return <Navigate to="/login" replace />;
@@ -272,6 +275,7 @@ function App() {
           <Route path="/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
           <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/onboarding" element={<ProtectedRoute><OnboardingChecklist /></ProtectedRoute>} />
 
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/courses" element={<ProtectedRoute requireAdmin><CourseManagement /></ProtectedRoute>} />
@@ -286,6 +290,8 @@ function App() {
           <Route path="/admin/formations/:id" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
           <Route path="/admin/manage" element={<ProtectedRoute requireAdmin><AdminManage /></ProtectedRoute>} />
           <Route path="/admin/companies" element={<ProtectedRoute requireAdmin><CompanyManagement /></ProtectedRoute>} />
+          <Route path="/admin/companies/:id/checklist" element={<ProtectedRoute requireAdmin><CompanyChecklistProgress /></ProtectedRoute>} />
+          <Route path="/admin/onboarding-templates" element={<ProtectedRoute requireAdmin><OnboardingTemplateManagement /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -21,9 +21,29 @@ import { Youtube } from '@tiptap/extension-youtube';
 import { TaskList } from '@tiptap/extension-task-list';
 import { TaskItem } from '@tiptap/extension-task-item';
 import { common, createLowlight } from 'lowlight';
+import { toast } from 'sonner';
 import { TipTapToolbar } from './TipTapToolbar';
+import { uploadImage } from '../lib/upload';
+import type { Editor } from '@tiptap/react';
 
 const lowlight = createLowlight(common);
+
+const insertUploadedImage = (editor: Editor, file: File, position?: number) => {
+  const promise = uploadImage(file).then((url) => {
+    const chain = editor.chain().focus();
+    if (position !== undefined) {
+      chain.insertContentAt(position, { type: 'image', attrs: { src: url } }).run();
+    } else {
+      chain.setImage({ src: url }).run();
+    }
+    return url;
+  });
+  toast.promise(promise, {
+    loading: 'Enviando imagem...',
+    success: 'Imagem inserida!',
+    error: (err) => (err instanceof Error ? err.message : 'Falha ao enviar a imagem.'),
+  });
+};
 
 interface TipTapEditorProps {
   content: string;
@@ -78,6 +98,27 @@ export const TipTapEditor = ({ content, onChange, editable = true, showToolbar =
     editable,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
+    },
+    editorProps: {
+      handleDrop: (_view, event) => {
+        const file = event.dataTransfer?.files?.[0];
+        if (file && file.type.startsWith('image/') && editor) {
+          event.preventDefault();
+          const pos = editor.view.posAtCoords({ left: event.clientX, top: event.clientY })?.pos;
+          insertUploadedImage(editor, file, pos);
+          return true;
+        }
+        return false;
+      },
+      handlePaste: (_view, event) => {
+        const file = Array.from(event.clipboardData?.files ?? []).find((f) => f.type.startsWith('image/'));
+        if (file && editor) {
+          event.preventDefault();
+          insertUploadedImage(editor, file);
+          return true;
+        }
+        return false;
+      },
     },
   });
 

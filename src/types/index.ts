@@ -140,12 +140,68 @@ export interface Formation {
 }
 
 export type CompanyStatus = 'active' | 'inactive' | 'deleted';
+export type OnboardingTrack = 'self_service' | 'guided_growth' | 'enterprise_deploy' | 'rescue_recover';
 
 export interface Company {
   id: string;
   name: string;
   status: CompanyStatus;
   createdAt?: string;
+  onboardingTrack?: OnboardingTrack;
+  onboardingTrackAssignedAt?: string;
+}
+
+// ============================================
+// Checklist de Onboarding
+// ============================================
+
+export type ChecklistItemType = 'academy_lesson' | 'call' | 'manual_milestone' | 'certificate';
+export type ChecklistItemScope = 'company' | 'user';
+export type ChecklistItemStatus = 'pending' | 'in_progress' | 'completed';
+
+export interface ChecklistTemplate {
+  id: string;
+  track: OnboardingTrack;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  items: ChecklistTemplateItem[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ChecklistTemplateItem {
+  id: string;
+  templateId: string;
+  title: string;
+  description?: string;
+  itemType: ChecklistItemType;
+  order: number;
+  blocksNext: boolean;
+  scope: ChecklistItemScope;
+  courseId?: string;
+  lessonId?: string;
+  productEventKey?: string;
+}
+
+export interface ChecklistItemProgress {
+  id: string;
+  companyId: string;
+  templateItemId: string;
+  userId?: string;
+  status: ChecklistItemStatus;
+  completedAt?: string;
+  completedBy?: string;
+  notes?: string;
+}
+
+// Item de template combinado com o progresso real, pronto para a UI
+export interface ChecklistItemView extends ChecklistTemplateItem {
+  status: ChecklistItemStatus;
+  completedAt?: string;
+  completedBy?: string;
+  notes?: string;
+  isLocked: boolean;
 }
 
 // Declaração global para Tawk.to
