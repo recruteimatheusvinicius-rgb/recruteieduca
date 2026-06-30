@@ -56,14 +56,19 @@ CREATE INDEX IF NOT EXISTS idx_checklist_items_template ON checklist_template_it
 -- ============================================
 -- 4. Progresso de cada item, por empresa (e por usuário quando scope='user')
 -- ============================================
+-- company_id/user_id/completed_by não têm FK para companies(id)/profiles(id):
+-- esses ids são UUID no banco real do projeto (diverge do TEXT declarado em
+-- supabase/migration.sql), então uma FK aqui falharia por incompatibilidade de
+-- tipo, igual já aconteceu com course_id. São validados pela aplicação, não
+-- pelo banco — mesmo tratamento dado a course_id/lesson_id acima.
 CREATE TABLE IF NOT EXISTS checklist_item_progress (
   id TEXT PRIMARY KEY,
-  company_id TEXT NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  company_id TEXT NOT NULL,
   template_item_id TEXT NOT NULL REFERENCES checklist_template_items(id) ON DELETE CASCADE,
-  user_id TEXT REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id TEXT,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed')),
   completed_at TIMESTAMPTZ,
-  completed_by TEXT REFERENCES profiles(id),
+  completed_by TEXT,
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -111,7 +116,7 @@ CREATE POLICY "Allow read checklist_item_progress" ON checklist_item_progress FO
   EXISTS (
     SELECT 1 FROM profiles
     WHERE id = auth.uid()
-      AND (company_id = checklist_item_progress.company_id OR role = 'admin')
+      AND (company_id::text = checklist_item_progress.company_id OR role = 'admin')
   )
 );
 DROP POLICY IF EXISTS "Allow insert checklist_item_progress" ON checklist_item_progress;
@@ -119,7 +124,7 @@ CREATE POLICY "Allow insert checklist_item_progress" ON checklist_item_progress 
   EXISTS (
     SELECT 1 FROM profiles
     WHERE id = auth.uid()
-      AND (company_id = checklist_item_progress.company_id OR role = 'admin')
+      AND (company_id::text = checklist_item_progress.company_id OR role = 'admin')
   )
 );
 DROP POLICY IF EXISTS "Allow update checklist_item_progress" ON checklist_item_progress;
@@ -127,7 +132,7 @@ CREATE POLICY "Allow update checklist_item_progress" ON checklist_item_progress 
   EXISTS (
     SELECT 1 FROM profiles
     WHERE id = auth.uid()
-      AND (company_id = checklist_item_progress.company_id OR role = 'admin')
+      AND (company_id::text = checklist_item_progress.company_id OR role = 'admin')
   )
 );
 
