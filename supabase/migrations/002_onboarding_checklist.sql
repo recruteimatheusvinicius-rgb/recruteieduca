@@ -39,9 +39,11 @@ CREATE TABLE IF NOT EXISTS checklist_template_items (
   "order" INTEGER NOT NULL DEFAULT 0,
   blocks_next BOOLEAN DEFAULT TRUE,
   scope TEXT NOT NULL DEFAULT 'company' CHECK (scope IN ('company', 'user')),
-  -- referência opcional a uma aula/curso da Academy. lesson_id não tem FK pois
-  -- a tabela `lessons` fica vazia (fonte de verdade é o JSONB courses.modules).
-  course_id TEXT REFERENCES courses(id) ON DELETE SET NULL,
+  -- referência opcional a uma aula/curso da Academy, sem FK: course_id não tem
+  -- REFERENCES porque o courses.id real do projeto é UUID (diverge do TEXT
+  -- declarado em supabase/migration.sql) e lesson_id não tem FK pois a tabela
+  -- `lessons` fica vazia (fonte de verdade é o JSONB courses.modules).
+  course_id TEXT,
   lesson_id TEXT,
   -- reservado para fase futura: webhook do produto Recrutei populando este item
   -- automaticamente (ex: 'first_vacancy_published')
