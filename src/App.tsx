@@ -32,9 +32,20 @@ import { CategoryManagement } from './pages/admin/CategoryManagement';
 import { FormationManagement } from './pages/admin/FormationManagement';
 import { FormationCreate } from './pages/admin/FormationCreate';
 import { CompanyManagement } from './pages/admin/CompanyManagement';
+import { OnboardingTemplateManagement } from './pages/admin/OnboardingTemplateManagement';
+import { CompanyChecklistProgress } from './pages/admin/CompanyChecklistProgress';
+import { OnboardingChecklist } from './pages/student/OnboardingChecklist';
+import { Landing } from './pages/Landing';
+import { MyProjects } from './pages/student/MyProjects';
+import { ClientBooksManagement } from './pages/admin/ClientBooksManagement';
+import { BookEditor } from './pages/BookEditor';
 
-function RootRedirect() {
-  return <Navigate to="/login" replace />;
+function RootRoute() {
+  const { isAuthenticated, user } = useAuthStore();
+  if (isAuthenticated && user?.name && user.name.trim()) {
+    return <Navigate to={user.role === 'admin' ? '/admin' : '/home'} replace />;
+  }
+  return <Landing />;
 }
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
@@ -257,7 +268,7 @@ function App() {
         <PersistentChrome position="top" />
         <PageTransition>
           <Routes>
-          <Route path="/" element={<RootRedirect />} />
+          <Route path="/" element={<RootRoute />} />
           <Route path="/login" element={<Login />} />
           <Route path="/invite/:token" element={<InviteSetup />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
@@ -272,6 +283,9 @@ function App() {
           <Route path="/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
           <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/onboarding" element={<ProtectedRoute><OnboardingChecklist /></ProtectedRoute>} />
+          <Route path="/projects" element={<ProtectedRoute><MyProjects /></ProtectedRoute>} />
+          <Route path="/projects/:id" element={<ProtectedRoute><BookEditor /></ProtectedRoute>} />
 
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/courses" element={<ProtectedRoute requireAdmin><CourseManagement /></ProtectedRoute>} />
@@ -286,6 +300,10 @@ function App() {
           <Route path="/admin/formations/:id" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
           <Route path="/admin/manage" element={<ProtectedRoute requireAdmin><AdminManage /></ProtectedRoute>} />
           <Route path="/admin/companies" element={<ProtectedRoute requireAdmin><CompanyManagement /></ProtectedRoute>} />
+          <Route path="/admin/companies/:id/checklist" element={<ProtectedRoute requireAdmin><CompanyChecklistProgress /></ProtectedRoute>} />
+          <Route path="/admin/onboarding-templates" element={<ProtectedRoute requireAdmin><OnboardingTemplateManagement /></ProtectedRoute>} />
+          <Route path="/admin/client-books" element={<ProtectedRoute requireAdmin><ClientBooksManagement /></ProtectedRoute>} />
+          <Route path="/admin/client-books/:id" element={<ProtectedRoute requireAdmin><BookEditor /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
 import { useAuthStore } from '../../stores/authStore';
 import { progressService } from '../../hooks/useProgress';
+import { checklistProgressService } from '../../hooks/useChecklistProgress';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import type { Course, Lesson } from '../../types';
@@ -100,12 +101,24 @@ export const LessonViewer = () => {
     );
 
     if (user?.id && currentCourse?.id) {
+      const willBeCompleted = !isCompleted;
       await progressService.saveLessonProgress(
         user.id,
         currentCourse.id,
         lessonId,
-        !isCompleted
+        willBeCompleted
       );
+
+      // Camada de checklist de onboarding é desacoplada do progresso genérico
+      // de aulas — sincroniza explicitamente aqui em vez de dentro de useProgress.ts.
+      if (willBeCompleted) {
+        await checklistProgressService.syncAcademyLessonCompletion(
+          user.id,
+          user.company_id,
+          currentCourse.id,
+          lessonId
+        );
+      }
     }
   };
 

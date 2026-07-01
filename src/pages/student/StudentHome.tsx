@@ -1,13 +1,17 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
+import { useAuthStore } from '../../stores/authStore';
 import { CourseCard } from '../../components/ui/CourseCard';
 import { Input } from '../../components/ui/Input';
-import { Search, Sparkles } from 'lucide-react';
+import { Card } from '../../components/ui/Card';
+import { Search, Sparkles, ListChecks, ChevronRight } from 'lucide-react';
 import { stripHtml } from '../../lib/sanitize';
 import { useDebounce } from '../../hooks/useDebounce';
 
 export const StudentHome = () => {
   const { courses } = useDataStore();
+  const { user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedQuery = useDebounce(searchQuery, 200);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
@@ -49,6 +53,23 @@ export const StudentHome = () => {
       </div>
 
       <div className="container-app py-8">
+        {user?.company_id && (
+          <Link to="/onboarding" className="block mb-8">
+            <Card className="p-5 flex items-center justify-between gap-4 hover:border-primary-300 dark:hover:border-primary-700 transition-colors" hover>
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
+                  <ListChecks size={22} className="text-primary-600 dark:text-primary-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-surface-900 dark:text-surface-100">Meu Onboarding</p>
+                  <p className="text-sm text-surface-500 dark:text-surface-300">Acompanhe as etapas de implantação da sua conta</p>
+                </div>
+              </div>
+              <ChevronRight size={20} className="text-surface-400 flex-shrink-0" />
+            </Card>
+          </Link>
+        )}
+
         <div className="flex flex-col md:flex-row md:items-center justify-center gap-4 mb-8">
           <div className="flex items-center gap-2 justify-center flex-wrap">
             {categories.map((category) => (

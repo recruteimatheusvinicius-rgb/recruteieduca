@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
@@ -6,10 +7,26 @@ import { Modal } from '../../components/ui/Modal';
 import { useConfirm } from '../../hooks/useConfirm';
 import { toast } from 'sonner';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
-import { 
-  Search, Plus, Trash2, Building, Users, Calendar
+import {
+  Search, Plus, Trash2, Building, Users, Calendar, ListChecks
 } from 'lucide-react';
-import type { Company } from '../../types';
+import type { Company, OnboardingTrack } from '../../types';
+
+const TRACK_LABELS: Record<OnboardingTrack, string> = {
+  self_service: 'Self-service',
+  guided_growth: 'Guided Growth',
+  enterprise_deploy: 'Enterprise Deploy',
+  rescue_recover: 'Rescue/Recover',
+};
+
+const fromDbCompany = (row: Record<string, unknown>): Company => ({
+  id: row.id as string,
+  name: row.name as string,
+  status: row.status as Company['status'],
+  createdAt: (row.created_at as string) ?? undefined,
+  onboardingTrack: (row.onboarding_track as OnboardingTrack) ?? undefined,
+  onboardingTrackAssignedAt: (row.onboarding_track_assigned_at as string) ?? undefined,
+});
 
 export const CompanyManagement = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -42,7 +59,7 @@ export const CompanyManagement = () => {
 
       if (error) throw error;
 
-      setCompanies(data || []);
+      setCompanies((data || []).map(fromDbCompany));
 
       const counts: Record<string, number> = {};
       for (const company of data || []) {
@@ -93,6 +110,28 @@ export const CompanyManagement = () => {
     } catch (error) {
       console.error('Error creating company:', error);
       toast.error('Erro ao criar empresa. Tente novamente.');
+    }
+  };
+
+  const handleTrackChange = async (companyId: string, track: OnboardingTrack | '') => {
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .update({
+          onboarding_track: track || null,
+          onboarding_track_assigned_at: track ? new Date().toISOString() : null,
+        })
+        .eq('id', companyId);
+
+      if (error) throw error;
+
+      setCompanies((prev) =>
+        prev.map((c) => (c.id === companyId ? { ...c, onboardingTrack: track || undefined } : c)),
+      );
+      toast.success('Track de onboarding atualizada.');
+    } catch (error) {
+      console.error('Error updating onboarding track:', error);
+      toast.error('Erro ao atualizar a track de onboarding.');
     }
   };
 
@@ -189,6 +228,7 @@ export const CompanyManagement = () => {
                   <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Empresa</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Usuários</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Track de Onboarding</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Criada em</th>
                   <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Ações</th>
                 </tr>
@@ -218,14 +258,33 @@ export const CompanyManagement = () => {
                         {company.status === 'active' ? 'Ativa' : 'Inativa'}
                       </Badge>
                     </td>
+                    <td className="py-3 px-4">
+                      <select
+                        value={company.onboardingTrack ?? ''}
+                        onChange={(e) => handleTrackChange(company.id, e.target.value as OnboardingTrack | '')}
+                        className="px-3 py-1.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 text-sm"
+                      >
+                        <option value="">Sem track</option>
+                        {Object.entries(TRACK_LABELS).map(([value, label]) => (
+                          <option key={value} value={value}>{label}</option>
+                        ))}
+                      </select>
+                    </td>
                     <td className="py-3 px-4 text-surface-600 dark:text-surface-300">
                       {company.createdAt ? new Date(company.createdAt).toLocaleDateString('pt-BR') : '-'}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button 
+                        <Link
+                          to={`/admin/companies/${company.id}/checklist`}
+                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer"
+                          title="Ver progresso do checklist"
+                        >
+                          <ListChecks size={16} />
+                        </Link>
+                        <button
                           onClick={() => handleDelete(company.id)}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer" 
+                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer"
                           title="Excluir"
                         >
                           <Trash2 size={16} />

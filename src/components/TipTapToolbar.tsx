@@ -1,5 +1,8 @@
 import { Editor } from '@tiptap/react';
-import { 
+import { useRef } from 'react';
+import { toast } from 'sonner';
+import { uploadImage } from '../lib/upload';
+import {
   Bold, Italic, Strikethrough, Code, Heading1, Heading2, Heading3,
   List, ListOrdered, CheckSquare, Quote, Minus, Link, Image as ImageIcon,
   Table, AlignLeft, AlignCenter, AlignRight, Highlighter,
@@ -39,6 +42,8 @@ const Separator = () => (
 );
 
 export const TipTapToolbar = ({ editor }: TipTapToolbarProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   if (!editor) return null;
 
   const addVideo = () => {
@@ -48,8 +53,27 @@ export const TipTapToolbar = ({ editor }: TipTapToolbarProps) => {
     }
   };
 
-  const addImage = () => {
-    const url = window.prompt('Digite a URL da imagem:');
+  const insertImageFile = async (file: File) => {
+    const promise = uploadImage(file).then((url) => {
+      editor.chain().focus().setImage({ src: url }).run();
+      return url;
+    });
+    toast.promise(promise, {
+      loading: 'Enviando imagem...',
+      success: 'Imagem inserida!',
+      error: (err) => (err instanceof Error ? err.message : 'Falha ao enviar a imagem.'),
+    });
+    await promise.catch(() => {});
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) insertImageFile(file);
+    e.target.value = '';
+  };
+
+  const addImageByUrl = () => {
+    const url = window.prompt('Cole a URL da imagem:');
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
     }
@@ -230,11 +254,24 @@ export const TipTapToolbar = ({ editor }: TipTapToolbarProps) => {
       >
         <Link size={18} />
       </ToolbarButton>
-      <ToolbarButton 
-        onClick={addImage} 
-        title="Inserir imagem"
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelected}
+        className="hidden"
+      />
+      <ToolbarButton
+        onClick={() => fileInputRef.current?.click()}
+        title="Inserir imagem (upload)"
       >
         <ImageIcon size={18} />
+      </ToolbarButton>
+      <ToolbarButton
+        onClick={addImageByUrl}
+        title="Inserir imagem por URL"
+      >
+        <ImageIcon size={18} className="opacity-60" />
       </ToolbarButton>
       <ToolbarButton 
         onClick={addVideo} 

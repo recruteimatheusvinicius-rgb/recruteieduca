@@ -4,7 +4,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
-import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, ChevronDown, MessageCircle } from 'lucide-react';
+import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, ChevronDown, MessageCircle, ListChecks, FolderKanban } from 'lucide-react';
 
 export const StudentNavbar = () => {
   const { theme, toggleTheme } = useThemeStore();
@@ -35,6 +35,8 @@ export const StudentNavbar = () => {
   const navLinks = [
     { path: '/home', label: 'Início', icon: Home },
     { path: '/my-courses', label: 'Meus Cursos', icon: BookOpen },
+    ...(user?.company_id ? [{ path: '/onboarding', label: 'Meu Onboarding', icon: ListChecks }] : []),
+    ...(user?.company_id ? [{ path: '/projects', label: 'Meus Projetos', icon: FolderKanban }] : []),
     { path: '/help', label: 'Ajuda', icon: HelpCircle },
     { path: '/contact', label: 'Fale Conosco!', icon: MessageCircle },
   ];
