@@ -65,7 +65,7 @@ export const StudentNavbar = () => {
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-0.5">
+            <div className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -77,7 +77,7 @@ export const StudentNavbar = () => {
                     }
                   }}
                   className={`
-                    flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm font-medium
+                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
                     whitespace-nowrap cursor-pointer
                     ${isActive(link.path)
                       ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
@@ -96,12 +96,12 @@ export const StudentNavbar = () => {
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               aria-label="Pesquisar"
-              className="md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
+              className="lg:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               <Search size={20} />
             </button>
 
-            <div className="hidden md:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-64">
+            <div className="hidden lg:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-48 xl:w-64">
               <Search size={16} className="text-surface-400" />
               <input
                 type="text"
