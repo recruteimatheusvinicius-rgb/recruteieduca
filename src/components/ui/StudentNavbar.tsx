@@ -36,7 +36,7 @@ export const StudentNavbar = () => {
     { path: '/home', label: 'Início', icon: Home },
     { path: '/my-courses', label: 'Meus Cursos', icon: BookOpen },
     ...(user?.company_id ? [{ path: '/onboarding', label: 'Meu Onboarding', icon: ListChecks }] : []),
-    ...(user?.company_id ? [{ path: '/projects', label: 'Meus Projetos', icon: FolderKanban }] : []),
+    { path: '/projects', label: 'Meus Projetos', icon: FolderKanban },
     { path: '/help', label: 'Ajuda', icon: HelpCircle },
     { path: '/contact', label: 'Fale Conosco!', icon: MessageCircle },
   ];
