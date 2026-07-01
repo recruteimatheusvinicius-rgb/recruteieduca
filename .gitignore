@@ -17,6 +17,9 @@ dist
 dist-ssr
 *.local
 
+# Claude Code worktrees (nunca devem ser commitados como gitlink/submodule)
+.claude/worktrees/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
