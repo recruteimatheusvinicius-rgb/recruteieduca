@@ -71,17 +71,17 @@ export const AdminNavbar = () => {
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-1.5">
+            <div className="hidden md:flex items-center gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   className={`
                     flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-                    whitespace-nowrap
+                    whitespace-nowrap border transition-colors
                     ${isActive(link.path)
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                      : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-900 dark:hover:text-surface-100'
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-800'
+                      : 'text-surface-600 dark:text-surface-300 bg-surface-50 dark:bg-surface-800/60 border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-surface-900 dark:hover:text-surface-100'
                     }
                   `}
                 >
