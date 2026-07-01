@@ -3,7 +3,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
-import { Moon, Sun, Bell, User, LogOut, Settings, Menu, X, ChevronDown, BookOpen, Home, HelpCircle, MessageCircle, Building, ListChecks } from 'lucide-react';
+import { Moon, Sun, Bell, User, LogOut, Settings, Menu, X, ChevronDown, BookOpen, Home, HelpCircle, MessageCircle, Building, ListChecks, FolderKanban } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
 export const AdminNavbar = () => {
@@ -22,6 +22,7 @@ export const AdminNavbar = () => {
     { path: '/admin/manage', label: 'Gerenciar', icon: Settings },
     { path: '/admin/companies', label: 'Empresas', icon: Building },
     { path: '/admin/onboarding-templates', label: 'Checklists', icon: ListChecks },
+    { path: '/admin/client-books', label: 'Books', icon: FolderKanban },
     { path: '/home', label: 'Início', icon: Home },
     { path: '/my-courses', label: 'Meus Cursos', icon: BookOpen },
     { path: '/help', label: 'Ajuda', icon: HelpCircle },
