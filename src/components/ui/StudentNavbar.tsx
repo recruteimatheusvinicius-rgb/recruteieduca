@@ -36,7 +36,7 @@ export const StudentNavbar = () => {
     { path: '/home', label: 'Início', icon: Home },
     { path: '/my-courses', label: 'Meus Cursos', icon: BookOpen },
     ...(user?.company_id ? [{ path: '/onboarding', label: 'Meu Onboarding', icon: ListChecks }] : []),
-    { path: '/projects', label: 'Meus Projetos', icon: FolderKanban },
+    { path: '/projects', label: 'Projetos', icon: FolderKanban },
     { path: '/help', label: 'Ajuda', icon: HelpCircle },
     { path: '/contact', label: 'Fale Conosco!', icon: MessageCircle },
   ];
@@ -101,8 +101,8 @@ export const StudentNavbar = () => {
               <Search size={20} />
             </button>
 
-            <div className="hidden lg:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-3 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-48 xl:w-64">
-              <Search size={16} className="text-surface-400" />
+            <div className="hidden lg:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-32 xl:w-44">
+              <Search size={16} className="text-surface-400 flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Buscar cursos..."
