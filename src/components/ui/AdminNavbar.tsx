@@ -71,13 +71,13 @@ export const AdminNavbar = () => {
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-0.5">
+            <div className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   className={`
-                    flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm font-medium
+                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
                     whitespace-nowrap
                     ${isActive(link.path)
                       ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
@@ -93,12 +93,12 @@ export const AdminNavbar = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => window.Tawk_API?.toggle()}
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 cursor-pointer"
             >
               <MessageCircle size={18} />
-              Fale Conosco
+              <span className="hidden xl:inline">Fale Conosco</span>
             </button>
 
             <button
