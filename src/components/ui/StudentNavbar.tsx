@@ -65,7 +65,7 @@ export const StudentNavbar = () => {
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
