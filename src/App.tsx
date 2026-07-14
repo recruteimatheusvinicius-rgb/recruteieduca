@@ -35,9 +35,6 @@ import { CompanyManagement } from './pages/admin/CompanyManagement';
 import { OnboardingTemplateManagement } from './pages/admin/OnboardingTemplateManagement';
 import { CompanyChecklistProgress } from './pages/admin/CompanyChecklistProgress';
 import { OnboardingChecklist } from './pages/student/OnboardingChecklist';
-import { MyProjects } from './pages/student/MyProjects';
-import { ClientBooksManagement } from './pages/admin/ClientBooksManagement';
-import { BookEditor } from './pages/BookEditor';
 
 function RootRedirect() {
   return <Navigate to="/login" replace />;
@@ -279,8 +276,6 @@ function App() {
           <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/onboarding" element={<ProtectedRoute><OnboardingChecklist /></ProtectedRoute>} />
-          <Route path="/projects" element={<ProtectedRoute><MyProjects /></ProtectedRoute>} />
-          <Route path="/projects/:id" element={<ProtectedRoute><BookEditor /></ProtectedRoute>} />
 
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/courses" element={<ProtectedRoute requireAdmin><CourseManagement /></ProtectedRoute>} />
@@ -297,8 +292,6 @@ function App() {
           <Route path="/admin/companies" element={<ProtectedRoute requireAdmin><CompanyManagement /></ProtectedRoute>} />
           <Route path="/admin/companies/:id/checklist" element={<ProtectedRoute requireAdmin><CompanyChecklistProgress /></ProtectedRoute>} />
           <Route path="/admin/onboarding-templates" element={<ProtectedRoute requireAdmin><OnboardingTemplateManagement /></ProtectedRoute>} />
-          <Route path="/admin/client-books" element={<ProtectedRoute requireAdmin><ClientBooksManagement /></ProtectedRoute>} />
-          <Route path="/admin/client-books/:id" element={<ProtectedRoute requireAdmin><BookEditor /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
