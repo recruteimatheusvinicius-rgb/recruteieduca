@@ -195,59 +195,6 @@ export interface ChecklistItemProgress {
   notes?: string;
 }
 
-// ============================================
-// Client Books (projetos/documentos por empresa, estilo Notion)
-// ============================================
-
-export type ClientBookStatus = 'active' | 'archived';
-export type BookPageType = 'doc' | 'kanban';
-
-export interface ClientBook {
-  id: string;
-  companyId: string;
-  title: string;
-  description?: string;
-  coverEmoji?: string;
-  status: ClientBookStatus;
-  createdBy?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface KanbanCard {
-  id: string;
-  title: string;
-  description?: string;
-}
-
-export interface KanbanColumn {
-  id: string;
-  title: string;
-  cards: KanbanCard[];
-}
-
-export interface KanbanContent {
-  columns: KanbanColumn[];
-}
-
-export interface DocContent {
-  html: string;
-}
-
-export type BookPageContent = KanbanContent | DocContent | Record<string, never>;
-
-export interface BookPage {
-  id: string;
-  bookId: string;
-  title: string;
-  icon?: string;
-  pageType: BookPageType;
-  content: BookPageContent;
-  order: number;
-  updatedBy?: string;
-  updatedAt?: string;
-}
-
 // Item de template combinado com o progresso real, pronto para a UI
 export interface ChecklistItemView extends ChecklistTemplateItem {
   status: ChecklistItemStatus;
