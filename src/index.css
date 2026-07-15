@@ -10,16 +10,16 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-heading: 'Outfit', system-ui, sans-serif;
 
-  --color-primary-50: #e6f4fc;
-  --color-primary-100: #cce9f9;
-  --color-primary-200: #99d3f3;
-  --color-primary-300: #66bded;
-  --color-primary-400: #0eb2f7;
-  --color-primary-500: #0b77df;
-  --color-primary-600: #1460a6;
-  --color-primary-700: #104a85;
-  --color-primary-800: #0c3864;
-  --color-primary-900: #041a47;
+  --color-primary-50: #f6f8fe;
+  --color-primary-100: #ecf0fc;
+  --color-primary-200: #d0daf8;
+  --color-primary-300: #b3c3f3;
+  --color-primary-400: #7a96ea;
+  --color-primary-500: #4169e1;
+  --color-primary-600: #3759bf;
+  --color-primary-700: #2e4a9e;
+  --color-primary-800: #243a7c;
+  --color-primary-900: #1a2a5a;
 
   --color-surface-50: #f3f6f7;
   --color-surface-100: #e7eaeb;
@@ -64,8 +64,8 @@
 }
 
 :root {
-  --color-primary: #0b77df;
-  --color-primary-hover: #1460a6;
+  --color-primary: #4169e1;
+  --color-primary-hover: #3759bf;
   --color-surface: #f3f6f7;
   --color-surface-dark: #041a47;
   --color-text: #041a47;
@@ -74,15 +74,15 @@
 }
 
 :root.light {
-  --color-primary: #1177d9;
-  --color-primary-hover: #287bbb;
+  --color-primary: #4169e1;
+  --color-primary-hover: #3759bf;
   --color-surface: #ebf6f8;
   --color-surface-dark: #081b44;
   --color-text: #32394d;
   --color-text-muted: #6a7080;
   --color-border: #cfd3d6;
-  --color-accent: #20b3f4;
-  --color-primary-light: #0f9ef3;
+  --color-accent: #7a96ea;
+  --color-primary-light: #7a96ea;
   --color-text-dark: #07112c;
 }
 

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { toast } from 'sonner';
-import { BookOpen, Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
+import { Logo } from '../../components/ui/Logo';
 
 const setTawkVisitor = (name: string, email: string) => {
   const win = window as unknown as { Tawk_API?: { setVisitor?: (v: { name: string; email: string }) => void } };
@@ -72,7 +73,7 @@ export const Login = () => {
   return (
     <div className="flex min-h-screen bg-surface-50 dark:bg-surface-900">
       {/* Painel Esquerdo - Branding/Hero (Desktop only) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-700 to-primary-900 dark:from-[#0f1f14] dark:to-[#1a2e1a] flex-col relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-700 to-primary-900 dark:from-[#0b1330] dark:to-[#1b2a5c] flex-col relative overflow-hidden">
         {/* Background decorative elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl" />
@@ -81,13 +82,8 @@ export const Login = () => {
 
         <div className="relative z-10 flex flex-col items-center justify-center flex-1 p-12 text-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 mb-8">
-            <div className="w-16 h-16 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
-              <BookOpen size={32} className="text-white" />
-            </div>
-            <span className="font-heading font-bold text-3xl text-white">
-              Recrutei<span className="text-primary-400">Educa</span>
-            </span>
+          <Link to="/" className="mb-8">
+            <Logo size={64} theme="onDark" />
           </Link>
 
           {/* Headline */}
@@ -105,13 +101,8 @@ export const Login = () => {
       <div className="w-full lg:w-1/2 bg-white dark:bg-[#111827] flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md">
           {/* Logo - Mobile only */}
-          <Link to="/" className="flex items-center gap-2 lg:hidden mb-8 justify-center">
-            <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center">
-              <BookOpen size={20} className="text-white" />
-            </div>
-            <span className="font-heading font-bold text-xl text-surface-900 dark:text-white">
-              Recrutei<span className="text-primary-500 dark:text-primary-400">Educa</span>
-            </span>
+          <Link to="/" className="flex justify-center lg:hidden mb-8">
+            <Logo size={40} />
           </Link>
 
           <div className="text-center mb-8">

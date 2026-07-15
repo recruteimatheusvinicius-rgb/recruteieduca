@@ -4,6 +4,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
+import { Logo } from './Logo';
 import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, ChevronDown, MessageCircle, ListChecks } from 'lucide-react';
 
 export const StudentNavbar = () => {
@@ -55,13 +56,8 @@ export const StudentNavbar = () => {
       <div className="container-app">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
-            <Link to="/home" className="flex items-center gap-2 group cursor-pointer">
-              <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center shadow-lg shadow-primary-500/30 group-hover:scale-105">
-                <BookOpen size={20} className="text-white" />
-              </div>
-              <span className="font-heading font-bold text-xl text-surface-900 dark:text-surface-100">
-                Recrutei<span className="text-primary-600">Educa</span>
-              </span>
+            <Link to="/home" className="flex items-center group cursor-pointer">
+              <Logo size={36} className="group-hover:scale-105 transition-transform" />
             </Link>
 
             <div className="hidden md:flex items-center gap-2.5">
