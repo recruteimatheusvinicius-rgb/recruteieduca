@@ -97,7 +97,7 @@ export const CompleteProfile = () => {
   return (
     <div className="flex min-h-screen bg-surface-50 dark:bg-surface-900">
       {/* Painel Esquerdo */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-700 to-primary-900 dark:from-[#0f1f14] dark:to-[#1a2e1a] flex-col relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-700 to-primary-900 dark:from-[#0b1330] dark:to-[#1b2a5c] flex-col relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-20 left-20 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl" />

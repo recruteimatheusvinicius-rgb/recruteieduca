@@ -3,6 +3,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
+import { Logo } from './Logo';
 import { Moon, Sun, Bell, User, LogOut, Settings, Menu, X, ChevronDown, BookOpen, Home, HelpCircle, MessageCircle, Building, ListChecks } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
@@ -61,13 +62,8 @@ export const AdminNavbar = () => {
       <div className="container-app">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
-            <Link to="/admin" className="flex items-center gap-2 group">
-              <div className="w-9 h-9 bg-primary-600 rounded-lg flex items-center justify-center shadow-lg shadow-primary-500/30">
-                <BookOpen size={20} className="text-white" />
-              </div>
-              <span className="font-heading font-bold text-xl text-surface-900 dark:text-surface-100">
-                Recrutei<span className="text-primary-600">Educa</span>
-              </span>
+            <Link to="/admin" className="flex items-center group">
+              <Logo size={36} className="group-hover:scale-105 transition-transform" />
             </Link>
 
             <div className="hidden md:flex items-center gap-2">
