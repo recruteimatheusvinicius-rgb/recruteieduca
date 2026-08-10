@@ -3,17 +3,19 @@ import { Link } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { useDataStore } from '../../stores/dataStore';
 import { useAuthStore } from '../../stores/authStore';
+import { useFavoritesStore } from '../../stores/favoritesStore';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { 
-  Search, BookOpen, Clock, Play, CheckCircle, Star, 
-  MoreVertical, TrendingUp
+import {
+  Search, BookOpen, Clock, Play, CheckCircle, Star,
+  Heart, TrendingUp
 } from 'lucide-react';
 
 export const MyCourses = () => {
   const { courses } = useDataStore();
   const { user } = useAuthStore();
+  const { favorites, toggleFavorite } = useFavoritesStore();
   const [activeTab, setActiveTab] = useState<'all' | 'ongoing' | 'completed' | 'favorites'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [enrollments, setEnrollments] = useState<Record<string, number>>({});
@@ -38,6 +40,7 @@ export const MyCourses = () => {
   useEffect(() => {
     const loadEnrollments = async () => {
       if (!user || !isSupabaseConfigured()) {
+        setStatsLoaded(true);
         return;
       }
 
@@ -87,13 +90,18 @@ export const MyCourses = () => {
     return enrolledCourses.filter((course) => (enrollments[course.id] ?? 0) >= 100);
   }, [enrolledCourses, enrollments]);
 
-  const displayCourses = activeTab === 'all' 
-    ? enrolledCourses 
-    : activeTab === 'ongoing' 
-      ? ongoingCourses 
-      : activeTab === 'completed' 
-        ? completedCourses 
-        : enrolledCourses;
+  // Favoritos aparecem mesmo sem inscrição (o aluno pode favoritar para depois)
+  const favoriteCourses = useMemo(() => {
+    return filteredCourses.filter((course) => favorites.includes(course.id));
+  }, [filteredCourses, favorites]);
+
+  const displayCourses = activeTab === 'all'
+    ? enrolledCourses
+    : activeTab === 'ongoing'
+      ? ongoingCourses
+      : activeTab === 'completed'
+        ? completedCourses
+        : favoriteCourses;
 
   const totalMinutes = enrolledCourses.reduce(
     (sum, course) => sum + parseDurationMinutes(course.duration),
@@ -101,9 +109,9 @@ export const MyCourses = () => {
   );
 
   const stats = [
-    { icon: BookOpen, label: 'Cursos Inscritos', value: statsLoaded ? enrolledCourses.length : 'Sem dados' },
-    { icon: Clock, label: 'Horas de Estudo', value: statsLoaded ? formatMinutes(totalMinutes) : 'Sem dados' },
-    { icon: TrendingUp, label: 'Concluídos', value: statsLoaded ? completedCourses.length : 'Sem dados' },
+    { icon: BookOpen, label: 'Cursos Inscritos', value: enrolledCourses.length },
+    { icon: Clock, label: 'Horas de Estudo', value: formatMinutes(totalMinutes) },
+    { icon: TrendingUp, label: 'Concluídos', value: completedCourses.length },
   ];
 
   return (
@@ -137,7 +145,11 @@ export const MyCourses = () => {
                 className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors"
               >
                 <stat.icon size={24} className="text-primary-200 mb-2" />
-                <p className="text-2xl font-bold">{stat.value}</p>
+                {statsLoaded ? (
+                  <p className="text-2xl font-bold">{stat.value}</p>
+                ) : (
+                  <div className="h-8 w-16 bg-white/20 rounded-md animate-pulse mb-1" />
+                )}
                 <p className="text-sm text-primary-200">{stat.label}</p>
               </div>
             ))}
@@ -204,11 +216,19 @@ export const MyCourses = () => {
                             {course.instructor}
                           </p>
                         </div>
-                        <button 
-                          onClick={(e) => e.preventDefault()}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700"
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleFavorite(course.id);
+                          }}
+                          aria-label={favorites.includes(course.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                          title={favorites.includes(course.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                         >
-                          <MoreVertical size={20} className="text-surface-400" />
+                          <Heart
+                            size={20}
+                            className={favorites.includes(course.id) ? 'fill-red-500 text-red-500' : 'text-surface-400'}
+                          />
                         </button>
                       </div>
 

@@ -122,7 +122,8 @@ function ScrollToTop() {
 
 function App() {
   const { theme } = useThemeStore();
-  const { initializeAuth, isAuthInitialized } = useAuthStore();
+  const { initializeAuth, isAuthInitialized, user } = useAuthStore();
+  const initializeData = useDataStore((s) => s.initialize);
   const [isAppLoading, setIsAppLoading] = useState(true);
 
   useEffect(() => {
@@ -130,6 +131,17 @@ function App() {
       initializeAuth();
     }
   }, [initializeAuth, isAuthInitialized]);
+
+  // Once authenticated, ensure catalog data is loaded no matter which route
+  // the student lands on. Public pages (/home, /course/:id, /lesson/:id) are
+  // not wrapped in ProtectedRoute, which is otherwise the only init trigger —
+  // so a direct link or refresh there would show an empty catalog. initialize()
+  // has its own guard, so calling it here is idempotent.
+  useEffect(() => {
+    if (isAuthInitialized && user) {
+      initializeData();
+    }
+  }, [isAuthInitialized, user, initializeData]);
 
   useEffect(() => {
     if (isAuthInitialized) {

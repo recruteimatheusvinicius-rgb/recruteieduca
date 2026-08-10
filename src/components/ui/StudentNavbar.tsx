@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
 import { Logo } from './Logo';
-import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, ChevronDown, MessageCircle, ListChecks } from 'lucide-react';
+import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, Settings, ChevronDown, MessageCircle, ListChecks } from 'lucide-react';
 
 export const StudentNavbar = () => {
   const { theme, toggleTheme } = useThemeStore();
@@ -14,6 +14,7 @@ export const StudentNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -49,6 +50,14 @@ export const StudentNavbar = () => {
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchTerm.trim();
+    navigate(q ? `/home?q=${encodeURIComponent(q)}` : '/home');
+    setIsSearchOpen(false);
+    setIsMenuOpen(false);
   };
 
   return (
@@ -96,14 +105,19 @@ export const StudentNavbar = () => {
               <Search size={20} />
             </button>
 
-            <div className="hidden lg:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-32 xl:w-44">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="hidden lg:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-32 xl:w-44"
+            >
               <Search size={16} className="text-surface-400 flex-shrink-0" />
               <input
                 type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar cursos..."
                 className="bg-transparent border-none outline-none text-sm text-surface-700 dark:text-surface-300 placeholder:text-surface-400 w-full ml-2 cursor-text"
               />
-            </div>
+            </form>
 
             <button
               onClick={toggleTheme}
@@ -165,7 +179,7 @@ export const StudentNavbar = () => {
                     onClick={() => setIsUserMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-2 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
                   >
-                    <LogOut size={18} />
+                    <Settings size={18} />
                     <span className="text-sm">Configurações</span>
                   </Link>
                   <div className="mt-2 pt-2 border-t border-surface-200 dark:border-surface-700">
@@ -192,14 +206,16 @@ export const StudentNavbar = () => {
         </div>
 
         {isSearchOpen && (
-          <div className="md:hidden pb-4">
+          <form onSubmit={handleSearchSubmit} className="md:hidden pb-4">
             <input
               type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar cursos..."
-              className="w-full px-4 py-2.5 rounded-lg bg-surface-100 dark:bg-surface-800 border-none outline-none text-surface-700 dark:text-surface-300 placeholder:text-surface-400 cursor-text"
+              className="w-full px-4 py-2.5 rounded-lg bg-surface-100 dark:bg-surface-800 border-none outline-none text-surface-700 dark:text-surface-300 placeholder:text-surface-400 cursor-text focus:ring-2 focus:ring-primary-500/20"
               autoFocus
             />
-          </div>
+          </form>
         )}
       </div>
 
@@ -243,7 +259,7 @@ export const StudentNavbar = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg cursor-pointer"
               >
-                <LogOut size={20} />
+                <Settings size={20} />
                 <span className="text-sm font-medium">Configurações</span>
               </Link>
               <button 
