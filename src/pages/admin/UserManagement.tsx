@@ -47,6 +47,7 @@ export const UserManagement = () => {
 
   useEffect(() => {
     if (!routeUserId) return;
+    if (isModalOpen) return; // não sobrescreve edições em andamento em refresh da lista
     const target = users.find(u => u.id === routeUserId);
     if (target) {
       openModal(target);

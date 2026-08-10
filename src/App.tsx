@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useThemeStore } from './stores/themeStore';
-import { useAuthStore } from './stores/authStore';
+import { useAuthStore, mapProfileRowToUser } from './stores/authStore';
 import { useDataStore } from './stores/dataStore';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { StudentNavbar } from './components/ui/StudentNavbar';
@@ -231,11 +231,11 @@ function App() {
         
         if (profile) {
           const currentUser = useAuthStore.getState().user;
-          const mergedUser = {
+          const mergedProfile = {
             ...profile,
             name: currentUser?.name && currentUser.name.trim() ? currentUser.name : profile.name
           };
-          useAuthStore.setState({ user: mergedUser, isAuthenticated: true });
+          useAuthStore.setState({ user: mapProfileRowToUser(mergedProfile), isAuthenticated: true });
           
           if (profile.name && profile.email) {
             setTawkVisitor(profile.name, profile.email);
