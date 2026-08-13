@@ -615,7 +615,7 @@ export const CourseCreate = () => {
           >
             {levels.map((level) => (
               <option key={level} value={level}>
-                {level === 'iniciante' ? 'Iniciante' : level === 'intermediario' ? 'Intermédiario' : 'Avançado'}
+                {level === 'iniciante' ? 'Iniciante' : level === 'intermediario' ? 'Intermediário' : 'Avançado'}
               </option>
             ))}
           </select>
