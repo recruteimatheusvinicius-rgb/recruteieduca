@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useThemeStore } from './stores/themeStore';
 import { useAuthStore, mapProfileRowToUser } from './stores/authStore';
 import { useDataStore } from './stores/dataStore';
@@ -10,34 +10,47 @@ import { AdminNavbar } from './components/ui/AdminNavbar';
 import { ToastProvider } from './components/ui/Toast';
 import { PageTransition } from './components/ui/PageTransition';
 import { ConfirmProvider } from './hooks/useConfirm';
-import { StudentHome } from './pages/student/StudentHome';
-import { CourseDetail } from './pages/student/CourseDetail';
-import { LessonViewer } from './pages/student/LessonViewer';
-import { HelpCenter } from './pages/student/HelpCenter';
-import { StudentProfile } from './pages/student/StudentProfile';
-import { MyCourses } from './pages/student/MyCourses';
-import { Settings } from './pages/student/Settings';
 import { Login } from './pages/auth/Login';
-import { CompleteProfile } from './pages/auth/CompleteProfile';
-import { ForgotPassword } from './pages/auth/ForgotPassword';
-import { ResetPassword } from './pages/auth/ResetPassword';
-import { InviteSetup } from './pages/auth/InviteSetup';
-import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { AdminManage } from './pages/admin/AdminManage';
-import { CourseManagement } from './pages/admin/CourseManagement';
-import { CourseCreate } from './pages/admin/CourseCreate';
-import { UserManagement } from './pages/admin/UserManagement';
-import { PlanManagement } from './pages/admin/PlanManagement';
-import { CategoryManagement } from './pages/admin/CategoryManagement';
-import { FormationManagement } from './pages/admin/FormationManagement';
-import { FormationCreate } from './pages/admin/FormationCreate';
-import { CompanyManagement } from './pages/admin/CompanyManagement';
-import { OnboardingTemplateManagement } from './pages/admin/OnboardingTemplateManagement';
-import { CompanyChecklistProgress } from './pages/admin/CompanyChecklistProgress';
-import { OnboardingChecklist } from './pages/student/OnboardingChecklist';
+
+// Rotas carregadas sob demanda: reduz o bundle inicial (principalmente as
+// telas de admin, que puxam o editor Tiptap) para quem só usa a área do aluno.
+const StudentHome = lazy(() => import('./pages/student/StudentHome').then(m => ({ default: m.StudentHome })));
+const CourseDetail = lazy(() => import('./pages/student/CourseDetail').then(m => ({ default: m.CourseDetail })));
+const LessonViewer = lazy(() => import('./pages/student/LessonViewer').then(m => ({ default: m.LessonViewer })));
+const HelpCenter = lazy(() => import('./pages/student/HelpCenter').then(m => ({ default: m.HelpCenter })));
+const StudentProfile = lazy(() => import('./pages/student/StudentProfile').then(m => ({ default: m.StudentProfile })));
+const MyCourses = lazy(() => import('./pages/student/MyCourses').then(m => ({ default: m.MyCourses })));
+const Settings = lazy(() => import('./pages/student/Settings').then(m => ({ default: m.Settings })));
+const OnboardingChecklist = lazy(() => import('./pages/student/OnboardingChecklist').then(m => ({ default: m.OnboardingChecklist })));
+const Webinars = lazy(() => import('./pages/student/EducaHub').then(m => ({ default: m.Webinars })));
+const Pilulas = lazy(() => import('./pages/student/EducaHub').then(m => ({ default: m.Pilulas })));
+const Materiais = lazy(() => import('./pages/student/EducaHub').then(m => ({ default: m.Materiais })));
+const CompleteProfile = lazy(() => import('./pages/auth/CompleteProfile').then(m => ({ default: m.CompleteProfile })));
+const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword').then(m => ({ default: m.ForgotPassword })));
+const ResetPassword = lazy(() => import('./pages/auth/ResetPassword').then(m => ({ default: m.ResetPassword })));
+const InviteSetup = lazy(() => import('./pages/auth/InviteSetup').then(m => ({ default: m.InviteSetup })));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const CourseManagement = lazy(() => import('./pages/admin/CourseManagement').then(m => ({ default: m.CourseManagement })));
+const CourseCreate = lazy(() => import('./pages/admin/CourseCreate').then(m => ({ default: m.CourseCreate })));
+const UserManagement = lazy(() => import('./pages/admin/UserManagement').then(m => ({ default: m.UserManagement })));
+const PlanManagement = lazy(() => import('./pages/admin/PlanManagement').then(m => ({ default: m.PlanManagement })));
+const CategoryManagement = lazy(() => import('./pages/admin/CategoryManagement').then(m => ({ default: m.CategoryManagement })));
+const FormationManagement = lazy(() => import('./pages/admin/FormationManagement').then(m => ({ default: m.FormationManagement })));
+const FormationCreate = lazy(() => import('./pages/admin/FormationCreate').then(m => ({ default: m.FormationCreate })));
+const CompanyManagement = lazy(() => import('./pages/admin/CompanyManagement').then(m => ({ default: m.CompanyManagement })));
+const OnboardingTemplateManagement = lazy(() => import('./pages/admin/OnboardingTemplateManagement').then(m => ({ default: m.OnboardingTemplateManagement })));
+const CompanyChecklistProgress = lazy(() => import('./pages/admin/CompanyChecklistProgress').then(m => ({ default: m.CompanyChecklistProgress })));
 
 function RootRedirect() {
   return <Navigate to="/login" replace />;
+}
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 }
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
@@ -221,8 +234,6 @@ function App() {
       }
       
       if (session) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
@@ -271,6 +282,7 @@ function App() {
       <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
         <PersistentChrome position="top" />
         <PageTransition>
+          <Suspense fallback={<RouteFallback />}>
           <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Login />} />
@@ -288,6 +300,9 @@ function App() {
           <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/onboarding" element={<ProtectedRoute><OnboardingChecklist /></ProtectedRoute>} />
+          <Route path="/educa/webinars" element={<ProtectedRoute><Webinars /></ProtectedRoute>} />
+          <Route path="/educa/pilulas" element={<ProtectedRoute><Pilulas /></ProtectedRoute>} />
+          <Route path="/educa/materiais" element={<ProtectedRoute><Materiais /></ProtectedRoute>} />
 
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/courses" element={<ProtectedRoute requireAdmin><CourseManagement /></ProtectedRoute>} />
@@ -300,13 +315,14 @@ function App() {
           <Route path="/admin/formations" element={<ProtectedRoute requireAdmin><FormationManagement /></ProtectedRoute>} />
           <Route path="/admin/formations/create" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
           <Route path="/admin/formations/:id" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
-          <Route path="/admin/manage" element={<ProtectedRoute requireAdmin><AdminManage /></ProtectedRoute>} />
+          <Route path="/admin/manage" element={<Navigate to="/admin" replace />} />
           <Route path="/admin/companies" element={<ProtectedRoute requireAdmin><CompanyManagement /></ProtectedRoute>} />
           <Route path="/admin/companies/:id/checklist" element={<ProtectedRoute requireAdmin><CompanyChecklistProgress /></ProtectedRoute>} />
           <Route path="/admin/onboarding-templates" element={<ProtectedRoute requireAdmin><OnboardingTemplateManagement /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
         </PageTransition>
         <PersistentChrome position="bottom" />
       </div>

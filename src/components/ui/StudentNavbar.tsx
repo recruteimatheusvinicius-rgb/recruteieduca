@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
 import { Logo } from './Logo';
-import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, Settings, ChevronDown, MessageCircle, ListChecks } from 'lucide-react';
+import { Moon, Sun, Search, Menu, X, BookOpen, Home, HelpCircle, Bell, User, LogOut, Settings, ChevronDown, MessageCircle, ListChecks, Plus, Video, Zap, FileText } from 'lucide-react';
 
 export const StudentNavbar = () => {
   const { theme, toggleTheme } = useThemeStore();
@@ -14,6 +14,7 @@ export const StudentNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isEducaOpen, setIsEducaOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,8 +40,15 @@ export const StudentNavbar = () => {
     { path: '/my-courses', label: 'Meus Cursos', icon: BookOpen },
     ...(user?.company_id ? [{ path: '/onboarding', label: 'Meu Onboarding', icon: ListChecks }] : []),
     { path: '/help', label: 'Ajuda', icon: HelpCircle },
-    { path: '/contact', label: 'Fale Conosco!', icon: MessageCircle },
   ];
+
+  const educaLinks = [
+    { path: '/educa/webinars', label: 'Webinar', icon: Video },
+    { path: '/educa/pilulas', label: 'Pílulas', icon: Zap },
+    { path: '/educa/materiais', label: 'Materiais', icon: FileText },
+  ];
+
+  const isEducaActive = educaLinks.some(link => location.pathname.startsWith(link.path));
 
   const isActive = (path: string) => {
     if (path === '/home') return location.pathname === '/home';
@@ -73,13 +81,7 @@ export const StudentNavbar = () => {
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
-                  to={link.path === '/contact' ? '#' : link.path}
-                  onClick={(e) => {
-                    if (link.path === '/contact') {
-                      e.preventDefault();
-                      window.Tawk_API?.toggle();
-                    }
-                  }}
+                  to={link.path}
                   className={`
                     flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
                     whitespace-nowrap cursor-pointer border transition-colors
@@ -93,6 +95,48 @@ export const StudentNavbar = () => {
                   {link.label}
                 </Link>
               ))}
+
+              <div
+                className="relative"
+                onMouseEnter={() => setIsEducaOpen(true)}
+                onMouseLeave={() => setIsEducaOpen(false)}
+              >
+                <button
+                  className={`
+                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+                    whitespace-nowrap cursor-pointer border transition-colors
+                    ${isEducaActive
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-800'
+                      : 'text-surface-600 dark:text-surface-300 bg-surface-50 dark:bg-surface-800/60 border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-surface-900 dark:hover:text-surface-100'
+                    }
+                  `}
+                >
+                  <Plus size={17} className="flex-shrink-0" />
+                  Educa
+                  <ChevronDown size={14} className={`transition-transform ${isEducaOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isEducaOpen && (
+                  <div className="absolute left-0 top-full pt-1 w-44 z-50">
+                    <div className="bg-white dark:bg-surface-800 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700 py-1">
+                      {educaLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left cursor-pointer ${
+                            location.pathname.startsWith(link.path)
+                              ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                              : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
+                          }`}
+                        >
+                          <link.icon size={16} />
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -103,6 +147,15 @@ export const StudentNavbar = () => {
               className="lg:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               <Search size={20} />
+            </button>
+
+            <button
+              onClick={() => window.Tawk_API?.toggle()}
+              aria-label="Fale conosco"
+              title="Fale conosco"
+              className="hidden sm:flex p-2 rounded-lg text-surface-400 dark:text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-surface-600 dark:hover:text-surface-300 cursor-pointer"
+            >
+              <MessageCircle size={20} />
             </button>
 
             <form
@@ -225,13 +278,8 @@ export const StudentNavbar = () => {
             {navLinks.map((link) => (
               <Link
                 key={link.path}
-                to={link.path === '/contact' ? '#' : link.path}
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  if (link.path === '/contact') {
-                    window.Tawk_API?.toggle();
-                  }
-                }}
+                to={link.path}
+                onClick={() => setIsMenuOpen(false)}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
                   cursor-pointer
@@ -245,7 +293,42 @@ export const StudentNavbar = () => {
                 {link.label}
               </Link>
             ))}
+
+            <div className="pt-2 mt-2 border-t border-surface-200 dark:border-surface-800">
+              <p className="px-4 pb-1 text-xs font-medium uppercase tracking-wide text-surface-400 dark:text-surface-500">
+                +Educa
+              </p>
+              {educaLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`
+                    flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
+                    cursor-pointer
+                    ${location.pathname.startsWith(link.path)
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                      : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'
+                    }
+                  `}
+                >
+                  <link.icon size={20} />
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
             <div className="pt-2 border-t border-surface-200 dark:border-surface-800">
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  window.Tawk_API?.toggle();
+                }}
+                className="flex items-center gap-3 px-4 py-3 w-full text-left text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg cursor-pointer"
+              >
+                <MessageCircle size={20} />
+                <span className="text-sm font-medium">Fale conosco</span>
+              </button>
               <Link 
                 to="/profile"
                 onClick={() => setIsMenuOpen(false)}

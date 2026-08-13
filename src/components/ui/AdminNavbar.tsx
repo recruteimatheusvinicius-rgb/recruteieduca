@@ -4,7 +4,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
 import { Logo } from './Logo';
-import { Moon, Sun, Bell, User, LogOut, Settings, Menu, X, ChevronDown, BookOpen, Home, HelpCircle, MessageCircle, Building, ListChecks } from 'lucide-react';
+import { Moon, Sun, Bell, User, LogOut, LayoutDashboard, Menu, X, ChevronDown, BookOpen, Home, HelpCircle, MessageCircle, Building, ListChecks, GraduationCap, Users, Tag, DollarSign, MoreHorizontal, Eye } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
 export const AdminNavbar = () => {
@@ -13,16 +13,32 @@ export const AdminNavbar = () => {
   const { unreadCount, togglePanel, isOpen, closePanel } = useNotificationStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isViewMenuOpen, setIsViewMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+  const viewMenuRef = useRef<HTMLDivElement>(null);
 
-  const navLinks = [
-    { path: '/admin', label: 'Dashboard', icon: Settings },
-    { path: '/admin/manage', label: 'Gerenciar', icon: Settings },
+  // Seções mais usadas ficam sempre visíveis; o resto agrupa em "Mais" pra não
+  // virar uma fileira infinita de botões.
+  const primaryLinks = [
+    { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/admin/courses', label: 'Cursos', icon: BookOpen },
+    { path: '/admin/formations', label: 'Formações', icon: GraduationCap },
+    { path: '/admin/users', label: 'Usuários', icon: Users },
+  ];
+
+  const secondaryLinks = [
+    { path: '/admin/categories', label: 'Categorias', icon: Tag },
+    { path: '/admin/plans', label: 'Planos', icon: DollarSign },
     { path: '/admin/companies', label: 'Empresas', icon: Building },
     { path: '/admin/onboarding-templates', label: 'Checklists', icon: ListChecks },
+  ];
+
+  const studentViewLinks = [
     { path: '/home', label: 'Início', icon: Home },
     { path: '/my-courses', label: 'Meus Cursos', icon: BookOpen },
     { path: '/help', label: 'Ajuda', icon: HelpCircle },
@@ -34,6 +50,12 @@ export const AdminNavbar = () => {
       if (userMenuRef.current && !userMenuRef.current.contains(target)) {
         setIsUserMenuOpen(false);
       }
+      if (moreMenuRef.current && !moreMenuRef.current.contains(target)) {
+        setIsMoreMenuOpen(false);
+      }
+      if (viewMenuRef.current && !viewMenuRef.current.contains(target)) {
+        setIsViewMenuOpen(false);
+      }
       if (isOpen && notifRef.current && !notifRef.current.contains(target)) {
         closePanel();
       }
@@ -43,6 +65,7 @@ export const AdminNavbar = () => {
   }, [isOpen, closePanel]);
 
   const isActive = (path: string) => location.pathname === path;
+  const isSecondaryActive = secondaryLinks.some(link => isActive(link.path));
 
   const handleLogout = async () => {
     await logout();
@@ -67,7 +90,7 @@ export const AdminNavbar = () => {
             </Link>
 
             <div className="hidden md:flex items-center gap-2">
-              {navLinks.map((link) => (
+              {primaryLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
@@ -84,16 +107,81 @@ export const AdminNavbar = () => {
                   {link.label}
                 </Link>
               ))}
+
+              <div className="relative" ref={moreMenuRef}>
+                <button
+                  onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
+                  className={`
+                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+                    whitespace-nowrap border transition-colors cursor-pointer
+                    ${isSecondaryActive
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-800'
+                      : 'text-surface-600 dark:text-surface-300 bg-surface-50 dark:bg-surface-800/60 border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-surface-900 dark:hover:text-surface-100'
+                    }
+                  `}
+                >
+                  <MoreHorizontal size={17} className="flex-shrink-0" />
+                  Mais
+                  <ChevronDown size={14} />
+                </button>
+
+                {isMoreMenuOpen && (
+                  <div className="absolute left-0 mt-2 w-52 bg-white dark:bg-surface-800 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700 py-1 z-50">
+                    {secondaryLinks.map((link) => (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        onClick={() => setIsMoreMenuOpen(false)}
+                        className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left cursor-pointer ${
+                          isActive(link.path)
+                            ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                            : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
+                        }`}
+                      >
+                        <link.icon size={16} />
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <div className="relative hidden lg:block" ref={viewMenuRef}>
+              <button
+                onClick={() => setIsViewMenuOpen(!isViewMenuOpen)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-surface-600 dark:text-surface-300 bg-surface-50 dark:bg-surface-800/60 border border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
+              >
+                <Eye size={17} />
+                <span className="hidden xl:inline">Ver como aluno</span>
+                <ChevronDown size={14} />
+              </button>
+
+              {isViewMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-800 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700 py-1 z-50">
+                  {studentViewLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setIsViewMenuOpen(false)}
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
+                    >
+                      <link.icon size={16} />
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => window.Tawk_API?.toggle()}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 cursor-pointer"
+              aria-label="Fale conosco"
+              className="p-2 rounded-lg text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 cursor-pointer"
             >
               <MessageCircle size={18} />
-              <span className="hidden xl:inline">Fale Conosco</span>
             </button>
 
             <button
@@ -170,7 +258,7 @@ export const AdminNavbar = () => {
       {isMenuOpen && (
         <div className="md:hidden border-t border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900">
           <div className="container-app py-4 space-y-2">
-            {navLinks.map((link) => (
+            {[...primaryLinks, ...secondaryLinks].map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -187,6 +275,30 @@ export const AdminNavbar = () => {
                 {link.label}
               </Link>
             ))}
+
+            <div className="pt-2 mt-2 border-t border-surface-200 dark:border-surface-800">
+              <p className="px-4 pb-1 text-xs font-medium uppercase tracking-wide text-surface-400 dark:text-surface-500">
+                Ver como aluno
+              </p>
+              {studentViewLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`
+                    flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
+                    ${isActive(link.path)
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                      : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'
+                    }
+                  `}
+                >
+                  <link.icon size={20} />
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
             <div className="pt-2 border-t border-surface-200 dark:border-surface-800">
               <Link
                 to="/profile"

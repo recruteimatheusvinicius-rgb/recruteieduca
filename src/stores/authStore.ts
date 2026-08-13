@@ -225,20 +225,14 @@ export const useAuthStore = create<AuthState>()(
               if (data.user) {
                 const profileResponse = await supabase
                   .from('profiles')
-                  .select('*')
+                  .select('*, companies(status)')
                   .eq('id', data.user.id)
                   .single();
-                const profile = profileResponse.data as SupabaseProfile | null;
+                const profile = profileResponse.data as (SupabaseProfile & { companies: { status: string } | null }) | null;
 
                 if (profile) {
                   if (profile.company_id) {
-                    const { data: company } = await supabase
-                      .from('companies')
-                      .select('status')
-                      .eq('id', profile.company_id)
-                      .single();
-                    
-                    if (!company || company.status === 'deleted') {
+                    if (!profile.companies || profile.companies.status === 'deleted') {
                       await supabase.auth.signOut();
                       throw new Error('Empresa vinculada a esta conta foi excluída. Contacte o administrador.');
                     }
