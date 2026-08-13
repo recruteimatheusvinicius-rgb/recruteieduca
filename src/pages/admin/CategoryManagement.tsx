@@ -38,35 +38,43 @@ export const CategoryManagement = () => {
     setIsModalOpen(true);
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name?.trim()) {
       toast.error('O nome da categoria é obrigatório');
       return;
     }
 
+    setIsSaving(true);
     try {
-      if (editingCategory) {
-        updateCategory(editingCategory.id, {
-          name: formData.name,
-          description: formData.description,
-          color: formData.color,
-        });
-        toast.success('Categoria atualizada com sucesso!');
-      } else {
-        addCategory({
-          id: crypto.randomUUID(),
-          name: formData.name,
-          description: formData.description,
-          color: formData.color,
-          courseCount: 0,
-        });
-        toast.success('Categoria criada com sucesso!');
+      const ok = editingCategory
+        ? await updateCategory(editingCategory.id, {
+            name: formData.name,
+            description: formData.description,
+            color: formData.color,
+          })
+        : await addCategory({
+            id: crypto.randomUUID(),
+            name: formData.name,
+            description: formData.description,
+            color: formData.color,
+            courseCount: 0,
+          });
+
+      if (!ok) {
+        toast.error('Não foi possível salvar a categoria. Verifique a conexão e tente novamente.');
+        return;
       }
+
+      toast.success(editingCategory ? 'Categoria atualizada com sucesso!' : 'Categoria criada com sucesso!');
       setIsModalOpen(false);
     } catch {
       toast.error('Erro ao salvar categoria');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -79,9 +87,13 @@ export const CategoryManagement = () => {
       message: `Tem certeza que deseja excluir a categoria "${category?.name}"?`,
       confirmText: 'Excluir',
       variant: 'danger',
-      onConfirm: () => {
-        deleteCategory(id);
-        toast.success('Categoria excluída com sucesso!');
+      onConfirm: async () => {
+        const ok = await deleteCategory(id);
+        if (ok) {
+          toast.success('Categoria excluída com sucesso!');
+        } else {
+          toast.error('Não foi possível excluir a categoria. Tente novamente.');
+        }
       },
     });
   };
@@ -227,8 +239,8 @@ export const CategoryManagement = () => {
                 <Button type="button" variant="secondary" className="flex-1" onClick={() => setIsModalOpen(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" className="flex-1">
-                  {editingCategory ? 'Salvar' : 'Criar'}
+                <Button type="submit" className="flex-1" disabled={isSaving}>
+                  {isSaving ? 'Salvando...' : editingCategory ? 'Salvar' : 'Criar'}
                 </Button>
               </div>
             </form>

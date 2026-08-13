@@ -20,7 +20,7 @@ export const FormationManagement = () => {
     };
     const labels: Record<string, string> = {
       iniciante: 'Iniciante',
-      intermediario: 'Intermediário',
+      intermediario: 'Intermédio',
       avancado: 'Avançado',
     };
     return <Badge variant={variants[level]}>{labels[level]}</Badge>;
@@ -93,9 +93,13 @@ export const FormationManagement = () => {
                         message: `Tem certeza que deseja excluir a formação "${formation.title}"?`,
                         confirmText: 'Excluir',
                         variant: 'danger',
-                        onConfirm: () => {
-                          deleteFormation(formation.id);
-                          toast.success('Formação excluída com sucesso!');
+                        onConfirm: async () => {
+                          const ok = await deleteFormation(formation.id);
+                          if (ok) {
+                            toast.success('Formação excluída com sucesso!');
+                          } else {
+                            toast.error('Não foi possível excluir a formação. Tente novamente.');
+                          }
                         },
                       });
                     }}
