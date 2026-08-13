@@ -69,7 +69,7 @@ export const StudentNavbar = () => {
               <Logo size={36} className="group-hover:scale-105 transition-transform" />
             </Link>
 
-            <div className="hidden md:flex items-center gap-2.5">
+            <div className="hidden md:flex items-center gap-1.5">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -81,11 +81,11 @@ export const StudentNavbar = () => {
                     }
                   }}
                   className={`
-                    flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+                    flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold
                     whitespace-nowrap cursor-pointer border transition-colors
                     ${isActive(link.path)
                       ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-800'
-                      : 'text-surface-600 dark:text-surface-300 bg-surface-50 dark:bg-surface-800/60 border-surface-200 dark:border-surface-700 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-surface-900 dark:hover:text-surface-100'
+                      : 'text-surface-500 dark:text-surface-300 bg-transparent border-transparent hover:bg-surface-50 dark:hover:bg-surface-800/60 hover:text-surface-900 dark:hover:text-surface-100'
                     }
                   `}
                 >
@@ -100,14 +100,14 @@ export const StudentNavbar = () => {
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               aria-label="Pesquisar"
-              className="lg:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
+              className="lg:hidden p-2 rounded-xl text-surface-500 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               <Search size={20} />
             </button>
 
             <form
               onSubmit={handleSearchSubmit}
-              className="hidden lg:flex items-center bg-surface-100 dark:bg-surface-800 rounded-lg px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-primary-500/20 w-32 xl:w-44"
+              className="hidden lg:flex items-center bg-surface-50 dark:bg-surface-800 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-primary-500/20 w-32 xl:w-44"
             >
               <Search size={16} className="text-surface-400 flex-shrink-0" />
               <input
@@ -121,7 +121,7 @@ export const StudentNavbar = () => {
 
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
+              className="p-2 rounded-xl text-surface-500 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
               aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
             >
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
@@ -131,7 +131,7 @@ export const StudentNavbar = () => {
               <button
                 onClick={togglePanel}
                 aria-label="Notificações"
-                className="p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer relative"
+                className="p-2 rounded-xl text-surface-500 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer relative"
               >
                 <Bell size={20} />
                 {unreadCount > 0 && (
@@ -148,46 +148,46 @@ export const StudentNavbar = () => {
             <div className="relative hidden md:block" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
+                className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
               >
-                <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                  <User size={16} className="text-primary-600 dark:text-primary-400" />
+                <div className="w-8 h-8 bg-violet-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                  <User size={16} className="text-violet-600 dark:text-primary-400" />
                 </div>
                 <ChevronDown size={16} className="text-surface-400" />
               </button>
 
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-800 rounded-xl shadow-lg border border-surface-200 dark:border-surface-700 py-2">
-                  <div className="px-4 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <p className="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-800 rounded-xl shadow-hover border border-surface-100 dark:border-surface-700 py-1.5">
+                  <div className="px-4 py-2 border-b border-surface-100 dark:border-surface-700">
+                    <p className="text-sm font-semibold text-surface-900 dark:text-surface-100 truncate">
                       {user?.name || 'Usuário'}
                     </p>
                     <p className="text-xs text-surface-500 truncate">
                       {user?.email}
                     </p>
                   </div>
-                  <Link 
+                  <Link
                     to="/profile"
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
+                    className="flex items-center gap-3 px-4 py-2.5 text-surface-500 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 cursor-pointer"
                   >
-                    <User size={18} />
+                    <User size={16} />
                     <span className="text-sm">Meu Perfil</span>
                   </Link>
-                  <Link 
+                  <Link
                     to="/settings"
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
+                    className="flex items-center gap-3 px-4 py-2.5 text-surface-500 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 cursor-pointer"
                   >
-                    <Settings size={18} />
+                    <Settings size={16} />
                     <span className="text-sm">Configurações</span>
                   </Link>
-                  <div className="mt-2 pt-2 border-t border-surface-200 dark:border-surface-700">
-                    <button 
+                  <div className="mt-1.5 pt-1.5 border-t border-surface-100 dark:border-surface-700">
+                    <button
                       onClick={handleLogout}
-                      className="flex items-center gap-3 px-4 py-2 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
+                      className="flex items-center gap-3 px-4 py-2.5 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
                     >
-                      <LogOut size={18} />
+                      <LogOut size={16} />
                       <span className="text-sm">Sair</span>
                     </button>
                   </div>
@@ -198,7 +198,7 @@ export const StudentNavbar = () => {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
-              className="md:hidden p-2 rounded-lg text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
+              className="md:hidden p-2 rounded-xl text-surface-500 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -212,7 +212,7 @@ export const StudentNavbar = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar cursos..."
-              className="w-full px-4 py-2.5 rounded-lg bg-surface-100 dark:bg-surface-800 border-none outline-none text-surface-700 dark:text-surface-300 placeholder:text-surface-400 cursor-text focus:ring-2 focus:ring-primary-500/20"
+              className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800 border-none outline-none text-surface-700 dark:text-surface-300 placeholder:text-surface-400 cursor-text focus:ring-2 focus:ring-primary-500/20"
               autoFocus
             />
           </form>
@@ -220,8 +220,8 @@ export const StudentNavbar = () => {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden border-t border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900">
-          <div className="container-app py-4 space-y-2">
+        <div className="md:hidden border-t border-surface-100 dark:border-surface-800 bg-white dark:bg-surface-900">
+          <div className="container-app py-4 space-y-1.5">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -233,11 +233,11 @@ export const StudentNavbar = () => {
                   }
                 }}
                 className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
+                  flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold
                   cursor-pointer
                   ${isActive(link.path)
                     ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                    : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'
+                    : 'text-surface-500 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'
                   }
                 `}
               >
@@ -245,29 +245,29 @@ export const StudentNavbar = () => {
                 {link.label}
               </Link>
             ))}
-            <div className="pt-2 border-t border-surface-200 dark:border-surface-800">
-              <Link 
+            <div className="pt-2 border-t border-surface-100 dark:border-surface-800">
+              <Link
                 to="/profile"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 text-surface-500 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 rounded-xl cursor-pointer"
               >
                 <User size={20} />
-                <span className="text-sm font-medium">Meu Perfil</span>
+                <span className="text-sm font-semibold">Meu Perfil</span>
               </Link>
-              <Link 
+              <Link
                 to="/settings"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 text-surface-500 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 rounded-xl cursor-pointer"
               >
                 <Settings size={20} />
-                <span className="text-sm font-medium">Configurações</span>
+                <span className="text-sm font-semibold">Configurações</span>
               </Link>
-              <button 
+              <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 w-full text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl cursor-pointer"
               >
                 <LogOut size={20} />
-                <span className="text-sm font-medium">Sair</span>
+                <span className="text-sm font-semibold">Sair</span>
               </button>
             </div>
           </div>

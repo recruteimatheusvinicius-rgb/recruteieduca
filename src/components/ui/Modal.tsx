@@ -74,18 +74,18 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             animate="visible"
             exit="exit"
             variants={modalVariants}
-            className="relative bg-surface-50 dark:bg-surface-800 rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto z-10"
+            className="relative bg-white dark:bg-surface-800 rounded-2xl shadow-hover border border-surface-100 dark:border-surface-700 w-full max-w-lg max-h-[90vh] overflow-y-auto z-10"
           >
-            <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-700 sticky top-0 bg-surface-50 dark:bg-surface-800 z-10">
+            <div className="flex items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700 sticky top-0 bg-white dark:bg-surface-800 z-10">
               <h2 id="modal-title" className="text-lg font-semibold text-surface-900 dark:text-surface-100">
                 {title}
               </h2>
               <button
                 onClick={onClose}
                 aria-label="Fechar"
-                className="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors cursor-pointer"
+                className="p-2 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-xl transition-colors cursor-pointer"
               >
-                <X className="w-5 h-5 text-surface-500" />
+                <X className="w-5 h-5 text-surface-400" />
               </button>
             </div>
             <div className="p-4">{children}</div>

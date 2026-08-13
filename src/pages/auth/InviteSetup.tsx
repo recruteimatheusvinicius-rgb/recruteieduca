@@ -120,10 +120,10 @@ export const InviteSetup = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-900">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 via-violet-600 to-violet-500">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-surface-600 dark:text-surface-300">Validando convite...</p>
+          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/80">Validando convite...</p>
         </div>
       </div>
     );
@@ -131,18 +131,18 @@ export const InviteSetup = () => {
 
   if (!isValid || !inviteData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-900 p-4">
-        <Card className="w-full max-w-md p-8 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 via-violet-600 to-violet-500 p-4">
+        <Card className="w-full max-w-md p-8 text-center rounded-2xl shadow-hover">
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock size={32} className="text-red-600 dark:text-red-400" />
           </div>
           <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-2">
             Convite Inválido
           </h1>
-          <p className="text-surface-600 dark:text-surface-300 mb-6">
+          <p className="text-surface-500 dark:text-surface-400 mb-6">
             Este link de convite é inválido ou expirou.
           </p>
-          <Button onClick={() => navigate('/login')}>
+          <Button onClick={() => navigate('/login')} className="w-full rounded-xl">
             Voltar para Login
           </Button>
         </Card>
@@ -151,21 +151,21 @@ export const InviteSetup = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-900 p-4">
-      <Card className="w-full max-w-md p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-500 via-violet-600 to-violet-500 p-4">
+      <Card className="w-full max-w-md p-8 sm:p-10 rounded-2xl shadow-hover">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle size={32} className="text-primary-600 dark:text-primary-400" />
+          <div className="w-16 h-16 bg-violet-100 dark:bg-violet-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle size={32} className="text-violet-600 dark:text-violet-400" />
           </div>
           <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
             Complete seu Cadastro
           </h1>
-          <p className="text-surface-600 dark:text-surface-300 mt-2">
+          <p className="text-surface-500 dark:text-surface-400 mt-2">
             Você foi convidado para a plataforma RecruteiEduca
           </p>
         </div>
 
-        <div className="bg-surface-50 dark:bg-surface-800 p-4 rounded-lg mb-6">
+        <div className="bg-surface-50 dark:bg-surface-900 border border-surface-100 dark:border-surface-700 p-4 rounded-xl mb-6">
           <div className="flex items-center gap-3">
             <Building size={20} className="text-surface-400" />
             <div>
@@ -198,7 +198,7 @@ export const InviteSetup = () => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Seu nome completo"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-surface-100 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                 required
               />
             </div>
@@ -215,7 +215,7 @@ export const InviteSetup = () => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-surface-100 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                 required
               />
             </div>
@@ -232,13 +232,13 @@ export const InviteSetup = () => {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-surface-100 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                 required
               />
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full rounded-xl font-semibold" disabled={isSubmitting}>
             {isSubmitting ? 'Criando conta...' : 'Criar Conta'}
           </Button>
         </form>

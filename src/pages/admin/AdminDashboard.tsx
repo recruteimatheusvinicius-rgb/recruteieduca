@@ -60,26 +60,26 @@ export const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
                 Dashboard
               </h1>
-              <p className="text-surface-500 dark:text-surface-300 mt-1">
+              <p className="text-surface-500 dark:text-surface-400 mt-1">
                 Visão geral da plataforma
               </p>
             </div>
             <div className="flex gap-3">
               <Link to="/admin/courses">
-                <Button variant="secondary" size="sm">
+                <Button variant="secondary" size="sm" className="rounded-xl font-semibold">
                   <BookOpen size={18} />
                   Ver Cursos
                 </Button>
               </Link>
               <Link to="/admin/users">
-                <Button size="sm">
+                <Button size="sm" className="rounded-xl font-semibold">
                   <Users size={18} />
                   Ver Usuários
                 </Button>
@@ -91,28 +91,35 @@ export const AdminDashboard = () => {
 
       <div className="container-app py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                  <stat.icon size={20} className="text-primary-600 dark:text-primary-400" />
-                </div>
+          {stats.map((stat, index) => (
+            <Card key={stat.label} className="p-5 rounded-2xl shadow-card hover:shadow-hover transition-shadow">
+              <div
+                className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${
+                  index % 2 === 0
+                    ? 'bg-primary-50 dark:bg-primary-900/30'
+                    : 'bg-violet-100 dark:bg-violet-900/30'
+                }`}
+              >
+                <stat.icon
+                  size={20}
+                  className={index % 2 === 0 ? 'text-primary-600 dark:text-primary-400' : 'text-violet-600 dark:text-violet-300'}
+                />
               </div>
               <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">
                 {stat.value.toLocaleString('pt-BR')}
               </p>
-              <p className="text-sm text-surface-500 dark:text-surface-300">{stat.label}</p>
+              <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">{stat.label}</p>
             </Card>
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6">
+          <Card className="p-6 rounded-2xl">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
                 Cursos Populares
               </h2>
-              <Link to="/admin/courses" className="text-sm text-primary-600 hover:text-primary-700 cursor-pointer">
+              <Link to="/admin/courses" className="text-sm font-medium text-primary-500 hover:text-primary-600 cursor-pointer">
                 Ver todos
               </Link>
             </div>
@@ -129,21 +136,21 @@ export const AdminDashboard = () => {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {popularCourses.map((course) => (
                   <Link
                     key={course.id}
                     to={`/admin/courses/${course.id}`}
-                    className="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
+                    className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors cursor-pointer"
                   >
-                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                      <BookOpen size={18} className="text-primary-600 dark:text-primary-400" />
+                    <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center shrink-0">
+                      <BookOpen size={18} className="text-violet-600 dark:text-violet-300" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
                         {course.title}
                       </p>
-                      <p className="text-sm text-surface-500 dark:text-surface-300">
+                      <p className="text-sm text-surface-500 dark:text-surface-400">
                         {course.enrolled || 0} {(course.enrolled || 0) === 1 ? 'aluno' : 'alunos'}
                       </p>
                     </div>
@@ -156,12 +163,12 @@ export const AdminDashboard = () => {
             )}
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 rounded-2xl">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
                 Novos Alunos
               </h2>
-              <Link to="/admin/users" className="text-sm text-primary-600 hover:text-primary-700 cursor-pointer">
+              <Link to="/admin/users" className="text-sm font-medium text-primary-500 hover:text-primary-600 cursor-pointer">
                 Ver todos
               </Link>
             </div>
@@ -173,14 +180,14 @@ export const AdminDashboard = () => {
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {recentStudents.map((user) => (
                   <Link
                     key={user.id}
                     to={`/admin/users/${user.id}?mode=view`}
-                    className="flex items-center gap-4 p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
+                    className="flex items-center gap-4 p-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors cursor-pointer"
                   >
-                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center shrink-0">
                       {user.avatar ? (
                         <img
                           src={user.avatar}
@@ -196,7 +203,7 @@ export const AdminDashboard = () => {
                       <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
                         {user.name}
                       </p>
-                      <p className="text-sm text-surface-500 dark:text-surface-300 truncate">
+                      <p className="text-sm text-surface-500 dark:text-surface-400 truncate">
                         {user.email}
                       </p>
                     </div>
@@ -211,12 +218,12 @@ export const AdminDashboard = () => {
         </div>
 
         {formations.length > 0 && (
-          <Card className="p-6 mt-6">
+          <Card className="p-6 mt-6 rounded-2xl">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
                 Formações ({formations.length})
               </h2>
-              <Link to="/admin/formations" className="text-sm text-primary-600 hover:text-primary-700 cursor-pointer">
+              <Link to="/admin/formations" className="text-sm font-medium text-primary-500 hover:text-primary-600 cursor-pointer">
                 Gerenciar
               </Link>
             </div>
@@ -225,7 +232,7 @@ export const AdminDashboard = () => {
                 <Link
                   key={f.id}
                   to={`/admin/formations/${f.id}`}
-                  className="p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
+                  className="p-3 bg-surface-50 dark:bg-surface-700/50 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer border border-surface-100 dark:border-surface-700"
                 >
                   <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
                     {f.title}

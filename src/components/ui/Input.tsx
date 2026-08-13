@@ -30,8 +30,8 @@ export const Input = ({ label, error, icon, size = 'md', className = '', ...prop
         )}
         <input
           className={`
-            w-full rounded-lg border border-surface-200 dark:border-surface-700
-            bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100
+            w-full rounded-xl border border-surface-100 dark:border-surface-700
+            bg-surface-50 dark:bg-surface-800 text-surface-900 dark:text-surface-100
             placeholder:text-surface-400
             focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500
             transition-all duration-200

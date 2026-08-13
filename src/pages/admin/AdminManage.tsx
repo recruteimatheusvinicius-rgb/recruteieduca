@@ -67,10 +67,10 @@ export const AdminManage = () => {
 
   const renderDashboard = () => (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('courses')}>
+      <Card className="!rounded-2xl !border-surface-100 shadow-card p-4 cursor-pointer hover:shadow-hover transition-shadow" onClick={() => setActiveTab('courses')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-            <BookOpen size={20} className="text-blue-600" />
+          <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+            <BookOpen size={20} className="text-primary-600 dark:text-primary-400" />
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{courses.length}</p>
@@ -78,10 +78,10 @@ export const AdminManage = () => {
           </div>
         </div>
       </Card>
-      <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('formations')}>
+      <Card className="!rounded-2xl !border-surface-100 shadow-card p-4 cursor-pointer hover:shadow-hover transition-shadow" onClick={() => setActiveTab('formations')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-            <GraduationCap size={20} className="text-purple-600" />
+          <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
+            <GraduationCap size={20} className="text-violet-600 dark:text-violet-300" />
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{formations.length}</p>
@@ -89,10 +89,10 @@ export const AdminManage = () => {
           </div>
         </div>
       </Card>
-      <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('users')}>
+      <Card className="!rounded-2xl !border-surface-100 shadow-card p-4 cursor-pointer hover:shadow-hover transition-shadow" onClick={() => setActiveTab('users')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-            <Users size={20} className="text-green-600" />
+          <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+            <Users size={20} className="text-primary-600 dark:text-primary-400" />
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{users.length}</p>
@@ -100,10 +100,10 @@ export const AdminManage = () => {
           </div>
         </div>
       </Card>
-      <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('categories')}>
+      <Card className="!rounded-2xl !border-surface-100 shadow-card p-4 cursor-pointer hover:shadow-hover transition-shadow" onClick={() => setActiveTab('categories')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
-            <Tag size={20} className="text-orange-600" />
+          <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
+            <Tag size={20} className="text-violet-600 dark:text-violet-300" />
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{categories.length}</p>
@@ -111,10 +111,10 @@ export const AdminManage = () => {
           </div>
         </div>
       </Card>
-      <Card className="p-4 cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab('plans')}>
+      <Card className="!rounded-2xl !border-surface-100 shadow-card p-4 cursor-pointer hover:shadow-hover transition-shadow" onClick={() => setActiveTab('plans')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-lg flex items-center justify-center">
-            <DollarSign size={20} className="text-pink-600" />
+          <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
+            <DollarSign size={20} className="text-primary-600 dark:text-primary-400" />
           </div>
           <div>
             <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{plans.length}</p>
@@ -131,60 +131,62 @@ export const AdminManage = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <Link to="/admin/courses/create">
-            <Button><Plus size={18} /> Novo Curso</Button>
+            <Button className="rounded-xl font-semibold"><Plus size={18} /> Novo Curso</Button>
           </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-surface-200 dark:border-surface-700">
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Curso</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Categoria</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Nível</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Status</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((course) => (
-                <tr key={course.id} className="border-b border-surface-100 dark:border-surface-700">
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center">
-                        <BookOpen size={18} className="text-surface-400" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-surface-900 dark:text-surface-100">{course.title}</p>
-                        <p className="text-sm text-surface-500 dark:text-surface-400">{course.duration}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4"><Badge variant="primary">{course.category}</Badge></td>
-                  <td className="py-3 px-4 capitalize">{course.level}</td>
-                  <td className="py-3 px-4">
-                    <Badge variant={course.status === 'published' ? 'success' : 'warning'}>
-                      {course.status}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center justify-end gap-1">
-                      <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 cursor-pointer">
-                        <Eye size={16} />
-                      </Link>
-                      <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 cursor-pointer">
-                        <Edit size={16} />
-                      </Link>
-                      <button onClick={() => handleDelete('course', course.id)} className="p-2 rounded-lg hover:bg-surface-100 text-red-500 cursor-pointer">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+        <div className="bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 shadow-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-surface-50 dark:bg-surface-800/60">
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Curso</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Categoria</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Nível</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Status</th>
+                  <th className="text-right py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map((course) => (
+                  <tr key={course.id} className="border-t border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50">
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-full flex items-center justify-center">
+                          <BookOpen size={18} className="text-violet-600 dark:text-violet-300" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-surface-900 dark:text-surface-100">{course.title}</p>
+                          <p className="text-sm text-surface-500 dark:text-surface-400">{course.duration}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4"><Badge variant="primary">{course.category}</Badge></td>
+                    <td className="py-3 px-4 capitalize text-surface-700 dark:text-surface-300">{course.level}</td>
+                    <td className="py-3 px-4">
+                      <Badge variant={course.status === 'published' ? 'success' : 'warning'}>
+                        {course.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer">
+                          <Eye size={16} />
+                        </Link>
+                        <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer">
+                          <Edit size={16} />
+                        </Link>
+                        <button onClick={() => handleDelete('course', course.id)} className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 cursor-pointer">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {filtered.length === 0 && <p className="text-center py-8 text-surface-500 dark:text-surface-400">Nenhum curso encontrado</p>}
         </div>
-        {filtered.length === 0 && <p className="text-center py-8 text-surface-500 dark:text-surface-400">Nenhum curso encontrado</p>}
       </div>
     );
   };
@@ -194,31 +196,34 @@ export const AdminManage = () => {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Button onClick={() => navigate('/admin/formations')}><Plus size={18} /> Nova Formação</Button>
+          <Button className="rounded-xl font-semibold" onClick={() => navigate('/admin/formations')}><Plus size={18} /> Nova Formação</Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((formation) => (
-            <Card key={formation.id} className="p-4">
+            <Card key={formation.id} className="!rounded-2xl !border-surface-100 shadow-card p-4">
               <div className="flex items-start justify-between mb-2">
-                <h3 className="font-semibold text-surface-900 dark:text-surface-100">{formation.title}</h3>
+                <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                  <GraduationCap size={18} className="text-violet-600 dark:text-violet-300" />
+                </div>
                 <div className="flex gap-1">
                   <button
                     onClick={() => navigate(`/admin/formations/${formation.id}`)}
                     aria-label="Editar formação"
-                    className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400"
+                    className="p-1 rounded-md hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400"
                   >
                     <Edit size={14} />
                   </button>
                   <button
                     onClick={() => handleDelete('formation', formation.id)}
                     aria-label="Excluir formação"
-                    className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
+                    className="p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
                   >
                     <Trash2 size={14} />
                   </button>
                 </div>
               </div>
-              <p className="text-sm text-surface-500 dark:text-surface-400 mb-2">{formation.courses.length} cursos • {formation.duration}</p>
+              <h3 className="font-semibold text-surface-900 dark:text-surface-100">{formation.title}</h3>
+              <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 mb-2">{formation.courses.length} cursos • {formation.duration}</p>
               <Badge variant="primary">{formation.level}</Badge>
             </Card>
           ))}
@@ -233,62 +238,64 @@ export const AdminManage = () => {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Button onClick={() => navigate('/admin/users')}><Plus size={18} /> Novo Usuário</Button>
+          <Button className="rounded-xl font-semibold" onClick={() => navigate('/admin/users')}><Plus size={18} /> Novo Usuário</Button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-surface-200 dark:border-surface-700">
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Usuário</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Papel</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Status</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-400">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((user) => (
-                <tr key={user.id} className="border-b border-surface-100 dark:border-surface-700">
-                  <td className="py-3 px-4">
-                    <div>
-                      <p className="font-medium text-surface-900 dark:text-surface-100">{user.name}</p>
-                      <p className="text-sm text-surface-500 dark:text-surface-400">{user.email}</p>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge variant={user.role === 'admin' ? 'warning' : 'primary'}>{user.role}</Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge variant={user.status === 'active' ? 'success' : 'secondary'}>{user.status}</Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => navigate(`/admin/users/${user.id}?mode=view`)}
-                        aria-label="Ver detalhes do usuário"
-                        className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400"
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
-                        onClick={() => navigate(`/admin/users/${user.id}`)}
-                        aria-label="Editar usuário"
-                        className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete('user', user.id)}
-                        aria-label="Excluir usuário"
-                        className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+        <div className="bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 shadow-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-surface-50 dark:bg-surface-800/60">
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Usuário</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Papel</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Status</th>
+                  <th className="text-right py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400">Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map((user) => (
+                  <tr key={user.id} className="border-t border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50">
+                    <td className="py-3 px-4">
+                      <div>
+                        <p className="font-medium text-surface-900 dark:text-surface-100">{user.name}</p>
+                        <p className="text-sm text-surface-500 dark:text-surface-400">{user.email}</p>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge variant={user.role === 'admin' ? 'warning' : 'primary'}>{user.role}</Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge variant={user.status === 'active' ? 'success' : 'secondary'}>{user.status}</Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => navigate(`/admin/users/${user.id}?mode=view`)}
+                          aria-label="Ver detalhes do usuário"
+                          className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400"
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          onClick={() => navigate(`/admin/users/${user.id}`)}
+                          aria-label="Editar usuário"
+                          className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete('user', user.id)}
+                          aria-label="Excluir usuário"
+                          className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );
@@ -299,11 +306,11 @@ export const AdminManage = () => {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Button onClick={() => navigate('/admin/categories')}><Plus size={18} /> Nova Categoria</Button>
+          <Button className="rounded-xl font-semibold" onClick={() => navigate('/admin/categories')}><Plus size={18} /> Nova Categoria</Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((category) => (
-            <Card key={category.id} className="p-4">
+            <Card key={category.id} className="!rounded-2xl !border-surface-100 shadow-card p-4">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: category.color }} />
                 <h3 className="font-semibold text-surface-900 dark:text-surface-100">{category.name}</h3>
@@ -311,10 +318,10 @@ export const AdminManage = () => {
               <p className="text-sm text-surface-500 dark:text-surface-400 mb-2">{category.description}</p>
               <p className="text-sm text-surface-500 dark:text-surface-400">{category.courseCount} cursos</p>
               <div className="flex gap-1 mt-3">
-                <button onClick={() => navigate('/admin/categories')} className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400">
+                <button onClick={() => navigate('/admin/categories')} className="p-1 rounded-md hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400">
                   <Edit size={14} />
                 </button>
-                <button onClick={() => handleDelete('category', category.id)} className="p-1 rounded hover:bg-surface-100 text-red-500">
+                <button onClick={() => handleDelete('category', category.id)} className="p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500">
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -330,11 +337,11 @@ export const AdminManage = () => {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Button onClick={() => navigate('/admin/plans')}><Plus size={18} /> Novo Plano</Button>
+          <Button className="rounded-xl font-semibold" onClick={() => navigate('/admin/plans')}><Plus size={18} /> Novo Plano</Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((plan) => (
-            <Card key={plan.id} className={`p-4 ${plan.isPopular ? 'ring-2 ring-primary-500' : ''}`}>
+            <Card key={plan.id} className={`!rounded-2xl !border-surface-100 shadow-card p-4 ${plan.isPopular ? 'ring-2 ring-primary-500' : ''}`}>
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-4 h-4 rounded-full" style={{ backgroundColor: plan.color }} />
                 <h3 className="font-semibold text-surface-900 dark:text-surface-100">{plan.name}</h3>
@@ -343,10 +350,10 @@ export const AdminManage = () => {
                 {plan.courseRestrictions?.length === 0 ? 'Acesso livre' : `${plan.courseRestrictions?.length} cursos restritos`}
               </p>
               <div className="flex gap-1 mt-3">
-                <button onClick={() => navigate('/admin/plans')} className="p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400">
+                <button onClick={() => navigate('/admin/plans')} className="p-1 rounded-md hover:bg-surface-100 dark:hover:bg-surface-800 text-surface-500 dark:text-surface-400">
                   <Edit size={14} />
                 </button>
-                <button onClick={() => handleDelete('plan', plan.id)} className="p-1 rounded hover:bg-surface-100 text-red-500">
+                <button onClick={() => handleDelete('plan', plan.id)} className="p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500">
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -359,17 +366,17 @@ export const AdminManage = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-4">
-          <div className="flex items-center gap-4 overflow-x-auto">
+          <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-surface-100 dark:bg-surface-700/50 overflow-x-auto max-w-full">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                    : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'
+                    ? 'bg-white dark:bg-surface-800 text-primary-600 dark:text-primary-400 shadow-card'
+                    : 'text-surface-500 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100'
                 }`}
               >
                 <tab.icon size={18} />
@@ -383,14 +390,14 @@ export const AdminManage = () => {
       <div className="container-app py-6">
         {activeTab !== 'dashboard' && (
           <div className="mb-4">
-            <div className="relative max-w-md">
+            <div className="relative max-w-md bg-white dark:bg-surface-800 border border-surface-100 dark:border-surface-700 rounded-xl">
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
               <input
                 type="text"
                 placeholder="Buscar..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-transparent text-surface-900 dark:text-surface-100"
               />
             </div>
           </div>

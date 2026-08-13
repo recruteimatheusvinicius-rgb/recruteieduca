@@ -5,7 +5,6 @@ import { useAuthStore } from '../../stores/authStore';
 import { useFavoritesStore } from '../../stores/favoritesStore';
 import { progressService } from '../../hooks/useProgress';
 import { Card } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { toast } from 'sonner';
 import { Play, User, BookOpen, Clock, Star, CheckCircle, ArrowLeft, Share2, Heart, ChevronDown } from 'lucide-react';
@@ -112,20 +111,13 @@ export const CourseDetail = () => {
     navigate(`/lesson/${targetLessonId}`);
   };
 
-  const categoryColors: Record<string, 'primary' | 'success' | 'warning' | 'info'> = {
-    'Programação': 'primary',
-    'Design': 'info',
-    'Marketing': 'warning',
-    'Negócios': 'success',
-  };
-
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-gradient-to-b from-surface-100 to-surface-50 dark:from-surface-800 dark:to-surface-900 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-gradient-to-br from-primary-500 via-violet-600 to-violet-500 text-white">
         <div className="container-app py-6">
-          <Link 
-            to="/" 
-            className="inline-flex items-center gap-2 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 mb-4 transition-colors"
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4 transition-colors"
           >
             <ArrowLeft size={18} />
             <span className="text-sm font-medium">Voltar</span>
@@ -134,30 +126,30 @@ export const CourseDetail = () => {
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
-                <Badge variant={categoryColors[course.category] || 'primary'}>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-primary-700">
                   {course.category}
-                </Badge>
+                </span>
                 {course.rating && (
                   <div className="flex items-center gap-1 text-sm">
-                    <Star size={16} className="text-amber-400 fill-amber-400" />
-                    <span className="font-medium text-surface-900 dark:text-surface-100">{course.rating.toFixed(1)}</span>
-                    <span className="text-surface-500 dark:text-surface-300">({course.enrolled || 0} alunos)</span>
+                    <Star size={16} className="text-amber-300 fill-amber-300" />
+                    <span className="font-medium text-white">{course.rating.toFixed(1)}</span>
+                    <span className="text-white/70">({course.enrolled || 0} alunos)</span>
                   </div>
                 )}
               </div>
-              
-              <h1 className="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 {course.title}
               </h1>
-              
-              <div className="prose dark:prose-invert max-w-2xl mb-6">
-                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(course.description) }} className="dark:text-surface-200" />
+
+              <div className="prose prose-invert max-w-2xl mb-6">
+                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(course.description) }} className="text-white/80" />
               </div>
 
-              <div className="flex flex-wrap items-center gap-6 text-sm text-surface-600 dark:text-surface-300 mb-6">
+              <div className="flex flex-wrap items-center gap-6 text-sm text-white/80 mb-6">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-                    <User size={16} className="text-primary-600 dark:text-primary-400" />
+                  <div className="w-8 h-8 bg-white/15 rounded-full flex items-center justify-center">
+                    <User size={16} className="text-white" />
                   </div>
                   <span>{course.instructor}</span>
                 </div>
@@ -174,33 +166,34 @@ export const CourseDetail = () => {
               {isEnrolled && (
                 <div className="mb-4">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden flex-1 max-w-md">
-                      <div 
-                        className={`h-full rounded-full transition-all duration-500 ${progress === 100 ? 'bg-emerald-500' : 'bg-primary-500'}`}
+                    <div className="h-1.5 bg-white/20 rounded-full overflow-hidden flex-1 max-w-md">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${progress === 100 ? 'bg-emerald-400' : 'bg-white'}`}
                         style={{ width: `${progress}%` }}
                       />
                     </div>
-                    <span className="text-sm font-medium text-surface-900 dark:text-surface-100">{progress}%</span>
+                    <span className="text-sm font-medium text-white">{progress}%</span>
                   </div>
-                  <p className="text-xs text-surface-500 dark:text-surface-300">
+                  <p className="text-xs text-white/70">
                     {completedCount} de {allLessons.length} aulas concluídas
                   </p>
                 </div>
               )}
 
               <div className="flex flex-wrap gap-3">
-                <Button onClick={handleContinue} disabled={isLoadingProgress}>
+                <Button onClick={handleContinue} disabled={isLoadingProgress} className="!bg-white !text-primary-600 hover:!bg-primary-50">
                   <Play size={18} className="mr-2" />
                   {progress === 100 ? 'Revisar Curso' : progress > 0 ? 'Continuar' : 'Iniciar Curso'}
                 </Button>
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   onClick={() => id && toggleFavorite(id)}
+                  className="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20"
                 >
                   <Heart size={18} className={isFavorite ? 'fill-red-500 text-red-500' : ''} />
                   {isFavorite ? 'Favoritado' : 'Favoritar'}
                 </Button>
-                <Button variant="secondary">
+                <Button variant="secondary" className="!bg-white/10 !text-white !border-white/20 hover:!bg-white/20">
                   <Share2 size={18} />
                   Compartilhar
                 </Button>
@@ -213,60 +206,67 @@ export const CourseDetail = () => {
       <div className="container-app py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <Card>
+            <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
               <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-4">
                 Grade Curricular
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {course.modules?.map((module) => (
                   <div key={module.id}>
-                    <h3 className="font-medium text-surface-700 dark:text-surface-300 mb-2 text-sm">
+                    <h3 className="font-semibold text-surface-400 dark:text-surface-400 uppercase tracking-wide mb-2 text-xs">
                       {module.title}
                     </h3>
                     <div className="space-y-2">
                       {module.lessons?.map((lesson, index) => {
                         const isCompleted = completedLessonIds.includes(lesson.id);
+                        const isCurrent = expandedLesson === lesson.id;
                         return (
                         <div
                           key={lesson.id}
-                          className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden"
+                          className={`rounded-lg border overflow-hidden transition-colors ${
+                            isCurrent
+                              ? 'border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/10'
+                              : 'border-surface-100 dark:border-surface-700'
+                          }`}
                         >
                           <button
                             onClick={() => setExpandedLesson(expandedLesson === lesson.id ? null : lesson.id)}
                             className="w-full flex items-center gap-4 p-4 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors text-left"
                           >
                             <div className={`
-                              w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
+                              w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
                               ${isCompleted
-                                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
-                                : 'bg-surface-100 dark:bg-surface-700 text-surface-400'
+                                ? 'bg-emerald-500 text-white'
+                                : isCurrent
+                                  ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
+                                  : 'border-2 border-surface-200 dark:border-surface-600 text-surface-400'
                               }
                             `}>
                               {isCompleted ? (
-                                <CheckCircle size={20} />
+                                <CheckCircle size={18} />
                               ) : (
-                                <span className="font-medium">{index + 1}</span>
+                                <span className="text-sm font-medium">{index + 1}</span>
                               )}
                             </div>
-                            
+
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-surface-900 dark:text-surface-100">
+                              <h3 className={`font-medium ${isCurrent ? 'text-primary-600 dark:text-primary-400' : 'text-surface-900 dark:text-surface-100'}`}>
                                 {lesson.title}
                               </h3>
-<p className="text-sm text-surface-500 dark:text-surface-300">
+                              <p className="text-sm text-surface-500 dark:text-surface-400">
                                 {lesson.duration}
                               </p>
                             </div>
-                            
-                            <ChevronDown 
-                              size={20} 
+
+                            <ChevronDown
+                              size={20}
                               className={`text-surface-400 transition-transform ${expandedLesson === lesson.id ? 'rotate-180' : ''}`}
                             />
                           </button>
-                          
+
                           {expandedLesson === lesson.id && (
                             <div className="px-4 pb-4 pt-0 border-t border-surface-100 dark:border-surface-700">
-                              <p className="text-sm text-surface-600 dark:text-surface-300 mt-3 line-clamp-3">
+                              <p className="text-sm text-surface-500 dark:text-surface-400 mt-3 line-clamp-3">
                                 {lesson.content?.substring(0, 200) || 'Conteúdo da aula...'}...
                               </p>
                               <Link to={`/lesson/${lesson.id}`} className="inline-block mt-3">
@@ -286,7 +286,7 @@ export const CourseDetail = () => {
               </div>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
               <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-4">
                 O que você vai aprender
               </h2>
@@ -312,11 +312,11 @@ export const CourseDetail = () => {
           </div>
 
           <div className="space-y-6">
-            <Card>
+            <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
               <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-4">
                 Inclui
               </h3>
-              <ul className="space-y-3 text-sm text-surface-600 dark:text-surface-300">
+              <ul className="space-y-3 text-sm text-surface-500 dark:text-surface-400">
                 <li className="flex items-center gap-3">
                   <BookOpen size={18} className="text-primary-500" />
                   <span>{allLessons.length} aulas</span>
@@ -337,7 +337,7 @@ export const CourseDetail = () => {
             </Card>
 
             {(course.instructorPhoto || course.instructorBio) && (
-              <Card>
+              <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
                 <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-4">
                   Instrutor
                 </h3>
@@ -357,14 +357,14 @@ export const CourseDetail = () => {
                     />
                   ) : null}
                   <div
-                    className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center"
+                    className="w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-full flex items-center justify-center"
                     style={{ display: course.instructorPhoto ? 'none' : 'flex' }}
                   >
-                    <User size={20} className="text-primary-600 dark:text-primary-400" />
+                    <User size={20} className="text-violet-600 dark:text-violet-300" />
                   </div>
                   <div>
                     <p className="font-medium text-surface-900 dark:text-surface-100">{course.instructor}</p>
-                    <p className="text-sm text-surface-500 dark:text-surface-300">Especialista</p>
+                    <p className="text-sm text-surface-500 dark:text-surface-400">Especialista</p>
                   </div>
                 </div>
                 {course.instructorBio && (

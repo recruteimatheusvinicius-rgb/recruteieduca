@@ -144,7 +144,7 @@ export const OnboardingTemplateManagement = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Checklists de Onboarding</h1>
           <p className="text-surface-500 dark:text-surface-300 mt-1">
@@ -159,13 +159,15 @@ export const OnboardingTemplateManagement = () => {
           const isExpanded = expandedTrack === track.value;
 
           return (
-            <Card key={track.value} className="overflow-hidden" padding="none">
+            <Card key={track.value} className="!rounded-2xl !border-surface-100 shadow-card overflow-hidden" padding="none">
               <button
                 onClick={() => setExpandedTrack(isExpanded ? null : track.value)}
                 className="w-full flex items-center justify-between p-5 text-left cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-700/50"
               >
                 <div className="flex items-center gap-3">
-                  <ListChecks size={20} className="text-primary-600 dark:text-primary-400" />
+                  <div className="w-10 h-10 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                    <ListChecks size={20} className="text-violet-600 dark:text-violet-300" />
+                  </div>
                   <div>
                     <p className="font-semibold text-surface-900 dark:text-surface-100">{track.label}</p>
                     <p className="text-sm text-surface-500 dark:text-surface-300">{track.description}</p>
@@ -181,9 +183,9 @@ export const OnboardingTemplateManagement = () => {
               </button>
 
               {isExpanded && (
-                <div className="p-5 border-t border-surface-200 dark:border-surface-700">
+                <div className="p-5 border-t border-surface-100 dark:border-surface-700">
                   {!template ? (
-                    <Button onClick={() => handleCreateTemplate(track.value, `Checklist — ${track.label}`)}>
+                    <Button className="rounded-xl font-semibold" onClick={() => handleCreateTemplate(track.value, `Checklist — ${track.label}`)}>
                       <Plus size={18} />
                       Criar checklist para esta track
                     </Button>
@@ -192,6 +194,7 @@ export const OnboardingTemplateManagement = () => {
                       <div className="flex justify-end">
                         <Button
                           size="sm"
+                          className="rounded-xl font-semibold"
                           onClick={() =>
                             setEditingItem({
                               templateId: template.id,
@@ -218,11 +221,11 @@ export const OnboardingTemplateManagement = () => {
                           return (
                             <div
                               key={item.id}
-                              className="flex items-center justify-between gap-3 p-3 rounded-lg border border-surface-200 dark:border-surface-700"
+                              className="flex items-center justify-between gap-3 p-3 rounded-xl border border-surface-100 dark:border-surface-700"
                             >
                               <div className="flex items-center gap-3 min-w-0">
-                                <div className="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
-                                  <Icon size={16} className="text-primary-600 dark:text-primary-400" />
+                                <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                                  <Icon size={16} className="text-violet-600 dark:text-violet-300" />
                                 </div>
                                 <div className="min-w-0">
                                   <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
@@ -246,13 +249,13 @@ export const OnboardingTemplateManagement = () => {
                               <div className="flex items-center gap-1 flex-shrink-0">
                                 <button
                                   onClick={() => setEditingItem({ templateId: template.id, item })}
-                                  className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer"
+                                  className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 cursor-pointer"
                                 >
                                   <Edit size={16} />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteItem(item.id)}
-                                  className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer"
+                                  className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 cursor-pointer"
                                 >
                                   <Trash2 size={16} />
                                 </button>
@@ -291,7 +294,7 @@ export const OnboardingTemplateManagement = () => {
                 type="text"
                 value={editingItem.item.title}
                 onChange={(e) => setEditingItem({ ...editingItem, item: { ...editingItem.item, title: e.target.value } })}
-                className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                 placeholder="Ex: Configurar pipeline de vagas"
               />
             </div>
@@ -302,7 +305,7 @@ export const OnboardingTemplateManagement = () => {
                 rows={2}
                 value={editingItem.item.description ?? ''}
                 onChange={(e) => setEditingItem({ ...editingItem, item: { ...editingItem.item, description: e.target.value } })}
-                className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 resize-none"
+                className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 resize-none"
               />
             </div>
 
@@ -317,7 +320,7 @@ export const OnboardingTemplateManagement = () => {
                       item: { ...editingItem.item, itemType: e.target.value as ChecklistItemType },
                     })
                   }
-                  className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                  className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                 >
                   {Object.entries(ITEM_TYPE_META).map(([value, meta]) => (
                     <option key={value} value={value}>{meta.label}</option>
@@ -334,7 +337,7 @@ export const OnboardingTemplateManagement = () => {
                       item: { ...editingItem.item, scope: e.target.value as ChecklistItemScope },
                     })
                   }
-                  className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                  className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                 >
                   <option value="company">Qualquer usuário da empresa</option>
                   <option value="user">Cada usuário individualmente</option>
@@ -353,7 +356,7 @@ export const OnboardingTemplateManagement = () => {
                       item: { ...editingItem.item, courseId: e.target.value || undefined, lessonId: undefined },
                     })
                   }
-                  className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 mb-2"
+                  className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 mb-2"
                 >
                   <option value="">Selecione um curso</option>
                   {courses.map((c) => (
@@ -366,7 +369,7 @@ export const OnboardingTemplateManagement = () => {
                     onChange={(e) =>
                       setEditingItem({ ...editingItem, item: { ...editingItem.item, lessonId: e.target.value || undefined } })
                     }
-                    className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                    className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                   >
                     <option value="">Curso inteiro (qualquer aula concluída)</option>
                     {courses

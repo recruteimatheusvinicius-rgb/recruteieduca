@@ -28,7 +28,7 @@ export const FormationManagement = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -39,7 +39,7 @@ export const FormationManagement = () => {
                 Gerencie as formações e trilhas de cursos
               </p>
             </div>
-            <Button onClick={() => navigate('/admin/formations/create')}>
+            <Button className="rounded-xl font-semibold" onClick={() => navigate('/admin/formations/create')}>
               <Plus size={18} />
               Nova Formação
             </Button>
@@ -50,20 +50,20 @@ export const FormationManagement = () => {
       <div className="container-app py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {formations.map((formation) => (
-            <Card key={formation.id} className="overflow-hidden">
+            <Card key={formation.id} className="!rounded-2xl !border-surface-100 shadow-card overflow-hidden">
               <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
-                      {formation.title}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-2">
-                      {getLevelBadge(formation.level)}
-                    </div>
+                  <div className="w-11 h-11 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                    <GraduationCap size={20} className="text-violet-600 dark:text-violet-300" />
                   </div>
+                  {getLevelBadge(formation.level)}
                 </div>
-                
-                <p className="text-sm text-surface-500 dark:text-surface-300 mb-4 line-clamp-2">
+
+                <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mt-3">
+                  {formation.title}
+                </h3>
+
+                <p className="text-sm text-surface-500 dark:text-surface-300 mt-1 mb-4 line-clamp-2">
                   {formation.description}
                 </p>
 
@@ -79,14 +79,14 @@ export const FormationManagement = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1" onClick={() => navigate(`/admin/formations/${formation.id}`)}>
+                  <Button variant="secondary" size="sm" className="flex-1 rounded-xl" onClick={() => navigate(`/admin/formations/${formation.id}`)}>
                     <Edit2 size={16} />
                     Editar
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20"
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-xl !text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20"
                     onClick={() => {
                       confirm({
                         title: 'Excluir formação',

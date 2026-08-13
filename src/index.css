@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
 
@@ -7,8 +7,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-heading: 'Outfit', system-ui, sans-serif;
+  --font-sans: 'Montserrat', system-ui, sans-serif;
+  --font-heading: 'Montserrat', system-ui, sans-serif;
 
   --color-primary-50: #f6f8fe;
   --color-primary-100: #ecf0fc;
@@ -21,17 +21,28 @@
   --color-primary-800: #243a7c;
   --color-primary-900: #1a2a5a;
 
-  --color-surface-50: #f3f6f7;
-  --color-surface-100: #e7eaeb;
-  --color-surface-200: #cfd3d6;
-  --color-surface-300: #b7bcc1;
-  --color-surface-400: #7d859b;
-  --color-surface-500: #5a6373;
-  --color-surface-600: #464d5a;
-  --color-surface-700: #333b47;
-  --color-surface-800: #1f2530;
-  --color-surface-900: #041a47;
-  --color-surface-950: #021229;
+  --color-violet-50: #f9f7fd;
+  --color-violet-100: #f4f1fb;
+  --color-violet-200: #e8e2f6;
+  --color-violet-300: #d3c9ee;
+  --color-violet-400: #a89bde;
+  --color-violet-500: #8173d5;
+  --color-violet-600: #6a5acd;
+  --color-violet-700: #55469f;
+  --color-violet-800: #3f3477;
+  --color-violet-900: #2a2350;
+
+  --color-surface-50: #f6f7fb;
+  --color-surface-100: #e7e8ef;
+  --color-surface-200: #dcdde7;
+  --color-surface-300: #c3c4d6;
+  --color-surface-400: #a5a6bc;
+  --color-surface-500: #5a5b78;
+  --color-surface-600: #464a5e;
+  --color-surface-700: #333647;
+  --color-surface-800: #1c1d3a;
+  --color-surface-900: #0f1030;
+  --color-surface-950: #08081d;
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -65,25 +76,25 @@
 
 :root {
   --color-primary: #4169e1;
-  --color-primary-hover: #3759bf;
-  --color-surface: #f3f6f7;
-  --color-surface-dark: #041a47;
-  --color-text: #041a47;
-  --color-text-muted: #7d859b;
-  --color-border: #cfd3d6;
+  --color-primary-hover: #2e4fbd;
+  --color-surface: #f6f7fb;
+  --color-surface-dark: #0f1030;
+  --color-text: #0f1030;
+  --color-text-muted: #5a5b78;
+  --color-border: #e7e8ef;
 }
 
 :root.light {
   --color-primary: #4169e1;
-  --color-primary-hover: #3759bf;
-  --color-surface: #ebf6f8;
-  --color-surface-dark: #081b44;
-  --color-text: #32394d;
-  --color-text-muted: #6a7080;
-  --color-border: #cfd3d6;
-  --color-accent: #7a96ea;
+  --color-primary-hover: #2e4fbd;
+  --color-surface: #f6f7fb;
+  --color-surface-dark: #0f1030;
+  --color-text: #0f1030;
+  --color-text-muted: #5a5b78;
+  --color-border: #e7e8ef;
+  --color-accent: #8173d5;
   --color-primary-light: #7a96ea;
-  --color-text-dark: #07112c;
+  --color-text-dark: #0f1030;
 }
 
 html {

@@ -27,15 +27,15 @@ export const NotificationPanel = () => {
   };
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-80 md:w-96 bg-white dark:bg-surface-800 rounded-xl shadow-xl border border-surface-200 dark:border-surface-700 overflow-hidden z-50">
-      <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-700">
+    <div className="absolute right-0 top-full mt-2 w-80 md:w-96 bg-white dark:bg-surface-800 rounded-xl shadow-hover border border-surface-100 dark:border-surface-700 overflow-hidden z-50">
+      <div className="flex items-center justify-between p-4 border-b border-surface-100 dark:border-surface-700">
         <div className="flex items-center gap-2">
-          <Bell size={18} className="text-surface-600 dark:text-surface-300" />
+          <Bell size={18} className="text-surface-500 dark:text-surface-300" />
           <span className="font-semibold text-surface-900 dark:text-surface-100">
             Notificações
           </span>
           {unreadCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-full">
+            <span className="px-2 py-0.5 text-xs font-semibold bg-violet-100 dark:bg-primary-900 text-violet-700 dark:text-primary-400 rounded-full">
               {unreadCount}
             </span>
           )}
@@ -44,7 +44,7 @@ export const NotificationPanel = () => {
           {unreadCount > 0 && (
             <button
               onClick={markAllAsRead}
-              className="p-1.5 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
+              className="p-1.5 rounded-lg text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
               title="Marcar todas como lidas"
             >
               <Check size={16} />
@@ -52,7 +52,7 @@ export const NotificationPanel = () => {
           )}
           <button
             onClick={closePanel}
-            className="p-1.5 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
+            className="p-1.5 rounded-lg text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
           >
             <X size={16} />
           </button>
@@ -111,7 +111,7 @@ export const NotificationPanel = () => {
                 {notification.link && (
                   <Link
                     to={notification.link}
-                    className="mt-2 ml-8 text-sm text-primary-500 hover:text-primary-600 cursor-pointer"
+                    className="mt-2 ml-8 text-sm font-medium text-primary-600 hover:text-primary-700 cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
                   >
                     Ver mais →

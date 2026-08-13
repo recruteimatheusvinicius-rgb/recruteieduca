@@ -82,13 +82,13 @@ export const ConfirmDialog = ({
         onClick={onClose}
       />
       <div className={`
-        relative bg-white dark:bg-surface-800 rounded-2xl shadow-2xl 
+        relative bg-white dark:bg-surface-800 rounded-2xl shadow-hover border border-surface-100 dark:border-surface-700
         max-w-md w-full mx-4 p-6 transform transition-all
         ring-1 ${styles.ring}
       `}>
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-1 rounded-xl text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer"
           disabled={isLoading}
         >
           <X size={20} />
@@ -103,7 +103,7 @@ export const ConfirmDialog = ({
           </h2>
         </div>
 
-        <p className="text-surface-600 dark:text-surface-300 mb-6">
+        <p className="text-surface-500 dark:text-surface-300 mb-6">
           {message}
         </p>
 
@@ -111,7 +111,7 @@ export const ConfirmDialog = ({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2.5 rounded-lg font-medium bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2.5 rounded-xl font-semibold bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors cursor-pointer disabled:opacity-50"
           >
             {cancelText}
           </button>
@@ -119,7 +119,7 @@ export const ConfirmDialog = ({
             onClick={handleConfirm}
             disabled={isLoading}
             className={`
-              px-4 py-2.5 rounded-lg font-medium text-white 
+              px-4 py-2.5 rounded-xl font-semibold text-white
               transition-all flex items-center gap-2
               ${styles.button}
               disabled:opacity-50 disabled:cursor-not-allowed

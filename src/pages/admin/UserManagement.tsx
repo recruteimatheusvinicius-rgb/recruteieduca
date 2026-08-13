@@ -5,12 +5,13 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
+import { SearchInput } from '../../components/ui/Input';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useDebounce } from '../../hooks/useDebounce';
 import { toast } from 'sonner';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { 
-  Search, Plus, Edit, Trash2, Mail, User as UserIcon, Shield, Calendar, GraduationCap, Send
+  Plus, Edit, Trash2, Mail, User as UserIcon, Shield, Calendar, GraduationCap, Send
 } from 'lucide-react';
 import type { User, Company } from '../../types';
 
@@ -233,18 +234,18 @@ export const UserManagement = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
                 Gerenciamento de Usuários
               </h1>
-              <p className="text-surface-500 dark:text-surface-300 mt-1">
+              <p className="text-surface-500 dark:text-surface-400 mt-1">
                 Gerencie todos os usuários da plataforma
               </p>
             </div>
-            <Button onClick={() => setIsInviteModalOpen(true)}>
+            <Button onClick={() => setIsInviteModalOpen(true)} className="rounded-xl font-semibold">
               <Plus size={18} />
               Convidar Usuário
             </Button>
@@ -255,38 +256,43 @@ export const UserManagement = () => {
       <div className="container-app py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => (
-            <Card key={index} className="p-4">
+            <Card key={index} className="p-5 rounded-2xl shadow-card hover:shadow-hover transition-shadow">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                  <stat.icon size={20} className="text-primary-600 dark:text-primary-400" />
+                <div
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                    index % 2 === 0
+                      ? 'bg-primary-50 dark:bg-primary-900/30'
+                      : 'bg-violet-100 dark:bg-violet-900/30'
+                  }`}
+                >
+                  <stat.icon
+                    size={20}
+                    className={index % 2 === 0 ? 'text-primary-600 dark:text-primary-400' : 'text-violet-600 dark:text-violet-300'}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{stat.value}</p>
-                  <p className="text-sm text-surface-500 dark:text-surface-300">{stat.label}</p>
+                  <p className="text-sm text-surface-500 dark:text-surface-400">{stat.label}</p>
                 </div>
               </div>
             </Card>
           ))}
         </div>
 
-        <Card className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar usuários..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-                />
-              </div>
+        <Card className="rounded-2xl overflow-hidden" padding="none">
+          <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+              <SearchInput
+                placeholder="Buscar usuários..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="rounded-xl border-surface-100 dark:border-surface-700 md:w-64"
+              />
               <div className="flex gap-2">
                 <select
                   value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value)}
-                  className="px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100"
+                  className="px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 >
                   <option value="all">Todos os papéis</option>
                   <option value="student">Estudante</option>
@@ -295,7 +301,7 @@ export const UserManagement = () => {
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100"
+                  className="px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 >
                   <option value="all">Todos os status</option>
                   <option value="active">Ativo</option>
@@ -305,51 +311,51 @@ export const UserManagement = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-b-2xl">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-surface-200 dark:border-surface-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Usuário</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Empresa</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Papel</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Criado em</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Ações</th>
+                <tr className="bg-surface-50 dark:bg-surface-900/40">
+                  <th className="text-left py-3 px-6 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Usuário</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Empresa</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Papel</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Status</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Criado em</th>
+                  <th className="text-right py-3 px-6 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-b border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50">
-                    <td className="py-3 px-4">
+                  <tr key={user.id} className="border-t border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50">
+                    <td className="py-3.5 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                          <UserIcon size={18} className="text-primary-600 dark:text-primary-400" />
+                        <div className="w-10 h-10 bg-violet-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                          <UserIcon size={18} className="text-violet-600 dark:text-primary-400" />
                         </div>
                         <div>
                           <p className="font-medium text-surface-900 dark:text-surface-100">{user.name}</p>
-                          <p className="text-sm text-surface-500 dark:text-surface-300">{user.email}</p>
+                          <p className="text-sm text-surface-500 dark:text-surface-400">{user.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <span className="text-surface-900 dark:text-surface-100">
                         {user.company_id ? companyNames[user.company_id] || user.company_id : '-'}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <Badge variant={user.role === 'admin' ? 'warning' : 'primary'}>
                         {user.role === 'admin' ? 'Admin' : 'Estudante'}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-4">
                       <Badge variant={user.status === 'active' ? 'success' : 'secondary'}>
                         {user.status === 'active' ? 'Ativo' : 'Inativo'}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4 text-surface-600 dark:text-surface-300">
+                    <td className="py-3.5 px-4 text-surface-600 dark:text-surface-300">
                       {user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : '-'}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-3.5 px-6">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => {
@@ -357,21 +363,21 @@ export const UserManagement = () => {
                           }}
                           disabled={!user.email}
                           aria-label="Enviar e-mail"
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                           title={user.email ? `Enviar e-mail para ${user.email}` : 'Este usuário não tem e-mail cadastrado'}
                         >
                           <Mail size={16} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => openModal(user)}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer" 
+                          className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer"
                           title="Editar"
                         >
                           <Edit size={16} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDelete(user.id)}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer" 
+                          className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer"
                           title="Excluir"
                         >
                           <Trash2 size={16} />
@@ -409,7 +415,7 @@ export const UserManagement = () => {
                 value={inviteFormData.email}
                 onChange={(e) => setInviteFormData({ ...inviteFormData, email: e.target.value })}
                 placeholder="usuario@empresa.com"
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 required
               />
             </div>
@@ -421,7 +427,7 @@ export const UserManagement = () => {
               <select
                 value={inviteFormData.company_id}
                 onChange={(e) => setInviteFormData({ ...inviteFormData, company_id: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 required
               >
                 <option value="">Selecione uma empresa</option>
@@ -440,21 +446,21 @@ export const UserManagement = () => {
               <select
                 value={inviteFormData.role}
                 onChange={(e) => setInviteFormData({ ...inviteFormData, role: e.target.value as 'student' | 'admin' })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
               >
                 <option value="student">Estudante</option>
                 <option value="admin">Administrador</option>
               </select>
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+            <div className="bg-violet-100 dark:bg-violet-900/20 p-4 rounded-xl">
               <div className="flex items-start gap-3">
-                <Mail size={18} className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                <Mail size={18} className="text-violet-600 dark:text-violet-300 mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
-                  <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                  <p className="font-medium text-violet-900 dark:text-violet-100 mb-1">
                     Como funciona o convite?
                   </p>
-                  <p className="text-blue-700 dark:text-blue-300">
+                  <p className="text-violet-700 dark:text-violet-200">
                     Um link de convite será gerado e enviado por e-mail. O usuário poderá clicar no link para definir sua senha e nome, criando assim sua conta.
                   </p>
                 </div>
@@ -490,7 +496,7 @@ export const UserManagement = () => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 readOnly={isViewOnly}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 read-only:bg-surface-50 dark:read-only:bg-surface-900 read-only:cursor-default"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 read-only:bg-surface-50 dark:read-only:bg-surface-900 read-only:cursor-default focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 required
               />
             </div>
@@ -504,7 +510,7 @@ export const UserManagement = () => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 readOnly={isViewOnly}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 read-only:bg-surface-50 dark:read-only:bg-surface-900 read-only:cursor-default"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 read-only:bg-surface-50 dark:read-only:bg-surface-900 read-only:cursor-default focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 required
               />
             </div>
@@ -518,7 +524,7 @@ export const UserManagement = () => {
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as 'student' | 'admin' })}
                   disabled={isViewOnly}
-                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 disabled:bg-surface-50 dark:disabled:bg-surface-900 disabled:cursor-default"
+                  className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 disabled:bg-surface-50 dark:disabled:bg-surface-900 disabled:cursor-default focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 >
                   <option value="student">Estudante</option>
                   <option value="admin">Administrador</option>
@@ -532,7 +538,7 @@ export const UserManagement = () => {
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as 'active' | 'inactive' })}
                   disabled={isViewOnly}
-                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 disabled:bg-surface-50 dark:disabled:bg-surface-900 disabled:cursor-default"
+                  className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 disabled:bg-surface-50 dark:disabled:bg-surface-900 disabled:cursor-default focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 >
                   <option value="active">Ativo</option>
                   <option value="inactive">Inativo</option>

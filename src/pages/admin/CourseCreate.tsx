@@ -483,7 +483,7 @@ export const CourseCreate = () => {
             type="text"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+            className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
             placeholder="Ex: Introdução ao React"
             required
           />
@@ -498,11 +498,11 @@ export const CourseCreate = () => {
               type="url"
               value={formData.thumbnail || ''}
               onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-              className="flex-1 px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
               placeholder="https://exemplo.com/imagem-curso.jpg"
             />
             {formData.thumbnail ? (
-              <div className="w-40 h-24 rounded-lg overflow-hidden border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 flex-shrink-0">
+              <div className="w-40 h-24 rounded-xl overflow-hidden border border-surface-100 dark:border-surface-700 bg-surface-100 dark:bg-surface-800 flex-shrink-0">
                 <img
                   src={formData.thumbnail}
                   alt="Pré-visualização da capa"
@@ -511,7 +511,7 @@ export const CourseCreate = () => {
                 />
               </div>
             ) : (
-              <div className="w-40 h-24 rounded-lg border-2 border-dashed border-surface-200 dark:border-surface-700 flex items-center justify-center text-xs text-surface-400 flex-shrink-0">
+              <div className="w-40 h-24 rounded-xl border-2 border-dashed border-surface-100 dark:border-surface-700 flex items-center justify-center text-xs text-surface-400 flex-shrink-0">
                 Sem capa
               </div>
             )}
@@ -538,7 +538,7 @@ export const CourseCreate = () => {
           <select
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+            className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
             required
           >
             <option value="">Selecione uma categoria</option>
@@ -553,17 +553,17 @@ export const CourseCreate = () => {
             Instrutor
           </label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center gap-4 p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
+            <div className="flex items-center gap-4 p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
               <div className="relative">
                 {formData.instructorPhoto ? (
-                  <img 
-                    src={formData.instructorPhoto} 
+                  <img
+                    src={formData.instructorPhoto}
                     alt={formData.instructor}
                     className="w-16 h-16 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-                    <User size={24} className="text-primary-600 dark:text-primary-400" />
+                  <div className="w-16 h-16 rounded-full bg-violet-100 dark:bg-primary-900 flex items-center justify-center">
+                    <User size={24} className="text-violet-600 dark:text-primary-400" />
                   </div>
                 )}
               </div>
@@ -572,13 +572,13 @@ export const CourseCreate = () => {
                   type="text"
                   value={formData.instructor}
                   onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                  className="w-full px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                   placeholder="Nome do instrutor"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs text-surface-500 dark:text-surface-300 mb-1">
+              <label className="block text-xs text-surface-500 dark:text-surface-400 mb-1">
                 URL da Foto
               </label>
               <div className="relative">
@@ -587,7 +587,7 @@ export const CourseCreate = () => {
                   type="text"
                   value={formData.instructorPhoto || ''}
                   onChange={(e) => setFormData({ ...formData, instructorPhoto: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
+                  className="w-full pl-10 pr-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                   placeholder="https://exemplo.com/foto.jpg"
                 />
               </div>
@@ -611,7 +611,7 @@ export const CourseCreate = () => {
           <select
             value={formData.level}
             onChange={(e) => setFormData({ ...formData, level: e.target.value as CourseLevel })}
-            className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+            className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
           >
             {levels.map((level) => (
               <option key={level} value={level}>
@@ -628,7 +628,7 @@ export const CourseCreate = () => {
           <select
             value={formData.status}
             onChange={(e) => setFormData({ ...formData, status: e.target.value as CourseStatus })}
-            className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+            className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
           >
             <option value="draft">Rascunho</option>
             <option value="published">Publicado</option>
@@ -645,10 +645,10 @@ export const CourseCreate = () => {
           {plans.map(plan => (
             <label
               key={plan.id}
-              className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${
+              className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-colors ${
                 formData.restrictedPlans.includes(plan.id)
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                  : 'border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
+                  : 'border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
               }`}
             >
               <input
@@ -659,7 +659,7 @@ export const CourseCreate = () => {
               />
               <div>
                 <p className="font-medium text-surface-900 dark:text-surface-100">{plan.name}</p>
-                <p className="text-xs text-surface-500 dark:text-surface-300">
+                <p className="text-xs text-surface-500 dark:text-surface-400">
                   {plan.features.length} funcionalidades
                 </p>
               </div>
@@ -681,19 +681,19 @@ export const CourseCreate = () => {
         <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
           Módulos e Aulas
         </h3>
-        <Button variant="secondary" onClick={addModule}>
+        <Button variant="secondary" onClick={addModule} className="rounded-xl font-semibold">
           <Plus size={18} />
           Adicionar Módulo
         </Button>
       </div>
 
       {formData.modules.length === 0 && (
-        <div className="text-center py-12 bg-surface-50 dark:bg-surface-800 rounded-xl border-2 border-dashed border-surface-200 dark:border-surface-700">
+        <div className="text-center py-12 bg-surface-50 dark:bg-surface-800 rounded-2xl border-2 border-dashed border-surface-100 dark:border-surface-700">
           <ListChecks size={40} className="mx-auto text-surface-300 dark:text-surface-600 mb-4" />
           <p className="text-surface-500 dark:text-surface-300 mb-4">
             Nenhum módulo criado ainda
           </p>
-          <Button variant="secondary" onClick={addModule}>
+          <Button variant="secondary" onClick={addModule} className="rounded-xl font-semibold">
             <Plus size={18} />
             Adicionar Primeiro Módulo
           </Button>
@@ -702,8 +702,8 @@ export const CourseCreate = () => {
 
       <div className="space-y-6">
         {formData.modules.map((module, moduleIndex) => (
-          <Card key={module.id} className="overflow-hidden">
-            <div className="bg-surface-50 dark:bg-surface-800 p-4 border-b border-surface-200 dark:border-surface-700">
+          <Card key={module.id} className="overflow-hidden rounded-2xl">
+            <div className="bg-surface-50 dark:bg-surface-800 p-4 border-b border-surface-100 dark:border-surface-700">
               <div className="flex items-center gap-3">
                 <GripVertical size={20} className="text-surface-400 cursor-grab" />
                 <div className="flex-1">
@@ -721,13 +721,13 @@ export const CourseCreate = () => {
                     />
                   </div>
                 </div>
-                <span className="text-sm text-surface-500 dark:text-surface-300">
+                <span className="text-sm text-surface-500 dark:text-surface-400 shrink-0">
                   {module.lessons.length} aulas
                 </span>
                 <button
                   onClick={() => removeModule(module.id)}
                   aria-label="Remover módulo"
-                  className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
+                  className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -740,10 +740,10 @@ export const CourseCreate = () => {
                 const TypeIcon = typeInfo.icon;
 
                 return (
-                  <div key={lesson.id} className="border border-surface-200 dark:border-surface-700 rounded-lg overflow-hidden">
+                  <div key={lesson.id} className="border border-surface-100 dark:border-surface-700 rounded-xl overflow-hidden">
                     <div className="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800">
-                      <div 
-                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                      <div
+                        className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
                         style={{ backgroundColor: typeInfo.color + '20', color: typeInfo.color }}
                       >
                         <TypeIcon size={16} />
@@ -759,12 +759,12 @@ export const CourseCreate = () => {
                         type="text"
                         value={lesson.duration}
                         onChange={(e) => updateLesson(module.id, lesson.id, { duration: e.target.value })}
-                        className="w-20 bg-transparent border-none text-sm text-surface-500 dark:text-surface-300 text-center focus:outline-none focus:ring-0"
+                        className="w-20 bg-transparent border-none text-sm text-surface-500 dark:text-surface-400 text-center focus:outline-none focus:ring-0"
                         placeholder="5min"
                       />
                       <button
                         onClick={() => removeLesson(module.id, lesson.id)}
-                        className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -781,7 +781,7 @@ export const CourseCreate = () => {
                               type="text"
                               value={lesson.videoUrl}
                               onChange={(e) => updateLesson(module.id, lesson.id, { videoUrl: e.target.value })}
-                              className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                              className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                               placeholder="https://www.youtube.com/watch?v=… ou https://vimeo.com/…"
                             />
                           </div>
@@ -813,7 +813,7 @@ export const CourseCreate = () => {
                             </Button>
                           </div>
                           {(lesson.questions || []).map((q, qIndex) => (
-                            <div key={q.id} className="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg space-y-3">
+                            <div key={q.id} className="p-4 bg-surface-50 dark:bg-surface-800 rounded-xl space-y-3">
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-surface-600 dark:text-surface-300">
                                   Questão {qIndex + 1}
@@ -829,7 +829,7 @@ export const CourseCreate = () => {
                                 type="text"
                                 value={q.question}
                                 onChange={(e) => updateQuizQuestion(module.id, lesson.id, q.id, { question: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                                className="w-full px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                                 placeholder="Digite a pergunta..."
                               />
                               <div className="grid grid-cols-2 gap-2">
@@ -850,7 +850,7 @@ export const CourseCreate = () => {
                                         newOptions[optIndex] = e.target.value;
                                         updateQuizQuestion(module.id, lesson.id, q.id, { options: newOptions });
                                       }}
-                                      className="flex-1 px-3 py-1.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
+                                      className="flex-1 px-3 py-1.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
                                       placeholder={`Opção ${optIndex + 1}`}
                                     />
                                   </div>
@@ -860,7 +860,7 @@ export const CourseCreate = () => {
                                 type="text"
                                 value={q.explanation}
                                 onChange={(e) => updateQuizQuestion(module.id, lesson.id, q.id, { explanation: e.target.value })}
-                                className="w-full px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
+                                className="w-full px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
                                 placeholder="Explicação da resposta (opcional)"
                               />
                             </div>
@@ -894,7 +894,7 @@ export const CourseCreate = () => {
                             rows={3}
                             value={lesson.embedCode}
                             onChange={(e) => updateLesson(module.id, lesson.id, { embedCode: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 font-mono text-sm resize-none"
+                            className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 font-mono text-sm resize-none"
                             placeholder="https://docs.google.com/presentation/d/.../embed  ou  &lt;iframe src='...'&gt;&lt;/iframe&gt;"
                           />
                           <p className="text-xs text-surface-500 dark:text-surface-400 mt-1">
@@ -921,7 +921,7 @@ export const CourseCreate = () => {
                                     passingGrade: safeInt(e.target.value, lesson.assessmentConfig?.passingGrade ?? 70)
                                   } as AssessmentConfig
                                 })}
-                                className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                                className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                               />
                             </div>
                             <div>
@@ -938,12 +938,12 @@ export const CourseCreate = () => {
                                     maxAttempts: safeInt(e.target.value, lesson.assessmentConfig?.maxAttempts ?? 3)
                                   } as AssessmentConfig
                                 })}
-                                className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                                className="w-full px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                               />
                             </div>
                           </div>
                           
-                          <div className="border-t border-surface-200 dark:border-surface-700 pt-4">
+                          <div className="border-t border-surface-100 dark:border-surface-700 pt-4">
                             <div className="flex items-center justify-between mb-3">
                               <label className="text-sm font-medium text-surface-700 dark:text-surface-300">
                                 Questões da Avaliação
@@ -958,7 +958,7 @@ export const CourseCreate = () => {
                               </Button>
                             </div>
                             {(lesson.assessmentConfig?.questions || []).map((q, qIndex) => (
-                              <div key={q.id} className="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg space-y-3 mb-3">
+                              <div key={q.id} className="p-4 bg-surface-50 dark:bg-surface-800 rounded-xl space-y-3 mb-3">
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm font-medium text-surface-600 dark:text-surface-300">
                                     Questão {qIndex + 1}
@@ -974,7 +974,7 @@ export const CourseCreate = () => {
                                   type="text"
                                   value={q.question}
                                   onChange={(e) => updateAssessmentQuestion(module.id, lesson.id, q.id, { question: e.target.value })}
-                                  className="w-full px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                                  className="w-full px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                                   placeholder="Digite a pergunta..."
                                 />
                                 <div className="grid grid-cols-2 gap-2">
@@ -995,7 +995,7 @@ export const CourseCreate = () => {
                                           newOptions[optIndex] = e.target.value;
                                           updateAssessmentQuestion(module.id, lesson.id, q.id, { options: newOptions });
                                         }}
-                                        className="flex-1 px-3 py-1.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
+                                        className="flex-1 px-3 py-1.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
                                         placeholder={`Opção ${optIndex + 1}`}
                                       />
                                     </div>
@@ -1005,7 +1005,7 @@ export const CourseCreate = () => {
                                   type="text"
                                   value={q.explanation || ''}
                                   onChange={(e) => updateAssessmentQuestion(module.id, lesson.id, q.id, { explanation: e.target.value })}
-                                  className="w-full px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
+                                  className="w-full px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 text-sm"
                                   placeholder="Explicação da resposta (opcional)"
                                 />
                               </div>
@@ -1025,7 +1025,7 @@ export const CourseCreate = () => {
             </div>
 
             {module.lessons.length === 0 && (
-              <div className="p-4 border-t border-surface-200 dark:border-surface-700">
+              <div className="p-4 border-t border-surface-100 dark:border-surface-700">
                 <p className="text-sm text-surface-500 dark:text-surface-300 mb-3">
                   Adicione aulas a este módulo
                 </p>
@@ -1037,7 +1037,7 @@ export const CourseCreate = () => {
                       <button
                         key={type}
                         onClick={() => addLesson(module.id, type)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
                         style={{ color: info.color }}
                       >
                         <TypeIcon size={16} />
@@ -1050,7 +1050,7 @@ export const CourseCreate = () => {
             )}
 
             {module.lessons.length > 0 && (
-              <div className="p-4 border-t border-surface-200 dark:border-surface-700">
+              <div className="p-4 border-t border-surface-100 dark:border-surface-700">
                 <p className="text-sm text-surface-500 dark:text-surface-300 mb-3">
                   Adicionar mais aulas
                 </p>
@@ -1062,7 +1062,7 @@ export const CourseCreate = () => {
                       <button
                         key={type}
                         onClick={() => addLesson(module.id, type)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
                         style={{ color: info.color }}
                       >
                         <TypeIcon size={16} />
@@ -1093,7 +1093,7 @@ export const CourseCreate = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 p-4 bg-surface-50 dark:bg-surface-800 rounded-xl border-2 border-dashed border-surface-200 dark:border-surface-700">
+      <div className="flex items-center gap-3 p-4 bg-surface-50 dark:bg-surface-800 rounded-xl border-2 border-dashed border-surface-100 dark:border-surface-700">
         <input
           type="checkbox"
           id="enableCert"
@@ -1113,7 +1113,7 @@ export const CourseCreate = () => {
 
       {formData.certificateConfig.enableCertificate && (
         <div className="space-y-4 pl-4">
-          <div className="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-xl">
             <input
               type="checkbox"
               id="requireCompletion"
@@ -1134,7 +1134,7 @@ export const CourseCreate = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-xl">
             <input
               type="checkbox"
               id="requirePassingGrade"
@@ -1166,7 +1166,7 @@ export const CourseCreate = () => {
                   ...formData,
                   certificateConfig: { ...formData.certificateConfig, passingGrade: safeInt(e.target.value, formData.certificateConfig.passingGrade ?? 70) },
                 })}
-                className="w-32 px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-32 px-4 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
               />
               <p className="text-sm text-surface-500 dark:text-surface-300 mt-1">
                 O aluno precisa atingir esta nota na avaliação para receber o certificado
@@ -1175,7 +1175,7 @@ export const CourseCreate = () => {
           )}
 
           {/* HTML personalizado do certificado */}
-          <div className="p-4 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <div className="p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
             <label className="block text-sm font-semibold text-surface-900 dark:text-surface-100 mb-1">
               Template HTML personalizado <span className="text-surface-500 dark:text-surface-400 font-normal">(opcional)</span>
             </label>
@@ -1207,7 +1207,7 @@ export const CourseCreate = () => {
                 ...formData,
                 certificateConfig: { ...formData.certificateConfig, customHtml: e.target.value },
               })}
-              className="w-full px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 font-mono text-xs resize-y"
+              className="w-full px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 font-mono text-xs resize-y"
               placeholder={`<!doctype html>
 <html>
   <head><meta charset="utf-8"><title>Certificado</title></head>
@@ -1260,7 +1260,7 @@ export const CourseCreate = () => {
         </div>
       )}
 
-      <Card className="p-6 bg-surface-50 dark:bg-surface-800">
+      <Card className="p-6 rounded-2xl bg-surface-50 dark:bg-surface-800">
         <h4 className="font-semibold text-surface-900 dark:text-surface-100 mb-4">
           Resumo da Configuração
         </h4>
@@ -1306,14 +1306,14 @@ export const CourseCreate = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => confirmExit(() => navigate('/admin/courses'))}
                 aria-label="Voltar"
-                className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
+                className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer"
               >
                 <ArrowLeft size={20} />
               </button>
@@ -1321,37 +1321,33 @@ export const CourseCreate = () => {
                 <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
                   {isEditing ? 'Editar Curso' : 'Criar Novo Curso'}
                 </h1>
-                <p className="text-sm text-surface-500 dark:text-surface-300">
+                <p className="text-sm text-surface-500 dark:text-surface-400">
                   Etapa {currentStep} de 3
                 </p>
               </div>
             </div>
-            <Button onClick={handleSave} disabled={isLoading}>
+            <Button onClick={handleSave} disabled={isLoading} className="rounded-xl font-semibold">
               <Save size={18} />
               {isLoading ? 'Salvando...' : 'Salvar Curso'}
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 mt-4">
-            {steps.map((step, index) => (
-              <div key={step.num} className="flex items-center">
-                <button
-                  onClick={() => setCurrentStep(step.num)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                    currentStep === step.num
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                      : currentStep > step.num
-                      ? 'text-green-600'
-                      : 'text-surface-500 dark:text-surface-300'
-                  }`}
-                >
-                  {currentStep > step.num ? <Check size={18} /> : <step.icon size={18} />}
-                  <span className="hidden md:inline">{step.label}</span>
-                </button>
-                {index < steps.length - 1 && (
-                  <div className="w-8 h-px bg-surface-200 dark:bg-surface-700 mx-1" />
-                )}
-              </div>
+          <div className="flex items-center gap-1 mt-4 p-1 bg-surface-100 dark:bg-surface-900/40 rounded-xl w-fit">
+            {steps.map((step) => (
+              <button
+                key={step.num}
+                onClick={() => setCurrentStep(step.num)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                  currentStep === step.num
+                    ? 'bg-white dark:bg-surface-800 text-primary-600 dark:text-primary-400 shadow-card'
+                    : currentStep > step.num
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-surface-500 dark:text-surface-400'
+                }`}
+              >
+                {currentStep > step.num ? <Check size={18} /> : <step.icon size={18} />}
+                <span className="hidden md:inline">{step.label}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -1362,14 +1358,14 @@ export const CourseCreate = () => {
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}
 
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
-          <Button variant="secondary" onClick={handlePrev} disabled={currentStep === 1}>
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-surface-100 dark:border-surface-700">
+          <Button variant="secondary" onClick={handlePrev} disabled={currentStep === 1} className="rounded-xl font-semibold">
             <ArrowLeft size={18} />
             Anterior
           </Button>
-          
+
           {currentStep < 3 ? (
-            <Button onClick={handleNext}>
+            <Button onClick={handleNext} className="rounded-xl font-semibold">
               Próximo
               <ArrowRight size={18} />
             </Button>

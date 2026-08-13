@@ -63,9 +63,11 @@ export const OnboardingChecklist = () => {
   if (!user?.company_id) {
     return (
       <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center p-6">
-        <Card className="p-8 max-w-md text-center">
-          <ListChecks size={40} className="text-surface-300 mx-auto mb-4" />
-          <p className="text-surface-500 dark:text-surface-300">
+        <Card className="p-8 max-w-md text-center rounded-2xl border-surface-100 dark:border-surface-700">
+          <div className="w-16 h-16 bg-violet-100 dark:bg-violet-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <ListChecks size={28} className="text-violet-500 dark:text-violet-300" />
+          </div>
+          <p className="text-surface-500 dark:text-surface-400">
             Sua conta não está vinculada a uma empresa, então não há um checklist de onboarding disponível.
           </p>
         </Card>
@@ -76,9 +78,11 @@ export const OnboardingChecklist = () => {
   if (!track || items.length === 0) {
     return (
       <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center p-6">
-        <Card className="p-8 max-w-md text-center">
-          <ListChecks size={40} className="text-surface-300 mx-auto mb-4" />
-          <p className="text-surface-500 dark:text-surface-300">
+        <Card className="p-8 max-w-md text-center rounded-2xl border-surface-100 dark:border-surface-700">
+          <div className="w-16 h-16 bg-violet-100 dark:bg-violet-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <ListChecks size={28} className="text-violet-500 dark:text-violet-300" />
+          </div>
+          <p className="text-surface-500 dark:text-surface-400">
             Ainda não há um checklist de implantação configurado para sua conta. Fale com o seu consultor Recrutei.
           </p>
         </Card>
@@ -101,13 +105,13 @@ export const OnboardingChecklist = () => {
       </div>
 
       <div className="container-app py-6">
-        <Card className="p-6 max-w-2xl mx-auto">
+        <Card className="p-6 max-w-2xl mx-auto rounded-2xl border-surface-100 dark:border-surface-700">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-surface-700 dark:text-surface-300">Progresso geral</span>
+            <span className="text-sm font-medium text-surface-500 dark:text-surface-400">Progresso geral</span>
             <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">{progressPct}%</span>
           </div>
-          <div className="h-2 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden mb-6">
-            <div className="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+          <div className="h-1.5 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden mb-6">
+            <div className="h-full bg-gradient-to-r from-primary-500 to-violet-500 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
           </div>
 
           <div className="space-y-3">
@@ -118,12 +122,12 @@ export const OnboardingChecklist = () => {
 
               const content = (
                 <div
-                  className={`flex items-center gap-4 p-4 rounded-lg border transition-colors ${
+                  className={`flex items-center gap-4 p-4 rounded-xl border transition-colors ${
                     isLocked
-                      ? 'border-surface-200 dark:border-surface-700 opacity-50'
+                      ? 'border-surface-100 dark:border-surface-700 opacity-50'
                       : isDone
                         ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/10'
-                        : 'border-primary-200 dark:border-primary-800 bg-primary-50/30 dark:bg-primary-900/10'
+                        : 'border-primary-200 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/10'
                   }`}
                 >
                   <div
@@ -131,7 +135,7 @@ export const OnboardingChecklist = () => {
                       isDone
                         ? 'bg-emerald-500 text-white'
                         : isLocked
-                          ? 'bg-surface-200 dark:bg-surface-700 text-surface-400'
+                          ? 'border-2 border-surface-200 dark:border-surface-600 text-surface-400'
                           : 'bg-primary-500 text-white'
                     }`}
                   >
@@ -144,11 +148,11 @@ export const OnboardingChecklist = () => {
                       <p className="font-medium text-surface-900 dark:text-surface-100 truncate">{item.title}</p>
                     </div>
                     {item.description && (
-                      <p className="text-sm text-surface-500 dark:text-surface-300 mt-0.5">{item.description}</p>
+                      <p className="text-sm text-surface-500 dark:text-surface-400 mt-0.5">{item.description}</p>
                     )}
                   </div>
 
-                  <Badge variant={isDone ? 'success' : isLocked ? 'secondary' : 'warning'}>
+                  <Badge variant={isDone ? 'success' : isLocked ? 'secondary' : 'warning'} className="rounded-full">
                     {isDone ? 'Concluído' : isLocked ? 'Bloqueado' : 'Pendente'}
                   </Badge>
                 </div>
@@ -174,7 +178,7 @@ export const OnboardingChecklist = () => {
           </div>
 
           {items.some((i) => i.itemType === 'call' && i.status !== 'completed' && !i.isLocked) && (
-            <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex items-start gap-3">
+            <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl flex items-start gap-3">
               <Clock size={18} className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-amber-700 dark:text-amber-300">
                 Etapas de call são confirmadas pelo seu consultor Recrutei após a reunião acontecer.

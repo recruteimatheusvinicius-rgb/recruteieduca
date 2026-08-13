@@ -40,8 +40,8 @@ export const Card = ({ children, className = '', padding = 'md', hover = false, 
         whileHover="hover"
         onClick={onClick}
         className={`
-          bg-white dark:bg-surface-800 
-          rounded-xl border border-surface-200 dark:border-surface-700
+          bg-white dark:bg-surface-800
+          rounded-2xl border border-surface-100 dark:border-surface-700
           cursor-pointer
           ${paddingSizes[padding]}
           ${className}
@@ -54,8 +54,8 @@ export const Card = ({ children, className = '', padding = 'md', hover = false, 
 
   return (
     <div className={`
-      bg-white dark:bg-surface-800 
-      rounded-xl border border-surface-200 dark:border-surface-700
+      bg-white dark:bg-surface-800
+      rounded-2xl border border-surface-100 dark:border-surface-700
       ${paddingSizes[padding]}
       ${className}
     `}>

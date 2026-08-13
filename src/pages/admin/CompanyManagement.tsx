@@ -171,7 +171,7 @@ export const CompanyManagement = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -182,7 +182,7 @@ export const CompanyManagement = () => {
                 Gerencie as empresas cadastradas na plataforma
               </p>
             </div>
-            <Button onClick={() => setIsModalOpen(true)}>
+            <Button className="rounded-xl font-semibold" onClick={() => setIsModalOpen(true)}>
               <Plus size={18} />
               Nova Empresa
             </Button>
@@ -193,10 +193,10 @@ export const CompanyManagement = () => {
       <div className="container-app py-6">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           {stats.map((stat, index) => (
-            <Card key={index} className="p-4">
+            <Card key={index} className="!rounded-2xl !border-surface-100 shadow-card p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                  <stat.icon size={20} className="text-primary-600 dark:text-primary-400" />
+                <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center">
+                  <stat.icon size={20} className="text-violet-600 dark:text-violet-300" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{stat.value}</p>
@@ -207,39 +207,39 @@ export const CompanyManagement = () => {
           ))}
         </div>
 
-        <Card className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div className="relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
-              <input
-                type="text"
-                placeholder="Buscar empresas..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-              />
-            </div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <div className="relative bg-white dark:bg-surface-800 border border-surface-100 dark:border-surface-700 rounded-xl">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
+            <input
+              type="text"
+              placeholder="Buscar empresas..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 rounded-xl bg-transparent text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+            />
           </div>
+        </div>
 
+        <div className="bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 shadow-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-surface-200 dark:border-surface-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Empresa</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Usuários</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Track de Onboarding</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Criada em</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Ações</th>
+                <tr className="bg-surface-50 dark:bg-surface-800/60">
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-400">Empresa</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-400">Usuários</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-400">Status</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-400">Track de Onboarding</th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-400">Criada em</th>
+                  <th className="text-right py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-400">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredCompanies.map((company) => (
-                  <tr key={company.id} className="border-b border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50">
+                  <tr key={company.id} className="border-t border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Building size={18} className="text-primary-600 dark:text-primary-400" />
+                        <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Building size={18} className="text-violet-600 dark:text-violet-300" />
                         </div>
                         <div>
                           <p className="font-medium text-surface-900 dark:text-surface-100">{company.name}</p>
@@ -262,7 +262,7 @@ export const CompanyManagement = () => {
                       <select
                         value={company.onboardingTrack ?? ''}
                         onChange={(e) => handleTrackChange(company.id, e.target.value as OnboardingTrack | '')}
-                        className="px-3 py-1.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 text-sm"
+                        className="px-3 py-1.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 text-sm"
                       >
                         <option value="">Sem track</option>
                         {Object.entries(TRACK_LABELS).map(([value, label]) => (
@@ -270,21 +270,21 @@ export const CompanyManagement = () => {
                         ))}
                       </select>
                     </td>
-                    <td className="py-3 px-4 text-surface-600 dark:text-surface-300">
+                    <td className="py-3 px-4 text-surface-500 dark:text-surface-300">
                       {company.createdAt ? new Date(company.createdAt).toLocaleDateString('pt-BR') : '-'}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-1">
                         <Link
                           to={`/admin/companies/${company.id}/checklist`}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer"
+                          className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer"
                           title="Ver progresso do checklist"
                         >
                           <ListChecks size={16} />
                         </Link>
                         <button
                           onClick={() => handleDelete(company.id)}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer"
+                          className="p-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 cursor-pointer"
                           title="Excluir"
                         >
                           <Trash2 size={16} />
@@ -310,7 +310,7 @@ export const CompanyManagement = () => {
               <p className="text-surface-500 dark:text-surface-300">Carregando...</p>
             </div>
           )}
-        </Card>
+        </div>
       </div>
 
       {isModalOpen && (
@@ -331,13 +331,13 @@ export const CompanyManagement = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Nome da empresa"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                   required
                 />
               </div>
             </div>
 
-            <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
+            <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl">
               <div className="flex items-start gap-3">
                 <Users size={18} className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                 <div className="text-sm">
@@ -352,10 +352,10 @@ export const CompanyManagement = () => {
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button type="button" variant="secondary" className="flex-1" onClick={() => setIsModalOpen(false)}>
+              <Button type="button" variant="secondary" className="flex-1 rounded-xl" onClick={() => setIsModalOpen(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" className="flex-1">
+              <Button type="submit" className="flex-1 rounded-xl font-semibold">
                 <Plus size={18} className="mr-2" />
                 Criar
               </Button>

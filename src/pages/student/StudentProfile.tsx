@@ -233,18 +233,18 @@ export const StudentProfile = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white">
+      <div className="bg-gradient-to-br from-primary-500 via-violet-600 to-violet-500 text-white">
         <div className="container-app py-12">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
             <div className="relative group">
-              <div className="w-32 h-32 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/20">
+              <div className="w-32 h-32 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center border-4 border-white/20">
                 <User size={48} className="text-white" />
               </div>
               <button className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform cursor-pointer">
                 <Camera size={18} className="text-surface-600 cursor-pointer" />
               </button>
             </div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 {isEditing ? (
@@ -260,9 +260,9 @@ export const StudentProfile = () => {
                 )}
                 {isAdmin && <Badge variant="warning">Admin</Badge>}
               </div>
-              <p className="text-primary-100 mb-4">{user?.email || 'email@example.com'} • {roleLabel}</p>
-              
-              <div className="flex flex-wrap gap-4 text-primary-100 text-sm">
+              <p className="text-white/80 mb-4">{user?.email || 'email@example.com'} • {roleLabel}</p>
+
+              <div className="flex flex-wrap gap-4 text-white/80 text-sm">
                 {user?.phone && (
                   <span className="flex items-center gap-1.5">
                     <Phone size={14} />
@@ -321,13 +321,15 @@ export const StudentProfile = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
             {stats.map((stat, index) => (
-              <div 
+              <div
                 key={index}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10"
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10"
               >
-                <stat.icon size={24} className="text-primary-200 mb-2" />
+                <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center mb-2">
+                  <stat.icon size={20} className="text-white" />
+                </div>
                 <p className="text-2xl font-bold">{stat.value}</p>
-                <p className="text-sm text-primary-200">{stat.label}</p>
+                <p className="text-sm text-white/80">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -337,34 +339,34 @@ export const StudentProfile = () => {
       <div className="container-app py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <div className="flex items-center gap-4 mb-6">
+            <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
+              <div className="inline-flex items-center gap-1 mb-6 bg-surface-100 dark:bg-surface-900 rounded-xl p-1.5">
                 <button
                   onClick={() => setActiveTab('courses')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all cursor-pointer ${
-                    activeTab === 'courses' 
-                      ? 'bg-primary-600 text-white' 
-                      : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === 'courses'
+                      ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 shadow-card'
+                      : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'
                   }`}
                 >
                   Meus Cursos
                 </button>
                 <button
                   onClick={() => setActiveTab('certificates')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all cursor-pointer ${
-                    activeTab === 'certificates' 
-                      ? 'bg-primary-600 text-white' 
-                      : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === 'certificates'
+                      ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 shadow-card'
+                      : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'
                   }`}
                 >
                   Certificados
                 </button>
                 <button
                   onClick={() => setActiveTab('activity')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all cursor-pointer ${
-                    activeTab === 'activity' 
-                      ? 'bg-primary-600 text-white' 
-                      : 'text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800'
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === 'activity'
+                      ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 shadow-card'
+                      : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'
                   }`}
                 >
                   Atividade
@@ -377,16 +379,16 @@ export const StudentProfile = () => {
                     <Link
                       key={course.id}
                       to={`/course/${course.id}`}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-card transition-all group cursor-pointer"
+                      className="flex items-center gap-4 p-4 rounded-xl border border-surface-100 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-card transition-all group cursor-pointer"
                     >
-                      <div className="w-16 h-16 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <BookOpen size={24} className="text-surface-400" />
+                      <div className="w-16 h-16 bg-gradient-to-br from-violet-100 to-violet-200 dark:from-surface-700 dark:to-surface-800 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <BookOpen size={24} className="text-violet-500 dark:text-violet-300" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-surface-900 dark:text-surface-100 group-hover:text-primary-600 transition-colors truncate">
                           {course.title}
                         </h3>
-                        <p className="text-sm text-surface-500 dark:text-surface-300">{course.instructor}</p>
+                        <p className="text-sm text-surface-500 dark:text-surface-400">{course.instructor}</p>
                         <div className="flex items-center gap-4 mt-2">
                           <div className="flex-1 h-1.5 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden">
                             <div className="h-full bg-primary-500 rounded-full" style={{ width: `${enrollments[course.id] ?? 0}%` }} />
@@ -404,9 +406,11 @@ export const StudentProfile = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {certificateCourses.length > 0 ? (
                     certificateCourses.map((course) => (
-                      <div key={course.id} className="p-4 rounded-xl border border-surface-200 dark:border-surface-700 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-surface-800 dark:to-surface-700">
+                      <div key={course.id} className="p-4 rounded-xl border border-surface-100 dark:border-surface-700 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-surface-800 dark:to-surface-700">
                         <div className="flex items-center gap-3 mb-3">
-                          <Award size={24} className="text-amber-500" />
+                          <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                            <Award size={20} className="text-amber-500" />
+                          </div>
                           <div>
                             <h3 className="font-medium text-surface-900 dark:text-surface-100">{course.title}</h3>
                             <p className="text-xs text-surface-500">Certificado disponível</p>
@@ -418,7 +422,7 @@ export const StudentProfile = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="p-6 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-500">
+                    <div className="p-6 rounded-xl border border-surface-100 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-500">
                       Nenhum certificado encontrado para o momento.
                     </div>
                   )}
@@ -430,8 +434,8 @@ export const StudentProfile = () => {
                   {recentActivities.length > 0 ? (
                     recentActivities.map((activity, i) => (
                       <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                        <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
-                          <BookMarked size={18} className="text-primary-600 dark:text-primary-400" />
+                        <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/30 rounded-full flex items-center justify-center">
+                          <BookMarked size={18} className="text-violet-600 dark:text-violet-300" />
                         </div>
                         <div className="flex-1">
                           <p className="text-sm text-surface-900 dark:text-surface-100">{activity.text}</p>
@@ -440,7 +444,7 @@ export const StudentProfile = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="p-6 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-500">
+                    <div className="p-6 rounded-xl border border-surface-100 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-500">
                       Nenhuma atividade recente disponível.
                     </div>
                   )}
@@ -448,7 +452,7 @@ export const StudentProfile = () => {
               )}
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
               <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">
                 Conquistas
               </h2>
@@ -467,7 +471,7 @@ export const StudentProfile = () => {
                   ))}
                 </div>
               ) : (
-                <div className="p-6 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-500 text-center">
+                <div className="p-6 rounded-xl border border-surface-100 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-500 text-center">
                   Nenhuma conquista conquistada ainda. Complete cursos para ganhar conquistas!
                 </div>
               )}
@@ -475,13 +479,13 @@ export const StudentProfile = () => {
           </div>
 
           <div className="space-y-6">
-            <Card>
+            <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
               <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-4">
                 Informações Pessoais
               </h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-xl flex items-center justify-center">
                     <Mail size={18} className="text-surface-500" />
                   </div>
                   <div>
@@ -490,7 +494,7 @@ export const StudentProfile = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-xl flex items-center justify-center">
                     <Phone size={18} className="text-surface-500" />
                   </div>
                   <div>
@@ -500,7 +504,7 @@ export const StudentProfile = () => {
                 </div>
                 {user?.role && (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-surface-100 dark:bg-surface-700 rounded-xl flex items-center justify-center">
                       <Briefcase size={18} className="text-surface-500" />
                     </div>
                     <div>
@@ -512,7 +516,7 @@ export const StudentProfile = () => {
               </div>
             </Card>
 
-            <Card>
+            <Card className="rounded-2xl border-surface-100 dark:border-surface-700">
               <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-4">
                 Notificações
               </h3>

@@ -4,6 +4,7 @@ import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
+import { SearchInput } from '../../components/ui/Input';
 import { useConfirm } from '../../hooks/useConfirm';
 import { useDebounce } from '../../hooks/useDebounce';
 import { toast } from 'sonner';
@@ -24,8 +25,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { 
-  Search, Plus, Edit, Trash2, Eye, 
+import {
+  Plus, Edit, Trash2, Eye,
   BookOpen, Users, Clock, Star, Upload, GripVertical, EyeOff
 } from 'lucide-react';
 import type { Course } from '../../types';
@@ -53,28 +54,28 @@ const SortableRow = ({ course, onDelete, onToggleStatus }: SortableRowProps) => 
   };
 
   return (
-    <tr 
-      ref={setNodeRef} 
+    <tr
+      ref={setNodeRef}
       style={style}
-      className="border-b border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50"
+      className="border-t border-surface-100 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800/50"
     >
       <td className="py-3 px-4">
         <div className="flex items-center gap-3">
-          <button 
-            {...attributes} 
+          <button
+            {...attributes}
             {...listeners}
             className="cursor-grab active:cursor-grabbing p-1 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300"
           >
             <GripVertical size={16} />
           </button>
-          <div className="w-12 h-12 bg-surface-100 dark:bg-surface-700 rounded-lg flex items-center justify-center flex-shrink-0">
-            <BookOpen size={20} className="text-surface-400" />
+          <div className="w-12 h-12 bg-violet-100 dark:bg-surface-700 rounded-xl flex items-center justify-center flex-shrink-0">
+            <BookOpen size={20} className="text-violet-600 dark:text-surface-400" />
           </div>
           <div className="min-w-0">
             <p className="font-medium text-surface-900 dark:text-surface-100 truncate">
               {course.title}
             </p>
-            <p className="text-sm text-surface-500 dark:text-surface-300 truncate">
+            <p className="text-sm text-surface-500 dark:text-surface-400 truncate">
               {course.instructor}
             </p>
           </div>
@@ -109,13 +110,13 @@ const SortableRow = ({ course, onDelete, onToggleStatus }: SortableRowProps) => 
       </td>
       <td className="py-3 px-4">
         <div className="flex items-center justify-end gap-1">
-          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
+          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
             <Eye size={16} />
           </Link>
-          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
+          <Link to={`/admin/courses/${course.id}`} className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 cursor-pointer">
             <Edit size={16} />
           </Link>
-          <button onClick={onDelete} className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer">
+          <button onClick={onDelete} className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 text-red-500 cursor-pointer">
             <Trash2 size={16} />
           </button>
         </div>
@@ -227,24 +228,24 @@ export const CourseManagement = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
                 Gerenciamento de Cursos
               </h1>
-              <p className="text-surface-500 dark:text-surface-300 mt-1">
+              <p className="text-surface-500 dark:text-surface-400 mt-1">
                 Gerencie todos os cursos da plataforma
               </p>
             </div>
             <div className="flex gap-3">
-              <Button variant="secondary">
+              <Button variant="secondary" className="rounded-xl font-semibold">
                 <Upload size={18} />
                 Importar
               </Button>
               <Link to="/admin/courses/create">
-                <Button>
+                <Button className="rounded-xl font-semibold">
                   <Plus size={18} />
                   Novo Curso
                 </Button>
@@ -257,38 +258,43 @@ export const CourseManagement = () => {
       <div className="container-app py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => (
-            <Card key={index} className="p-4">
+            <Card key={index} className="p-5 rounded-2xl shadow-card hover:shadow-hover transition-shadow">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                  <stat.icon size={20} className="text-primary-600 dark:text-primary-400" />
+                <div
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                    index % 2 === 0
+                      ? 'bg-primary-50 dark:bg-primary-900/30'
+                      : 'bg-violet-100 dark:bg-violet-900/30'
+                  }`}
+                >
+                  <stat.icon
+                    size={20}
+                    className={index % 2 === 0 ? 'text-primary-600 dark:text-primary-400' : 'text-violet-600 dark:text-violet-300'}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{stat.value}</p>
-                  <p className="text-sm text-surface-500 dark:text-surface-300">{stat.label}</p>
+                  <p className="text-sm text-surface-500 dark:text-surface-400">{stat.label}</p>
                 </div>
               </div>
             </Card>
           ))}
         </div>
 
-        <Card className="p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar cursos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-                />
-              </div>
+        <Card className="rounded-2xl overflow-hidden" padding="none">
+          <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+              <SearchInput
+                placeholder="Buscar cursos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="rounded-xl border-surface-100 dark:border-surface-700 md:w-64"
+              />
               <div className="flex items-center gap-2">
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                  className="px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 >
                   <option value="all">Todas as categorias</option>
                   {categories.filter(c => c !== 'all').map(cat => (
@@ -307,15 +313,15 @@ export const CourseManagement = () => {
             >
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-surface-200 dark:border-surface-700">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300 w-12"></th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Curso</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Categoria</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Alunos</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Duração</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Nota</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Status</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-surface-500 dark:text-surface-300">Ações</th>
+                  <tr className="bg-surface-50 dark:bg-surface-900/40">
+                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500 w-12"></th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Curso</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Categoria</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Alunos</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Duração</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Nota</th>
+                    <th className="text-left py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Status</th>
+                    <th className="text-right py-3 px-4 text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">Ações</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -150,16 +150,16 @@ export const Settings = () => {
       <div className="container-app py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
-            <Card className="p-2">
+            <Card className="p-2 rounded-2xl border-surface-100 dark:border-surface-700">
               {sections.map((section) => (
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
                   className={`
-                    w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all cursor-pointer
-                    ${activeSection === section.id 
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' 
-                      : 'text-surface-600 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700'
+                    w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all cursor-pointer
+                    ${activeSection === section.id
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                      : 'text-surface-500 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-700'
                     }
                   `}
                 >
@@ -173,7 +173,7 @@ export const Settings = () => {
           <div className="lg:col-span-3 space-y-6">
             {activeSection === 'profile' && (
               <>
-                <Card className="p-6">
+                <Card className="p-6 rounded-2xl border-surface-100 dark:border-surface-700">
                   <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-6">
                     Informações do Perfil
                   </h2>
@@ -202,7 +202,7 @@ export const Settings = () => {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                        className="w-full px-4 py-2.5 rounded-lg border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                       />
                     </div>
                     <div>
@@ -225,7 +225,7 @@ export const Settings = () => {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="(11) 99999-9999"
-                        className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                        className="w-full px-4 py-2.5 rounded-lg border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                       />
                     </div>
                   </div>
@@ -247,14 +247,14 @@ export const Settings = () => {
                   </div>
                 </Card>
 
-                <Card className="p-6">
+                <Card className="p-6 rounded-2xl border-surface-100 dark:border-surface-700">
                   <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-6">
                     Biografia
                   </h2>
                   <textarea
                     rows={4}
                     placeholder="Conte um pouco sobre você..."
-                    className="w-full px-4 py-3 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 resize-none"
                   />
                   <p className="text-sm text-surface-500 dark:text-surface-300 mt-2">Máximo de 500 caracteres</p>
                 </Card>
@@ -263,7 +263,7 @@ export const Settings = () => {
 
             {activeSection === 'account' && (
               <>
-                <Card className="p-6">
+                <Card className="p-6 rounded-2xl border-surface-100 dark:border-surface-700">
                   <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-6">
                     Segurança da Conta
                   </h2>
@@ -305,7 +305,7 @@ export const Settings = () => {
                   </div>
                 </Card>
 
-                <Card className="p-6">
+                <Card className="p-6 rounded-2xl border-surface-100 dark:border-surface-700">
                   <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">
                     Danger Zone
                   </h2>
@@ -338,7 +338,7 @@ export const Settings = () => {
             )}
 
             {activeSection === 'notifications' && (
-              <Card className="p-6">
+              <Card className="p-6 rounded-2xl border-surface-100 dark:border-surface-700">
                 <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-6">
                   Preferências de Notificações
                 </h2>
@@ -381,7 +381,7 @@ export const Settings = () => {
             )}
 
             {activeSection === 'appearance' && (
-              <Card className="p-6">
+              <Card className="p-6 rounded-2xl border-surface-100 dark:border-surface-700">
                 <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-6">
                   Aparência
                 </h2>
@@ -427,7 +427,7 @@ export const Settings = () => {
             )}
 
             {activeSection === 'privacy' && (
-              <Card className="p-6">
+              <Card className="p-6 rounded-2xl border-surface-100 dark:border-surface-700">
                 <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-6">
                   Privacidade e Dados
                 </h2>

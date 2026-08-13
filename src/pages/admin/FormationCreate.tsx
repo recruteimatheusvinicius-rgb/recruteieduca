@@ -136,7 +136,7 @@ export const FormationCreate = () => {
             type="text"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400"
+            className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400"
             placeholder="Ex: Desenvolvedor Full Stack"
             required
           />
@@ -163,7 +163,7 @@ export const FormationCreate = () => {
               value={formData.duration}
               onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
               placeholder="Ex: 40h"
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400"
               required
             />
           </div>
@@ -176,7 +176,7 @@ export const FormationCreate = () => {
           <select
             value={formData.level}
             onChange={(e) => setFormData({ ...formData, level: e.target.value as 'iniciante' | 'intermediario' | 'avancado' })}
-            className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+            className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
           >
             {levels.map((level) => (
               <option key={level} value={level}>
@@ -207,24 +207,24 @@ export const FormationCreate = () => {
           value={courseSearch}
           onChange={(e) => setCourseSearch(e.target.value)}
           placeholder="Buscar curso por nome..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 placeholder-surface-400"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredCourses.map((course) => (
-          <Card 
+          <Card
             key={course.id}
-            className={`cursor-pointer transition-all ${
+            className={`!rounded-2xl cursor-pointer transition-all ${
               formData.courses.includes(course.id)
-                ? 'ring-2 ring-primary-500 border-primary-500'
-                : 'border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700'
+                ? 'ring-2 ring-primary-500 !border-primary-500'
+                : '!border-surface-100 dark:!border-surface-700 hover:!border-primary-300 dark:hover:!border-primary-700'
             }`}
             onClick={() => toggleCourse(course.id)}
           >
             <div className="flex items-start gap-4">
               <div className={`
-                w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5
+                w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5
                 ${formData.courses.includes(course.id)
                   ? 'bg-primary-500 text-white'
                   : 'bg-surface-100 dark:bg-surface-700 text-surface-400'
@@ -343,7 +343,7 @@ export const FormationCreate = () => {
                         }
                       });
                     }}
-                    className="w-32 px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                    className="w-32 px-3 py-2 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                   />
                 </div>
               )}
@@ -416,12 +416,12 @@ export const FormationCreate = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={() => navigate('/admin/formations')}
-              className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700"
+              className="p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700"
             >
               <ArrowLeft size={20} className="text-surface-600 dark:text-surface-300" />
             </button>
@@ -435,26 +435,22 @@ export const FormationCreate = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 mt-4">
-            {steps.map((step, index) => (
-              <div key={step.num} className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentStep(step.num)}
-                  className={`
-                    flex items-center gap-2 px-4 py-2 rounded-lg transition-colors
-                    ${currentStep === step.num
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                      : 'text-surface-500 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
-                    }
-                  `}
-                >
-                  <step.icon size={18} />
-                  <span className="text-sm font-medium">{step.label}</span>
-                </button>
-                {index < steps.length - 1 && (
-                  <div className="w-8 h-px bg-surface-200 dark:bg-surface-700" />
-                )}
-              </div>
+          <div className="inline-flex items-center gap-1 mt-4 p-1 rounded-xl bg-surface-100 dark:bg-surface-700/50">
+            {steps.map((step) => (
+              <button
+                key={step.num}
+                onClick={() => setCurrentStep(step.num)}
+                className={`
+                  flex items-center gap-2 px-4 py-2 rounded-lg transition-colors
+                  ${currentStep === step.num
+                    ? 'bg-white dark:bg-surface-800 text-primary-600 dark:text-primary-400 shadow-card'
+                    : 'text-surface-500 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100'
+                  }
+                `}
+              >
+                <step.icon size={18} />
+                <span className="text-sm font-medium">{step.label}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -466,9 +462,10 @@ export const FormationCreate = () => {
         {currentStep === 3 && renderStep3()}
         {currentStep === 4 && renderStep4()}
 
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
-          <Button 
-            variant="secondary" 
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-surface-100 dark:border-surface-700">
+          <Button
+            variant="secondary"
+            className="rounded-xl"
             onClick={handlePrev}
             disabled={currentStep === 1}
           >
@@ -477,16 +474,16 @@ export const FormationCreate = () => {
           </Button>
 
           <div className="flex gap-3">
-            <Button variant="secondary" onClick={() => navigate('/admin/formations')}>
+            <Button variant="secondary" className="rounded-xl" onClick={() => navigate('/admin/formations')}>
               Cancelar
             </Button>
             {currentStep < steps.length ? (
-              <Button onClick={handleNext}>
+              <Button className="rounded-xl font-semibold" onClick={handleNext}>
                 Próximo
                 <ArrowRight size={18} className="ml-2" />
               </Button>
             ) : (
-              <Button onClick={handleSave} disabled={isLoading}>
+              <Button className="rounded-xl font-semibold" onClick={handleSave} disabled={isLoading}>
                 <Save size={18} className="mr-2" />
                 {isLoading ? 'Salvando...' : 'Salvar Formação'}
               </Button>

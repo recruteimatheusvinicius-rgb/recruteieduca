@@ -105,18 +105,18 @@ export const CategoryManagement = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
                 Categorias
               </h1>
-              <p className="text-surface-500 dark:text-surface-300 mt-1">
+              <p className="text-surface-500 dark:text-surface-400 mt-1">
                 Gerencie as categorias de cursos
               </p>
             </div>
-            <Button onClick={() => openModal()}>
+            <Button onClick={() => openModal()} className="rounded-xl font-semibold">
               <Plus size={18} />
               Nova Categoria
             </Button>
@@ -127,9 +127,9 @@ export const CategoryManagement = () => {
       <div className="container-app py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category) => (
-            <Card key={category.id} className="overflow-hidden">
-              <div 
-                className="h-2" 
+            <Card key={category.id} className="overflow-hidden rounded-2xl shadow-card hover:shadow-hover transition-shadow">
+              <div
+                className="h-1.5"
                 style={{ backgroundColor: category.color }}
               />
               <div className="p-6">
@@ -138,17 +138,17 @@ export const CategoryManagement = () => {
                     <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
                       {category.name}
                     </h3>
-                    <p className="text-sm text-surface-500 dark:text-surface-300 mt-1">
+                    <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
                       {category.description}
                     </p>
                   </div>
-                  <div 
-                    className="w-4 h-4 rounded-full"
+                  <div
+                    className="w-4 h-4 rounded-full shrink-0"
                     style={{ backgroundColor: category.color }}
                   />
                 </div>
-                
-                <div className="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-300 mb-4">
+
+                <div className="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400 mb-4">
                   <BookOpen size={16} />
                   <span>
                     {courseCountByCategory[category.name] || 0}{' '}
@@ -157,14 +157,14 @@ export const CategoryManagement = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1" onClick={() => openModal(category)}>
+                  <Button variant="secondary" size="sm" className="flex-1 rounded-xl font-semibold" onClick={() => openModal(category)}>
                     <Edit2 size={16} />
                     Editar
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="!text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20"
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-xl !text-red-600 hover:!bg-red-50 dark:hover:!bg-red-900/20"
                     onClick={() => handleDelete(category.id)}
                   >
                     <Trash2 size={16} />
@@ -198,7 +198,7 @@ export const CategoryManagement = () => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 required
               />
             </div>
@@ -211,7 +211,7 @@ export const CategoryManagement = () => {
                 rows={3}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 resize-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-surface-100 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
                 required
               />
               </div>

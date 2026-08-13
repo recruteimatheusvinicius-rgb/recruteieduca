@@ -106,7 +106,7 @@ export const CompanyChecklistProgress = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+      <div className="bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700">
         <div className="container-app py-6">
           <Link to="/admin/companies" className="flex items-center gap-2 text-surface-500 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 mb-3 cursor-pointer w-fit">
             <ArrowLeft size={18} />
@@ -126,35 +126,48 @@ export const CompanyChecklistProgress = () => {
 
       <div className="container-app py-6">
         {!company.onboardingTrack ? (
-          <Card className="p-8 text-center">
+          <Card className="!rounded-2xl !border-surface-100 shadow-card p-8 text-center">
             <p className="text-surface-500 dark:text-surface-300">
               Esta empresa ainda não tem uma track de onboarding atribuída. Defina uma track em{' '}
               <Link to="/admin/companies" className="text-primary-600 hover:underline">Gerenciamento de Empresas</Link>.
             </p>
           </Card>
         ) : items.length === 0 ? (
-          <Card className="p-8 text-center">
+          <Card className="!rounded-2xl !border-surface-100 shadow-card p-8 text-center">
             <p className="text-surface-500 dark:text-surface-300">
               Não há checklist configurado para a track <strong>{TRACK_LABELS[company.onboardingTrack]}</strong> ainda. Configure em{' '}
               <Link to="/admin/onboarding-templates" className="text-primary-600 hover:underline">Checklists de Onboarding</Link>.
             </p>
           </Card>
         ) : (
-          <Card className="p-6">
+          <Card className="!rounded-2xl !border-surface-100 shadow-card p-6">
             <div className="h-2 bg-surface-100 dark:bg-surface-700 rounded-full mb-6 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
+              <div className="h-full bg-gradient-to-r from-violet-600 to-primary-500 rounded-full transition-all" style={{ width: `${progressPct}%` }} />
             </div>
 
             <div className="space-y-3">
               {items.map((item) => {
                 const Icon = ITEM_TYPE_META[item.itemType].icon;
                 const isUserScoped = item.scope === 'user';
+                const isCompleted = item.status === 'completed';
 
                 return (
-                  <div key={item.id} className="flex items-center justify-between gap-3 p-4 rounded-lg border border-surface-200 dark:border-surface-700">
+                  <div
+                    key={item.id}
+                    className={`flex items-center justify-between gap-3 p-4 rounded-xl border ${
+                      isCompleted
+                        ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/15'
+                        : 'border-surface-100 dark:border-surface-700'
+                    }`}
+                  >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
-                        <Icon size={16} className="text-primary-600 dark:text-primary-400" />
+                      {isCompleted ? (
+                        <CheckCircle size={20} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                      ) : (
+                        <Circle size={20} className="text-surface-300 dark:text-surface-600 flex-shrink-0" />
+                      )}
+                      <div className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center flex-shrink-0">
+                        <Icon size={16} className="text-violet-600 dark:text-violet-300" />
                       </div>
                       <div className="min-w-0">
                         <p className="font-medium text-surface-900 dark:text-surface-100 truncate">{item.title}</p>
@@ -170,16 +183,17 @@ export const CompanyChecklistProgress = () => {
                     </div>
 
                     {isUserScoped ? (
-                      <Badge variant={item.status === 'completed' ? 'success' : 'warning'}>
-                        {item.status === 'completed' ? 'Concluído' : 'Em andamento'}
+                      <Badge variant={isCompleted ? 'success' : 'warning'}>
+                        {isCompleted ? 'Concluído' : 'Em andamento'}
                       </Badge>
                     ) : (
                       <Button
                         size="sm"
-                        variant={item.status === 'completed' ? 'secondary' : 'primary'}
+                        className="rounded-xl"
+                        variant={isCompleted ? 'secondary' : 'primary'}
                         onClick={() => handleToggle(item)}
                       >
-                        {item.status === 'completed' ? (
+                        {isCompleted ? (
                           <>
                             <CheckCircle size={16} />
                             Concluído

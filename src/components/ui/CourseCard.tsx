@@ -26,9 +26,9 @@ export const CourseCard = ({ course, progress = 0, showProgress = false }: Cours
   const categoryVariant = categoryColors[course.category] || categoryColors['default'];
 
   return (
-    <Link 
+    <Link
       to={`/course/${course.id}`}
-      className="group block bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden card-hover"
+      className="group block bg-white dark:bg-surface-800 rounded-2xl border border-surface-100 dark:border-surface-700 overflow-hidden transition-all duration-200 hover:shadow-hover hover:-translate-y-0.5"
     >
       <div className="relative aspect-video bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-700 dark:to-surface-800 overflow-hidden">
         {course.thumbnail ? (
@@ -65,7 +65,7 @@ export const CourseCard = ({ course, progress = 0, showProgress = false }: Cours
           }}
           aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
           title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-surface-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform cursor-pointer"
+          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-surface-900/80 backdrop-blur-sm flex items-center justify-center shadow-card hover:scale-110 transition-transform cursor-pointer"
         >
           <Heart
             size={16}
@@ -113,7 +113,7 @@ export const CourseCard = ({ course, progress = 0, showProgress = false }: Cours
           <div className="mt-3 pt-3 border-t border-surface-100 dark:border-surface-700">
             <div className="flex items-center justify-between text-sm">
               <span className="text-surface-500 dark:text-surface-300">Progresso</span>
-              <span className="font-medium text-primary-600 dark:text-primary-400">{progress}%</span>
+              <span className="font-semibold text-primary-600 dark:text-primary-400">{progress}%</span>
             </div>
             <div className="mt-1.5 h-1.5 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden">
               <div 
@@ -134,11 +134,11 @@ interface CourseCardHorizontalProps {
 
 export const CourseCardHorizontal = ({ course }: CourseCardHorizontalProps) => {
   return (
-    <Link 
+    <Link
       to={`/course/${course.id}`}
-      className="group flex gap-4 p-3 bg-white dark:bg-surface-800 rounded-lg border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:shadow-card transition-all"
+      className="group flex gap-4 p-3 bg-white dark:bg-surface-800 rounded-xl border border-surface-100 dark:border-surface-700 hover:border-primary-200 dark:hover:border-primary-700 hover:shadow-hover transition-all"
     >
-      <div className="relative w-32 h-20 flex-shrink-0 bg-surface-100 dark:bg-surface-700 rounded-lg overflow-hidden">
+      <div className="relative w-32 h-20 flex-shrink-0 bg-surface-100 dark:bg-surface-700 rounded-xl overflow-hidden">
         {course.thumbnail ? (
           <img 
             src={course.thumbnail} 

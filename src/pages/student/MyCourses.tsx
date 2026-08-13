@@ -8,7 +8,7 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import {
-  Search, BookOpen, Clock, Play, CheckCircle, Star,
+  Search, BookOpen, Clock, CheckCircle, Star,
   Heart, TrendingUp
 } from 'lucide-react';
 
@@ -116,16 +116,16 @@ export const MyCourses = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white">
+      <div className="bg-gradient-to-br from-primary-500 via-violet-600 to-violet-500 text-white">
         <div className="container-app py-12">
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 text-primary-200 mb-3">
+            <div className="flex items-center justify-center gap-2 text-white/80 mb-3">
               <BookOpen size={18} />
               <span className="text-sm font-medium">Área do Estudante</span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-3">Meus Cursos</h1>
-            <p className="text-primary-100 text-lg mb-6">Acompanhe seu progresso e continue aprendendo.</p>
-            
+            <p className="text-white/80 text-lg mb-6">Acompanhe seu progresso e continue aprendendo.</p>
+
             <div className="relative max-w-md mx-auto">
               <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-surface-400" />
               <input
@@ -133,24 +133,26 @@ export const MyCourses = () => {
                 placeholder="Buscar nos meus cursos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/90 border-0 text-surface-900 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border-0 text-surface-900 placeholder:text-surface-400 shadow-card focus:outline-none focus:ring-2 focus:ring-white/50"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
             {stats.map((stat, index) => (
-              <div 
+              <div
                 key={index}
-                className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:bg-white/20 transition-colors"
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10 hover:bg-white/20 transition-colors"
               >
-                <stat.icon size={24} className="text-primary-200 mb-2" />
+                <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center mb-2">
+                  <stat.icon size={20} className="text-white" />
+                </div>
                 {statsLoaded ? (
                   <p className="text-2xl font-bold">{stat.value}</p>
                 ) : (
                   <div className="h-8 w-16 bg-white/20 rounded-md animate-pulse mb-1" />
                 )}
-                <p className="text-sm text-primary-200">{stat.label}</p>
+                <p className="text-sm text-white/80">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -159,7 +161,7 @@ export const MyCourses = () => {
 
       <div className="container-app py-8">
         <div className="flex flex-col md:flex-row md:items-center justify-center gap-4 mb-8">
-          <div className="flex gap-2 justify-center flex-wrap">
+          <div className="inline-flex gap-1 justify-center flex-wrap bg-surface-100 dark:bg-surface-800 rounded-xl p-1.5 mx-auto">
             {[
               { key: 'all', label: 'Todos' },
               { key: 'ongoing', label: 'Em Andamento' },
@@ -170,10 +172,10 @@ export const MyCourses = () => {
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as 'all' | 'ongoing' | 'completed' | 'favorites')}
                 className={`
-                  px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200
+                  px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-200
                   ${activeTab === tab.key
-                    ? 'bg-surface-900 dark:bg-surface-100 text-white dark:text-surface-900 shadow-lg'
-                    : 'bg-white dark:bg-surface-800 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 border border-surface-200 dark:border-surface-700'
+                    ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-100 shadow-card'
+                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'
                   }
                 `}
               >
@@ -193,10 +195,10 @@ export const MyCourses = () => {
                   to={`/course/${course.id}`}
                   className="block"
                 >
-                  <Card hover className="flex flex-col md:flex-row gap-6 p-6">
-                    <div className="w-full md:w-64 h-40 bg-surface-100 dark:bg-surface-700 rounded-xl flex-shrink-0 overflow-hidden relative">
-                      <div className="absolute inset-0 bg-primary-600/10 flex items-center justify-center">
-                        <Play size={40} className="text-primary-600" />
+                  <Card hover className="flex flex-col md:flex-row gap-6 p-6 rounded-2xl border-surface-100 dark:border-surface-700">
+                    <div className="w-full md:w-64 h-40 bg-gradient-to-br from-violet-100 to-violet-200 dark:from-surface-700 dark:to-surface-800 rounded-xl flex-shrink-0 overflow-hidden relative">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <BookOpen size={40} className="text-violet-500 dark:text-violet-300" />
                       </div>
                       {progress === 100 && (
                         <div className="absolute top-3 right-3 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
@@ -204,15 +206,15 @@ export const MyCourses = () => {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4 mb-2">
                         <div>
-                          <Badge variant="primary" className="mb-2">{course.category}</Badge>
+                          <Badge variant="primary" className="mb-2 rounded-full">{course.category}</Badge>
                           <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">
                             {course.title}
                           </h3>
-                          <p className="text-sm text-surface-500 dark:text-surface-300">
+                          <p className="text-sm text-surface-500 dark:text-surface-400">
                             {course.instructor}
                           </p>
                         </div>
@@ -223,7 +225,7 @@ export const MyCourses = () => {
                           }}
                           aria-label={favorites.includes(course.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                           title={favorites.includes(course.id) ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-                          className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+                          className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
                         >
                           <Heart
                             size={20}
@@ -232,11 +234,11 @@ export const MyCourses = () => {
                         </button>
                       </div>
 
-                      <p className="text-sm text-surface-600 dark:text-surface-300 mb-4 line-clamp-2">
+                      <p className="text-sm text-surface-500 dark:text-surface-400 mb-4 line-clamp-2">
                         {course.description}
                       </p>
 
-                      <div className="flex items-center gap-6 text-sm text-surface-500 dark:text-surface-300 mb-4">
+                      <div className="flex items-center gap-6 text-sm text-surface-500 dark:text-surface-400 mb-4">
                         <span className="flex items-center gap-1.5">
                           <Clock size={16} />
                           {course.duration}
@@ -256,15 +258,15 @@ export const MyCourses = () => {
                       <div className="flex items-center gap-4">
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-sm text-surface-600 dark:text-surface-300">Progresso</span>
+                            <span className="text-sm text-surface-500 dark:text-surface-400">Progresso</span>
                             <span className="text-sm font-medium text-surface-900 dark:text-surface-100">
                               {progress}%
                             </span>
                           </div>
-                          <div className="h-2 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden">
-                            <div 
+                          <div className="h-1.5 bg-surface-100 dark:bg-surface-700 rounded-full overflow-hidden">
+                            <div
                               className={`h-full rounded-full transition-all duration-500 ${
-                                progress === 100 ? 'bg-emerald-500' : 'bg-primary-500'
+                                progress === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-primary-500 to-violet-500'
                               }`}
                               style={{ width: `${progress}%` }}
                             />
@@ -282,13 +284,13 @@ export const MyCourses = () => {
           </div>
         ) : (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BookOpen size={24} className="text-surface-400" />
+            <div className="w-16 h-16 bg-violet-100 dark:bg-violet-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <BookOpen size={24} className="text-violet-500 dark:text-violet-300" />
             </div>
             <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
               Nenhum curso encontrado
             </h3>
-            <p className="text-surface-500 dark:text-surface-300 mb-6">
+            <p className="text-surface-500 dark:text-surface-400 mb-6">
               {activeTab === 'ongoing' 
                 ? 'Você não tem cursos em andamento.'
                 : activeTab === 'completed' 
