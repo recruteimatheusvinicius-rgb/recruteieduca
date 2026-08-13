@@ -40,40 +40,48 @@ export const PlanManagement = () => {
     setIsModalOpen(true);
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name?.trim()) {
       toast.error('O nome do plano é obrigatório');
       return;
     }
 
+    setIsSaving(true);
     try {
-      if (editingPlan) {
-        updatePlan(editingPlan.id, {
-          name: formData.name,
-          features: [],
-          courseRestrictions: formData.courseRestrictions,
-          formationRestrictions: [],
-          color: formData.color,
-          isPopular: formData.isPopular,
-        });
-        toast.success('Plano atualizado com sucesso!');
-      } else {
-        addPlan({
-          id: crypto.randomUUID(),
-          name: formData.name,
-          features: [],
-          courseRestrictions: formData.courseRestrictions,
-          formationRestrictions: [],
-          color: formData.color,
-          isPopular: formData.isPopular,
-        });
-        toast.success('Plano criado com sucesso!');
+      const ok = editingPlan
+        ? await updatePlan(editingPlan.id, {
+            name: formData.name,
+            features: [],
+            courseRestrictions: formData.courseRestrictions,
+            formationRestrictions: [],
+            color: formData.color,
+            isPopular: formData.isPopular,
+          })
+        : await addPlan({
+            id: crypto.randomUUID(),
+            name: formData.name,
+            features: [],
+            courseRestrictions: formData.courseRestrictions,
+            formationRestrictions: [],
+            color: formData.color,
+            isPopular: formData.isPopular,
+          });
+
+      if (!ok) {
+        toast.error('Não foi possível salvar o plano. Verifique a conexão e tente novamente.');
+        return;
       }
+
+      toast.success(editingPlan ? 'Plano atualizado com sucesso!' : 'Plano criado com sucesso!');
       setIsModalOpen(false);
     } catch {
       toast.error('Erro ao salvar plano');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -86,9 +94,13 @@ export const PlanManagement = () => {
       message: `Tem certeza que deseja excluir o plano "${plan?.name}"? Esta ação não pode ser desfeita.`,
       confirmText: 'Excluir',
       variant: 'danger',
-      onConfirm: () => {
-        deletePlan(id);
-        toast.success('Plano excluído com sucesso!');
+      onConfirm: async () => {
+        const ok = await deletePlan(id);
+        if (ok) {
+          toast.success('Plano excluído com sucesso!');
+        } else {
+          toast.error('Não foi possível excluir o plano. Tente novamente.');
+        }
       },
     });
   };
@@ -268,8 +280,8 @@ export const PlanManagement = () => {
                 <Button type="button" variant="secondary" className="flex-1" onClick={() => setIsModalOpen(false)}>
                   Cancelar
                 </Button>
-                <Button type="submit" className="flex-1">
-                  {editingPlan ? 'Salvar' : 'Criar'}
+                <Button type="submit" className="flex-1" disabled={isSaving}>
+                  {isSaving ? 'Salvando...' : editingPlan ? 'Salvar' : 'Criar'}
                 </Button>
               </div>
             </form>
