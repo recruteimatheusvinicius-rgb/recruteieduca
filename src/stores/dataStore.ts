@@ -117,24 +117,24 @@ interface DataState {
   deleteCourse: (id: string) => Promise<boolean>;
   
   // Plan operations
-  addPlan: (plan: Plan) => Promise<void>;
-  updatePlan: (id: string, plan: Partial<Plan>) => Promise<void>;
-  deletePlan: (id: string) => Promise<void>;
-  
+  addPlan: (plan: Plan) => Promise<boolean>;
+  updatePlan: (id: string, plan: Partial<Plan>) => Promise<boolean>;
+  deletePlan: (id: string) => Promise<boolean>;
+
   // Category operations
-  addCategory: (category: Category) => Promise<void>;
-  updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
-  deleteCategory: (id: string) => Promise<void>;
-  
+  addCategory: (category: Category) => Promise<boolean>;
+  updateCategory: (id: string, category: Partial<Category>) => Promise<boolean>;
+  deleteCategory: (id: string) => Promise<boolean>;
+
   // Formation operations
-  addFormation: (formation: Formation) => Promise<void>;
-  updateFormation: (id: string, formation: Partial<Formation>) => Promise<void>;
-  deleteFormation: (id: string) => Promise<void>;
-  
+  addFormation: (formation: Formation) => Promise<boolean>;
+  updateFormation: (id: string, formation: Partial<Formation>) => Promise<boolean>;
+  deleteFormation: (id: string) => Promise<boolean>;
+
   // User operations
-  addUser: (user: User) => Promise<void>;
-  updateUser: (id: string, user: Partial<User>) => Promise<void>;
-  deleteUser: (id: string) => Promise<void>;
+  addUser: (user: User) => Promise<boolean>;
+  updateUser: (id: string, user: Partial<User>) => Promise<boolean>;
+  deleteUser: (id: string) => Promise<boolean>;
   
   // Level operations
   addLevel: (level: CourseLevel) => Promise<void>;
@@ -299,12 +299,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .insert([{ ...plan, created_at: new Date().toISOString() }])
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ plans: [...state.plans, data as Plan] }));
+        return true;
       }
+      console.error('Failed to add plan:', error);
+      return false;
     } else {
       set((state) => ({ plans: [...state.plans, plan] }));
+      return true;
     }
   },
 
@@ -316,12 +320,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .eq('id', id)
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ plans: state.plans.map((p) => (p.id === id ? (data as Plan) : p)) }));
+        return true;
       }
+      console.error('Failed to update plan:', error);
+      return false;
     } else {
       set((state) => ({ plans: state.plans.map((p) => (p.id === id ? { ...p, ...plan } : p)) }));
+      return true;
     }
   },
 
@@ -330,9 +338,13 @@ export const useDataStore = create<DataState>((set, get) => ({
       const { error } = await supabase.from('plans').delete().eq('id', id);
       if (!error) {
         set((state) => ({ plans: state.plans.filter((p) => p.id !== id) }));
+        return true;
       }
+      console.error('Failed to delete plan:', error);
+      return false;
     } else {
       set((state) => ({ plans: state.plans.filter((p) => p.id !== id) }));
+      return true;
     }
   },
 
@@ -344,12 +356,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .insert([{ ...category, created_at: new Date().toISOString() }])
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ categories: [...state.categories, data as Category] }));
+        return true;
       }
+      console.error('Failed to add category:', error);
+      return false;
     } else {
       set((state) => ({ categories: [...state.categories, category] }));
+      return true;
     }
   },
 
@@ -361,12 +377,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .eq('id', id)
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ categories: state.categories.map((c) => (c.id === id ? (data as Category) : c)) }));
+        return true;
       }
+      console.error('Failed to update category:', error);
+      return false;
     } else {
       set((state) => ({ categories: state.categories.map((c) => (c.id === id ? { ...c, ...category } : c)) }));
+      return true;
     }
   },
 
@@ -375,9 +395,13 @@ export const useDataStore = create<DataState>((set, get) => ({
       const { error } = await supabase.from('categories').delete().eq('id', id);
       if (!error) {
         set((state) => ({ categories: state.categories.filter((c) => c.id !== id) }));
+        return true;
       }
+      console.error('Failed to delete category:', error);
+      return false;
     } else {
       set((state) => ({ categories: state.categories.filter((c) => c.id !== id) }));
+      return true;
     }
   },
 
@@ -389,12 +413,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .insert([{ ...formation, created_at: new Date().toISOString() }])
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ formations: [...state.formations, data as Formation] }));
+        return true;
       }
+      console.error('Failed to add formation:', error);
+      return false;
     } else {
       set((state) => ({ formations: [...state.formations, formation] }));
+      return true;
     }
   },
 
@@ -406,12 +434,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .eq('id', id)
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ formations: state.formations.map((f) => (f.id === id ? (data as Formation) : f)) }));
+        return true;
       }
+      console.error('Failed to update formation:', error);
+      return false;
     } else {
       set((state) => ({ formations: state.formations.map((f) => (f.id === id ? { ...f, ...formation } : f)) }));
+      return true;
     }
   },
 
@@ -420,9 +452,13 @@ export const useDataStore = create<DataState>((set, get) => ({
       const { error } = await supabase.from('formations').delete().eq('id', id);
       if (!error) {
         set((state) => ({ formations: state.formations.filter((f) => f.id !== id) }));
+        return true;
       }
+      console.error('Failed to delete formation:', error);
+      return false;
     } else {
       set((state) => ({ formations: state.formations.filter((f) => f.id !== id) }));
+      return true;
     }
   },
 
@@ -434,12 +470,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .insert([{ ...user, created_at: new Date().toISOString() }])
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ users: [...state.users, data as User] }));
+        return true;
       }
+      console.error('Failed to add user:', error);
+      return false;
     } else {
       set((state) => ({ users: [...state.users, user] }));
+      return true;
     }
   },
 
@@ -451,12 +491,16 @@ export const useDataStore = create<DataState>((set, get) => ({
         .eq('id', id)
         .select()
         .single();
-      
+
       if (!error && data) {
         set((state) => ({ users: state.users.map((u) => (u.id === id ? (data as User) : u)) }));
+        return true;
       }
+      console.error('Failed to update user:', error);
+      return false;
     } else {
       set((state) => ({ users: state.users.map((u) => (u.id === id ? { ...u, ...user } : u)) }));
+      return true;
     }
   },
 
@@ -465,9 +509,13 @@ export const useDataStore = create<DataState>((set, get) => ({
       const { error } = await supabase.from('profiles').delete().eq('id', id);
       if (!error) {
         set((state) => ({ users: state.users.filter((u) => u.id !== id) }));
+        return true;
       }
+      console.error('Failed to delete user:', error);
+      return false;
     } else {
       set((state) => ({ users: state.users.filter((u) => u.id !== id) }));
+      return true;
     }
   },
 

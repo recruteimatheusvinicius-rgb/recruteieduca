@@ -47,6 +47,7 @@ export const UserManagement = () => {
 
   useEffect(() => {
     if (!routeUserId) return;
+    if (isModalOpen) return; // não sobrescreve edições em andamento em refresh da lista
     const target = users.find(u => u.id === routeUserId);
     if (target) {
       openModal(target);
@@ -172,9 +173,11 @@ export const UserManagement = () => {
     }
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name?.trim()) {
       toast.error('O nome do usuário é obrigatório');
       return;
@@ -184,21 +187,27 @@ export const UserManagement = () => {
       return;
     }
 
+    setIsSaving(true);
     try {
-      if (editingUser) {
-        updateUser(editingUser.id, formData);
-        toast.success('Usuário atualizado com sucesso!');
-      } else {
-        addUser({
-          id: crypto.randomUUID(),
-          ...formData,
-          createdAt: new Date().toISOString(),
-        });
-        toast.success('Usuário criado com sucesso!');
+      const ok = editingUser
+        ? await updateUser(editingUser.id, formData)
+        : await addUser({
+            id: crypto.randomUUID(),
+            ...formData,
+            createdAt: new Date().toISOString(),
+          });
+
+      if (!ok) {
+        toast.error('Não foi possível salvar o usuário. Verifique a conexão e tente novamente.');
+        return;
       }
+
+      toast.success(editingUser ? 'Usuário atualizado com sucesso!' : 'Usuário criado com sucesso!');
       closeModal();
     } catch {
       toast.error('Erro ao salvar usuário');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -211,9 +220,13 @@ export const UserManagement = () => {
       message: `Tem certeza que deseja excluir "${user?.name}"? Esta ação não pode ser desfeita.`,
       confirmText: 'Excluir',
       variant: 'danger',
-      onConfirm: () => {
-        deleteUser(id);
-        toast.success('Usuário excluído com sucesso!');
+      onConfirm: async () => {
+        const ok = await deleteUser(id);
+        if (ok) {
+          toast.success('Usuário excluído com sucesso!');
+        } else {
+          toast.error('Não foi possível excluir o usuário. Tente novamente.');
+        }
       },
     });
   };
@@ -546,8 +559,8 @@ export const UserManagement = () => {
                   <Button type="button" variant="secondary" className="flex-1" onClick={closeModal}>
                     Cancelar
                   </Button>
-                  <Button type="submit" className="flex-1">
-                    {editingUser ? 'Salvar' : 'Criar'}
+                  <Button type="submit" className="flex-1" disabled={isSaving}>
+                    {isSaving ? 'Salvando...' : editingUser ? 'Salvar' : 'Criar'}
                   </Button>
                 </>
               )}

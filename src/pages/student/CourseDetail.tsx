@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
 import { useAuthStore } from '../../stores/authStore';
+import { useFavoritesStore } from '../../stores/favoritesStore';
 import { progressService } from '../../hooks/useProgress';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
@@ -13,47 +14,67 @@ import { sanitizeHtml } from '../../lib/sanitize';
 export const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { courses } = useDataStore();
+  const { courses, initialized } = useDataStore();
   const { user } = useAuthStore();
+  const favorites = useFavoritesStore((s) => s.favorites);
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
+  const isFavorite = id ? favorites.includes(id) : false;
   const course = courses.find(c => c.id === id);
   const [expandedLesson, setExpandedLesson] = useState<string | null>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [completedLessonIds, setCompletedLessonIds] = useState<string[]>([]);
   const [isLoadingProgress, setIsLoadingProgress] = useState(false);
 
   useEffect(() => {
-    if (!course && id) {
+    // Só trata como "removido" depois que o catálogo terminou de carregar,
+    // senão redirecionaria durante o load inicial (acesso direto / refresh).
+    if (initialized && !course && id) {
       toast.error('Este curso foi removido ou está indisponível');
       const timer = setTimeout(() => {
         navigate('/home', { replace: true });
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [course, id, navigate]);
+  }, [initialized, course, id, navigate]);
 
   useEffect(() => {
-    const loadProgress = async () => {
-      if (!user?.id || !course?.id) {
-        return;
-      }
+    if (!user?.id || !course?.id) return;
 
-      setIsLoadingProgress(true);
+    let cancelled = false;
+    setIsLoadingProgress(true);
+
+    const loadProgress = async () => {
       try {
-        const enrollment = await progressService.getEnrollment(user.id, course.id);
-        if (enrollment) {
-          setProgress(enrollment.progress);
-        }
+        const [enrollment, completed] = await Promise.all([
+          progressService.getEnrollment(user.id, course.id),
+          progressService.getCompletedLessons(user.id, course.id),
+        ]);
+        if (cancelled) return;
+        setProgress(enrollment?.progress ?? 0);
+        setCompletedLessonIds(completed);
       } catch (error) {
         console.error('Error loading progress:', error);
       } finally {
-        setIsLoadingProgress(false);
+        if (!cancelled) setIsLoadingProgress(false);
       }
     };
 
     loadProgress();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.id, course?.id]);
 
   if (!course) {
+    // Enquanto o catálogo carrega, mostra spinner em vez de "não encontrado"
+    if (!initialized) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-900">
+          <div className="w-10 h-10 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -65,8 +86,8 @@ export const CourseDetail = () => {
   }
 
   const allLessons = course.modules?.flatMap(m => m.lessons || []) || [];
-  const completedLessons = Math.round((progress / 100) * allLessons.length);
-  const isEnrolled = progress > 0;
+  const completedCount = completedLessonIds.length;
+  const isEnrolled = progress > 0 || completedCount > 0;
 
   const handleContinue = async () => {
     if (!user?.id || !course?.id || allLessons.length === 0) return;
@@ -162,7 +183,7 @@ export const CourseDetail = () => {
                     <span className="text-sm font-medium text-surface-900 dark:text-surface-100">{progress}%</span>
                   </div>
                   <p className="text-xs text-surface-500 dark:text-surface-300">
-                    {completedLessons} de {allLessons.length} aulas concluídas
+                    {completedCount} de {allLessons.length} aulas concluídas
                   </p>
                 </div>
               )}
@@ -174,7 +195,7 @@ export const CourseDetail = () => {
                 </Button>
                 <Button 
                   variant="secondary" 
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={() => id && toggleFavorite(id)}
                 >
                   <Heart size={18} className={isFavorite ? 'fill-red-500 text-red-500' : ''} />
                   {isFavorite ? 'Favoritado' : 'Favoritar'}
@@ -203,8 +224,10 @@ export const CourseDetail = () => {
                       {module.title}
                     </h3>
                     <div className="space-y-2">
-                      {module.lessons?.map((lesson, index) => (
-                        <div 
+                      {module.lessons?.map((lesson, index) => {
+                        const isCompleted = completedLessonIds.includes(lesson.id);
+                        return (
+                        <div
                           key={lesson.id}
                           className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden"
                         >
@@ -214,12 +237,12 @@ export const CourseDetail = () => {
                           >
                             <div className={`
                               w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
-                              ${index < completedLessons 
-                                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' 
+                              ${isCompleted
+                                ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
                                 : 'bg-surface-100 dark:bg-surface-700 text-surface-400'
                               }
                             `}>
-                              {index < completedLessons ? (
+                              {isCompleted ? (
                                 <CheckCircle size={20} />
                               ) : (
                                 <span className="font-medium">{index + 1}</span>
@@ -255,7 +278,8 @@ export const CourseDetail = () => {
                             </div>
                           )}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
