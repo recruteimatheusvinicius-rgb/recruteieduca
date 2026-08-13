@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
@@ -26,7 +26,7 @@ const createEmptyCertificateConfig = (): CertificateConfig => ({
 export const FormationCreate = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { formations, courses, levels, addFormation, updateFormation } = useDataStore();
+  const { formations, courses, levels, addFormation, updateFormation, initialized } = useDataStore();
   
   const existingFormation = id ? formations.find(f => f.id === id) : null;
   const isEditing = !!existingFormation;
@@ -48,7 +48,19 @@ export const FormationCreate = () => {
     };
   });
 
-  const filteredCourses = courses.filter(course => 
+  // Se o catálogo ainda não tinha carregado no mount (link direto/refresh), o
+  // formData inicial ficou em branco — corrige assim que existingFormation surgir.
+  useEffect(() => {
+    if (id && existingFormation && existingFormation.id !== formData.id) {
+      setFormData({
+        ...existingFormation,
+        certificateConfig: existingFormation.certificateConfig || createEmptyCertificateConfig(),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, existingFormation, formData.id]);
+
+  const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(courseSearch.toLowerCase())
   );
 
@@ -72,15 +84,16 @@ export const FormationCreate = () => {
 
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
-      if (isEditing) {
-        updateFormation(formData.id, formData);
-        toast.success('Formação atualizada com sucesso!');
-      } else {
-        addFormation(formData);
-        toast.success('Formação criada com sucesso!');
+      const ok = isEditing
+        ? await updateFormation(formData.id, formData)
+        : await addFormation(formData);
+
+      if (!ok) {
+        toast.error('Não foi possível salvar a formação. Verifique a conexão e tente novamente.');
+        return;
       }
+
+      toast.success(isEditing ? 'Formação atualizada com sucesso!' : 'Formação criada com sucesso!');
       navigate('/admin/formations');
     } catch {
       toast.error('Erro ao salvar formação');
@@ -320,10 +333,16 @@ export const FormationCreate = () => {
                     min="0"
                     max="100"
                     value={formData.certificateConfig?.passingGrade || 70}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      certificateConfig: { ...formData.certificateConfig!, passingGrade: parseInt(e.target.value) }
-                    })}
+                    onChange={(e) => {
+                      const parsed = parseInt(e.target.value, 10);
+                      setFormData({
+                        ...formData,
+                        certificateConfig: {
+                          ...formData.certificateConfig!,
+                          passingGrade: Number.isFinite(parsed) ? parsed : (formData.certificateConfig?.passingGrade ?? 70),
+                        }
+                      });
+                    }}
                     className="w-32 px-3 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                   />
                 </div>
@@ -384,12 +403,23 @@ export const FormationCreate = () => {
     );
   };
 
+  // Edição por link direto/refresh: o catálogo pode ainda não ter carregado no
+  // primeiro render, o que faria o formulário aparecer em branco ("Nova
+  // Formação") por um instante antes de se autocorrigir. Mostra um spinner até lá.
+  if (id && !initialized) {
+    return (
+      <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
       <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
         <div className="container-app py-6">
           <div className="flex items-center gap-4 mb-4">
-            <button 
+            <button
               onClick={() => navigate('/admin/formations')}
               className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700"
             >
