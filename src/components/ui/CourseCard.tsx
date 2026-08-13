@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Clock, Star, Users, Play, BookOpen } from 'lucide-react';
+import { Clock, Star, Users, Play, BookOpen, Heart } from 'lucide-react';
 import { Badge } from './Badge';
+import { useFavoritesStore } from '../../stores/favoritesStore';
 import type { Course } from '../../types';
 
 interface CourseCardProps {
@@ -10,6 +11,10 @@ interface CourseCardProps {
 }
 
 export const CourseCard = ({ course, progress = 0, showProgress = false }: CourseCardProps) => {
+  const favorites = useFavoritesStore((s) => s.favorites);
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
+  const isFavorite = favorites.includes(course.id);
+
   const categoryColors: Record<string, 'primary' | 'success' | 'warning' | 'info'> = {
     'Programação': 'primary',
     'Design': 'info',
@@ -50,7 +55,24 @@ export const CourseCard = ({ course, progress = 0, showProgress = false }: Cours
         <div className="absolute top-3 left-3">
           <Badge variant={categoryVariant}>{course.category}</Badge>
         </div>
-        
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(course.id);
+          }}
+          aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-surface-900/80 backdrop-blur-sm flex items-center justify-center shadow-sm hover:scale-110 transition-transform cursor-pointer"
+        >
+          <Heart
+            size={16}
+            className={isFavorite ? 'fill-red-500 text-red-500' : 'text-surface-500 dark:text-surface-300'}
+          />
+        </button>
+
         {showProgress && progress > 0 && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-surface-200 dark:bg-surface-700">
             <div 

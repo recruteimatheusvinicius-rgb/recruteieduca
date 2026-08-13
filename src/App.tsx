@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useThemeStore } from './stores/themeStore';
-import { useAuthStore } from './stores/authStore';
+import { useAuthStore, mapProfileRowToUser } from './stores/authStore';
 import { useDataStore } from './stores/dataStore';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { StudentNavbar } from './components/ui/StudentNavbar';
@@ -122,7 +122,8 @@ function ScrollToTop() {
 
 function App() {
   const { theme } = useThemeStore();
-  const { initializeAuth, isAuthInitialized } = useAuthStore();
+  const { initializeAuth, isAuthInitialized, user } = useAuthStore();
+  const initializeData = useDataStore((s) => s.initialize);
   const [isAppLoading, setIsAppLoading] = useState(true);
 
   useEffect(() => {
@@ -130,6 +131,17 @@ function App() {
       initializeAuth();
     }
   }, [initializeAuth, isAuthInitialized]);
+
+  // Once authenticated, ensure catalog data is loaded no matter which route
+  // the student lands on. Public pages (/home, /course/:id, /lesson/:id) are
+  // not wrapped in ProtectedRoute, which is otherwise the only init trigger —
+  // so a direct link or refresh there would show an empty catalog. initialize()
+  // has its own guard, so calling it here is idempotent.
+  useEffect(() => {
+    if (isAuthInitialized && user) {
+      initializeData();
+    }
+  }, [isAuthInitialized, user, initializeData]);
 
   useEffect(() => {
     if (isAuthInitialized) {
@@ -219,11 +231,11 @@ function App() {
         
         if (profile) {
           const currentUser = useAuthStore.getState().user;
-          const mergedUser = {
+          const mergedProfile = {
             ...profile,
             name: currentUser?.name && currentUser.name.trim() ? currentUser.name : profile.name
           };
-          useAuthStore.setState({ user: mergedUser, isAuthenticated: true });
+          useAuthStore.setState({ user: mapProfileRowToUser(mergedProfile), isAuthenticated: true });
           
           if (profile.name && profile.email) {
             setTawkVisitor(profile.name, profile.email);
