@@ -4,6 +4,7 @@ import { useDataStore } from '../../stores/dataStore';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { TipTapEditor } from '../../components/TipTapEditor';
+import { useConfirm } from '../../hooks/useConfirm';
 import { toast } from 'sonner';
 import { 
   ArrowLeft, ArrowRight, Plus, Trash2, GripVertical, Play, 
@@ -35,6 +36,27 @@ const createEmptyLesson = (order: number, type: LessonType): Lesson => ({
   assessmentConfig: type === 'assessment' ? { passingGrade: 70, maxAttempts: 3, showResults: true } : undefined,
 });
 
+// Evita salvar NaN quando o campo numérico é apagado ou recebe texto inválido
+const safeInt = (value: string, fallback: number): number => {
+  const parsed = parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+// Converte durações livres tipo "5min", "1h", "1h 30min" ou "90" em minutos.
+// Um parseInt puro trataria "1h" como 1 minuto em vez de 60 — some horas na soma total.
+const parseDurationToMinutes = (duration: string | undefined): number => {
+  if (!duration) return 0;
+  const hourMatch = duration.match(/(\d+)\s*h/i);
+  const minuteMatch = duration.match(/(\d+)\s*m/i);
+  if (hourMatch || minuteMatch) {
+    const hours = hourMatch ? Number(hourMatch[1]) : 0;
+    const minutes = minuteMatch ? Number(minuteMatch[1]) : 0;
+    return hours * 60 + minutes;
+  }
+  const plain = parseInt(duration, 10);
+  return Number.isFinite(plain) && plain > 0 ? plain : 0;
+};
+
 const createEmptyQuizQuestion = (): QuizQuestion => ({
   id: crypto.randomUUID(),
   question: '',
@@ -61,13 +83,14 @@ const lessonTypeIcons: Record<LessonType, { icon: typeof Play; label: string; co
 export const CourseCreate = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { courses, categories, plans, levels, addCourse, updateCourse } = useDataStore();
+  const { courses, categories, plans, levels, addCourse, updateCourse, initialized } = useDataStore();
   
   const existingCourse = id ? courses.find(c => c.id === id) : null;
   const isEditing = !!existingCourse;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const confirm = useConfirm();
 
   const [formData, setFormData] = useState<Course>(() => {
     if (existingCourse) return existingCourse;
@@ -203,10 +226,7 @@ export const CourseCreate = () => {
       }));
 
       const totalDuration = normalizedModules.reduce((acc, mod) => {
-        const modDuration = mod.lessons.reduce((a, lesson) => {
-          const mins = parseInt(lesson.duration || '0', 10);
-          return a + (Number.isFinite(mins) && mins > 0 ? mins : 0);
-        }, 0);
+        const modDuration = mod.lessons.reduce((a, lesson) => a + parseDurationToMinutes(lesson.duration), 0);
         return acc + modDuration;
       }, 0);
       
@@ -252,9 +272,20 @@ export const CourseCreate = () => {
   };
 
   const removeModule = (moduleId: string) => {
-    setFormData({
-      ...formData,
-      modules: formData.modules.filter(m => m.id !== moduleId),
+    const module = formData.modules.find(m => m.id === moduleId);
+    confirm({
+      title: 'Remover módulo',
+      message: module?.lessons.length
+        ? `O módulo "${module.title || 'sem título'}" tem ${module.lessons.length} aula(s). Remover o módulo apaga todas as aulas dele. Esta ação não pode ser desfeita.`
+        : `Tem certeza que deseja remover o módulo "${module?.title || 'sem título'}"?`,
+      confirmText: 'Remover',
+      variant: 'danger',
+      onConfirm: () => {
+        setFormData((prev) => ({
+          ...prev,
+          modules: prev.modules.filter(m => m.id !== moduleId),
+        }));
+      },
     });
   };
 
@@ -285,13 +316,22 @@ export const CourseCreate = () => {
   };
 
   const removeLesson = (moduleId: string, lessonId: string) => {
-    setFormData({
-      ...formData,
-      modules: formData.modules.map(m => 
-        m.id === moduleId 
-          ? { ...m, lessons: m.lessons.filter(l => l.id !== lessonId) }
-          : m
-      ),
+    const lesson = formData.modules.find(m => m.id === moduleId)?.lessons.find(l => l.id === lessonId);
+    confirm({
+      title: 'Remover aula',
+      message: `Tem certeza que deseja remover a aula "${lesson?.title || 'sem título'}"? Esta ação não pode ser desfeita.`,
+      confirmText: 'Remover',
+      variant: 'danger',
+      onConfirm: () => {
+        setFormData((prev) => ({
+          ...prev,
+          modules: prev.modules.map(m =>
+            m.id === moduleId
+              ? { ...m, lessons: m.lessons.filter(l => l.id !== lessonId) }
+              : m
+          ),
+        }));
+      },
     });
   };
 
@@ -575,7 +615,7 @@ export const CourseCreate = () => {
           >
             {levels.map((level) => (
               <option key={level} value={level}>
-                {level === 'iniciante' ? 'Iniciante' : level === 'intermediario' ? 'Intermediário' : 'Avançado'}
+                {level === 'iniciante' ? 'Iniciante' : level === 'intermediario' ? 'Intermédiario' : 'Avançado'}
               </option>
             ))}
           </select>
@@ -875,11 +915,11 @@ export const CourseCreate = () => {
                                 min="0"
                                 max="100"
                                 value={lesson.assessmentConfig?.passingGrade || 70}
-                                onChange={(e) => updateLesson(module.id, lesson.id, { 
-                                  assessmentConfig: { 
-                                    ...lesson.assessmentConfig!, 
-                                    passingGrade: parseInt(e.target.value) 
-                                  } as AssessmentConfig 
+                                onChange={(e) => updateLesson(module.id, lesson.id, {
+                                  assessmentConfig: {
+                                    ...lesson.assessmentConfig!,
+                                    passingGrade: safeInt(e.target.value, lesson.assessmentConfig?.passingGrade ?? 70)
+                                  } as AssessmentConfig
                                 })}
                                 className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                               />
@@ -892,11 +932,11 @@ export const CourseCreate = () => {
                                 type="number"
                                 min="1"
                                 value={lesson.assessmentConfig?.maxAttempts || 3}
-                                onChange={(e) => updateLesson(module.id, lesson.id, { 
-                                  assessmentConfig: { 
-                                    ...lesson.assessmentConfig!, 
-                                    maxAttempts: parseInt(e.target.value) 
-                                  } as AssessmentConfig 
+                                onChange={(e) => updateLesson(module.id, lesson.id, {
+                                  assessmentConfig: {
+                                    ...lesson.assessmentConfig!,
+                                    maxAttempts: safeInt(e.target.value, lesson.assessmentConfig?.maxAttempts ?? 3)
+                                  } as AssessmentConfig
                                 })}
                                 className="w-full px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
                               />
@@ -1124,7 +1164,7 @@ export const CourseCreate = () => {
                 value={formData.certificateConfig.passingGrade || 70}
                 onChange={(e) => setFormData({
                   ...formData,
-                  certificateConfig: { ...formData.certificateConfig, passingGrade: parseInt(e.target.value) },
+                  certificateConfig: { ...formData.certificateConfig, passingGrade: safeInt(e.target.value, formData.certificateConfig.passingGrade ?? 70) },
                 })}
                 className="w-32 px-4 py-2 rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100"
               />
@@ -1252,6 +1292,17 @@ export const CourseCreate = () => {
       </Card>
     </div>
   );
+
+  // Edição por link direto/refresh: o catálogo pode ainda não ter carregado no
+  // primeiro render, o que faria o formulário aparecer em branco ("Criar Novo
+  // Curso") por um instante antes de se autocorrigir. Mostra um spinner até lá.
+  if (id && !initialized) {
+    return (
+      <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center">
+        <div className="w-10 h-10 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
