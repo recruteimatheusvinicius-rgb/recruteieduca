@@ -4,7 +4,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { NotificationPanel } from './NotificationPanel';
 import { Logo } from './Logo';
-import { Moon, Sun, Bell, User, LogOut, LayoutDashboard, Menu, X, ChevronDown, BookOpen, Home, HelpCircle, MessageCircle, Building, ListChecks, GraduationCap, Users, Tag, DollarSign, Shield, Eye } from 'lucide-react';
+import { Moon, Sun, Bell, User, LogOut, LayoutDashboard, Menu, X, ChevronDown, BookOpen, Home, HelpCircle, MessageCircle, Building, GraduationCap, Users, Tag, DollarSign, Shield, Eye } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
 export const AdminNavbar = () => {
@@ -41,7 +41,6 @@ export const AdminNavbar = () => {
       links: [
         { path: '/admin/users', label: 'Usuários', icon: Users },
         { path: '/admin/companies', label: 'Empresas', icon: Building },
-        { path: '/admin/onboarding-templates', label: 'Checklists', icon: ListChecks },
       ],
     },
   ];

@@ -43,39 +43,19 @@ export const mockPlans: Plan[] = [
   {
     id: '1',
     name: 'Gratuito',
-    features: [
-      'Acesso a cursos gratuitos',
-      'Certificados básicos',
-      'Suporte por email'
-    ],
     courseRestrictions: [],  // vazio = acesso total
     formationRestrictions: []
   },
   {
     id: '2',
     name: 'Premium',
-    features: [
-      'Acesso a todos os cursos',
-      'Certificados verificados',
-      'Suporte prioritário',
-      'Downloads offline',
-      'Formações exclusivas'
-    ],
     courseRestrictions: [],
     formationRestrictions: [],
-    isPopular: true,
     color: '#16a34a'
   },
   {
     id: '3',
     name: 'Enterprise',
-    features: [
-      'Tudo do Premium',
-      'Acesso antecipado a novos cursos',
-      'Mentoria mensal',
-      'Formações customizadas',
-      'Suporte dedicado'
-    ],
     courseRestrictions: [],
     formationRestrictions: [],
     color: '#8b5cf6'

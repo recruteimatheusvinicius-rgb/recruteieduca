@@ -657,12 +657,7 @@ export const CourseCreate = () => {
                 onChange={() => togglePlanRestriction(plan.id)}
                 className="w-4 h-4 rounded text-primary-600"
               />
-              <div>
-                <p className="font-medium text-surface-900 dark:text-surface-100">{plan.name}</p>
-                <p className="text-xs text-surface-500 dark:text-surface-300">
-                  {plan.features.length} funcionalidades
-                </p>
-              </div>
+              <p className="font-medium text-surface-900 dark:text-surface-100">{plan.name}</p>
             </label>
           ))}
           {plans.length === 0 && (

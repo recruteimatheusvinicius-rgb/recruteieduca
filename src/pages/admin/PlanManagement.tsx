@@ -16,7 +16,6 @@ export const PlanManagement = () => {
     name: '',
     courseRestrictions: [] as string[],
     color: '#16a34a',
-    isPopular: false,
   });
 
   const openModal = (plan?: Plan) => {
@@ -26,15 +25,13 @@ export const PlanManagement = () => {
         name: plan.name,
         courseRestrictions: plan.courseRestrictions || [],
         color: plan.color || '#16a34a',
-        isPopular: plan.isPopular || false,
       });
     } else {
       setEditingPlan(null);
-      setFormData({ 
-        name: '', 
-        courseRestrictions: [], 
+      setFormData({
+        name: '',
+        courseRestrictions: [],
         color: '#16a34a',
-        isPopular: false 
       });
     }
     setIsModalOpen(true);
@@ -55,20 +52,16 @@ export const PlanManagement = () => {
       const ok = editingPlan
         ? await updatePlan(editingPlan.id, {
             name: formData.name,
-            features: [],
             courseRestrictions: formData.courseRestrictions,
             formationRestrictions: [],
             color: formData.color,
-            isPopular: formData.isPopular,
           })
         : await addPlan({
             id: crypto.randomUUID(),
             name: formData.name,
-            features: [],
             courseRestrictions: formData.courseRestrictions,
             formationRestrictions: [],
             color: formData.color,
-            isPopular: formData.isPopular,
           });
 
       if (!ok) {
@@ -261,19 +254,6 @@ export const PlanManagement = () => {
                     </p>
                   )}
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="isPopular"
-                  checked={formData.isPopular}
-                  onChange={(e) => setFormData({ ...formData, isPopular: e.target.checked })}
-                  className="w-4 h-4 rounded text-primary-600"
-                />
-                <label htmlFor="isPopular" className="text-sm text-surface-700 dark:text-surface-300">
-                  Marcar como plano popular/destaque
-                </label>
               </div>
 
               <div className="flex gap-3 pt-4">

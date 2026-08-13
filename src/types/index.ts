@@ -112,10 +112,8 @@ export interface HelpArticle {
 export interface Plan {
   id: string;
   name: string;
-  features: string[];
   courseRestrictions: string[];
   formationRestrictions: string[];
-  isPopular?: boolean;
   color?: string;
 }
 
