@@ -41,20 +41,26 @@ export const AdminManage = () => {
       category: 'categoria',
     };
     const label = labels[type] ?? 'item';
+    const article = type === 'formation' || type === 'category' ? 'a' : 'o';
     confirm({
       title: `Excluir ${label}`,
       message: `Tem certeza que deseja excluir este ${label}? Esta ação não pode ser desfeita.`,
       confirmText: 'Excluir',
       variant: 'danger',
       onConfirm: async () => {
+        let ok = false;
         switch (type) {
-          case 'course': await deleteCourse(id); break;
-          case 'user': deleteUser(id); break;
-          case 'plan': deletePlan(id); break;
-          case 'formation': deleteFormation(id); break;
-          case 'category': deleteCategory(id); break;
+          case 'course': ok = await deleteCourse(id); break;
+          case 'user': ok = await deleteUser(id); break;
+          case 'plan': ok = await deletePlan(id); break;
+          case 'formation': ok = await deleteFormation(id); break;
+          case 'category': ok = await deleteCategory(id); break;
         }
-        toast.success(`${label[0].toUpperCase()}${label.slice(1)} excluído(a) com sucesso`);
+        if (ok) {
+          toast.success(`${label[0].toUpperCase()}${label.slice(1)} excluído(a) com sucesso`);
+        } else {
+          toast.error(`Não foi possível excluir ${article} ${label}. Tente novamente.`);
+        }
       },
     });
   };
