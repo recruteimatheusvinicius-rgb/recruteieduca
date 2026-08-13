@@ -19,7 +19,7 @@ import {
 export const LessonViewer = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { courses } = useDataStore();
+  const { courses, initialized } = useDataStore();
   const { user } = useAuthStore();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
@@ -69,6 +69,14 @@ export const LessonViewer = () => {
   }, [user?.id, currentCourse?.id, currentLesson?.id]);
 
   if (!currentLesson || !currentCourse) {
+    // Enquanto o catálogo carrega, mostra spinner em vez de "não encontrada"
+    if (!initialized) {
+      return (
+        <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center">
+          <div className="w-10 h-10 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center">
         <div className="text-center">

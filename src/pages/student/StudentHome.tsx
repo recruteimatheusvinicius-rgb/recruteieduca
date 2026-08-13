@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useDataStore } from '../../stores/dataStore';
 import { useAuthStore } from '../../stores/authStore';
 import { CourseCard } from '../../components/ui/CourseCard';
@@ -12,13 +12,23 @@ import { useDebounce } from '../../hooks/useDebounce';
 export const StudentHome = () => {
   const { courses } = useDataStore();
   const { user } = useAuthStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const urlQuery = searchParams.get('q') ?? '';
+  const [searchQuery, setSearchQuery] = useState(urlQuery);
   const debouncedQuery = useDebounce(searchQuery, 200);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
 
-  const categories = ['Todos', ...new Set(courses.map(c => c.category))];
+  // Sincroniza a busca com o parâmetro da URL (ex.: busca feita pela navbar)
+  useEffect(() => {
+    setSearchQuery(urlQuery);
+  }, [urlQuery]);
 
-  const filteredCourses = courses.filter(course => {
+  // Estudantes só enxergam cursos publicados (rascunhos/arquivados são internos)
+  const publishedCourses = courses.filter(course => course.status === 'published');
+
+  const categories = ['Todos', ...new Set(publishedCourses.map(c => c.category).filter(Boolean))];
+
+  const filteredCourses = publishedCourses.filter(course => {
     const q = debouncedQuery.trim().toLowerCase();
     if (!q) return selectedCategory === 'Todos' || course.category === selectedCategory;
     const haystack = `${course.title} ${stripHtml(course.description)} ${course.instructor ?? ''}`.toLowerCase();
