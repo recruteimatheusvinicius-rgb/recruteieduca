@@ -28,7 +28,7 @@ interface SupabaseProfile {
   company_id?: string | null;
 }
 
-const mapProfileRowToUser = (profile: SupabaseProfile): User => ({
+export const mapProfileRowToUser = (profile: SupabaseProfile): User => ({
   id: profile.id,
   name: profile.name ?? profile.email?.split('@')[0] ?? 'Usuário',
   email: profile.email ?? '',
