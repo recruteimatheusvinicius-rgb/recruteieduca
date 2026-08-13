@@ -20,7 +20,7 @@ export const FormationManagement = () => {
     };
     const labels: Record<string, string> = {
       iniciante: 'Iniciante',
-      intermediario: 'Intermédio',
+      intermediario: 'Intermediário',
       avancado: 'Avançado',
     };
     return <Badge variant={variants[level]}>{labels[level]}</Badge>;
