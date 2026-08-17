@@ -282,16 +282,64 @@ CREATE POLICY "Allow insert profiles" ON profiles FOR INSERT WITH CHECK (auth.ui
 CREATE POLICY "Allow update profiles" ON profiles FOR UPDATE USING (auth.uid()::text = id);
 
 -- Políticas para categories
+-- INSERT/UPDATE/DELETE: apenas admins
 DROP POLICY IF EXISTS "Allow read categories" ON categories;
+DROP POLICY IF EXISTS "Allow insert categories" ON categories;
+DROP POLICY IF EXISTS "Allow update categories" ON categories;
+DROP POLICY IF EXISTS "Allow delete categories" ON categories;
 CREATE POLICY "Allow read categories" ON categories FOR SELECT USING (true);
+CREATE POLICY "Allow insert categories" ON categories FOR INSERT WITH CHECK (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Allow update categories" ON categories FOR UPDATE USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Allow delete categories" ON categories FOR DELETE USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
 
 -- Políticas para plans
+-- INSERT/UPDATE/DELETE: apenas admins
 DROP POLICY IF EXISTS "Allow read plans" ON plans;
+DROP POLICY IF EXISTS "Allow insert plans" ON plans;
+DROP POLICY IF EXISTS "Allow update plans" ON plans;
+DROP POLICY IF EXISTS "Allow delete plans" ON plans;
 CREATE POLICY "Allow read plans" ON plans FOR SELECT USING (true);
+CREATE POLICY "Allow insert plans" ON plans FOR INSERT WITH CHECK (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Allow update plans" ON plans FOR UPDATE USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Allow delete plans" ON plans FOR DELETE USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
 
 -- Políticas para formations
+-- INSERT/UPDATE/DELETE: apenas admins
 DROP POLICY IF EXISTS "Allow read formations" ON formations;
+DROP POLICY IF EXISTS "Allow insert formations" ON formations;
+DROP POLICY IF EXISTS "Allow update formations" ON formations;
+DROP POLICY IF EXISTS "Allow delete formations" ON formations;
 CREATE POLICY "Allow read formations" ON formations FOR SELECT USING (true);
+CREATE POLICY "Allow insert formations" ON formations FOR INSERT WITH CHECK (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Allow update formations" ON formations FOR UPDATE USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Allow delete formations" ON formations FOR DELETE USING (
+  auth.uid() IS NOT NULL AND
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
 
 -- Políticas para user_achievements
 DROP POLICY IF EXISTS "Allow read user_achievements" ON user_achievements;
