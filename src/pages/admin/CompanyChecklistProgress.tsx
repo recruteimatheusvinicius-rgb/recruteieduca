@@ -107,7 +107,7 @@ export const CompanyChecklistProgress = () => {
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
       <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
-        <div className="container-app py-6">
+        <div className="px-6 md:px-10 py-6">
           <Link to="/admin/companies" className="flex items-center gap-2 text-surface-500 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 mb-3 cursor-pointer w-fit">
             <ArrowLeft size={18} />
             <span className="text-sm font-medium">Voltar para empresas</span>
@@ -124,7 +124,7 @@ export const CompanyChecklistProgress = () => {
         </div>
       </div>
 
-      <div className="container-app py-6">
+      <div className="px-6 md:px-10 py-6">
         {!company.onboardingTrack ? (
           <Card className="p-8 text-center">
             <p className="text-surface-500 dark:text-surface-300">

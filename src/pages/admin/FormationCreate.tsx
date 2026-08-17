@@ -417,7 +417,7 @@ export const FormationCreate = () => {
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
       <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
-        <div className="container-app py-6">
+        <div className="px-6 md:px-10 py-6">
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={() => navigate('/admin/formations')}
@@ -460,7 +460,7 @@ export const FormationCreate = () => {
         </div>
       </div>
 
-      <div className="container-app py-8">
+      <div className="px-6 md:px-10 py-8">
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}

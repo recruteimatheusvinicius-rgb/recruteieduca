@@ -8,6 +8,7 @@ import { Card } from '../../components/ui/Card';
 import { Search, Sparkles, ListChecks, ChevronRight } from 'lucide-react';
 import { stripHtml } from '../../lib/sanitize';
 import { useDebounce } from '../../hooks/useDebounce';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 
 export const StudentHome = () => {
   const { courses } = useDataStore();
@@ -17,11 +18,29 @@ export const StudentHome = () => {
   const [searchQuery, setSearchQuery] = useState(urlQuery);
   const debouncedQuery = useDebounce(searchQuery, 200);
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  const [enrollments, setEnrollments] = useState<Record<string, number>>({});
 
   // Sincroniza a busca com o parâmetro da URL (ex.: busca feita pela navbar)
   useEffect(() => {
     setSearchQuery(urlQuery);
   }, [urlQuery]);
+
+  useEffect(() => {
+    if (!user) return;
+    if (!isSupabaseConfigured()) return;
+    supabase
+      .from('user_enrollments')
+      .select('course_id, progress')
+      .eq('user_id', user.id)
+      .then(({ data, error }) => {
+        if (error || !data) return;
+        const map: Record<string, number> = {};
+        (data as Array<{ course_id: string | null; progress: number | null }>).forEach((row) => {
+          if (row.course_id) map[row.course_id] = row.progress ?? 0;
+        });
+        setEnrollments(map);
+      });
+  }, [user, courses]);
 
   // Estudantes só enxergam cursos publicados (rascunhos/arquivados são internos)
   const publishedCourses = courses.filter(course => course.status === 'published');
@@ -37,9 +56,16 @@ export const StudentHome = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const continueCourses = publishedCourses
+    .filter((course) => {
+      const progress = enrollments[course.id] ?? 0;
+      return progress > 0 && progress < 100;
+    })
+    .slice(0, 4);
+
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white">
+      <div className="bg-gradient-to-br from-primary-600 via-indigo-600 to-violet-600 text-white">
         <div className="container-app py-12 md:py-16">
           <div className="max-w-2xl mx-auto text-center animate-stagger">
             <div className="flex items-center justify-center gap-2 text-primary-200 mb-3">
@@ -78,6 +104,22 @@ export const StudentHome = () => {
               <ChevronRight size={20} className="text-surface-400 flex-shrink-0" />
             </Card>
           </Link>
+        )}
+
+        {continueCourses.length > 0 && (
+          <div className="mb-10">
+            <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">Continuar assistindo</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {continueCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  progress={enrollments[course.id] ?? 0}
+                  showProgress
+                />
+              ))}
+            </div>
+          </div>
         )}
 
         <div className="flex flex-col md:flex-row md:items-center justify-center gap-4 mb-8">

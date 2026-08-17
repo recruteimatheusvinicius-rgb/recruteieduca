@@ -45,7 +45,7 @@ export const HelpCenter = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-16">
+      <div className="bg-gradient-to-br from-primary-600 via-indigo-600 to-violet-600 text-white py-16">
         <div className="container-app">
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full mb-6">
@@ -210,15 +210,15 @@ export const HelpCenter = () => {
           </>
         )}
 
-        <div className="mt-16 bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-800 dark:to-surface-700 rounded-2xl p-8 text-center">
-          <MessageCircle size={48} className="mx-auto text-primary-500 mb-4" />
-          <h3 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-2">
+        <div className="mt-16 bg-gradient-to-br from-primary-600 to-violet-600 rounded-2xl p-8 text-center text-white">
+          <MessageCircle size={48} className="mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">
             Ainda precisa de ajuda?
           </h3>
-          <p className="text-surface-600 dark:text-surface-300 mb-6">
+          <p className="text-primary-100 mb-6">
             Nossa equipe está pronta para responder suas dúvidas
           </p>
-          <Button onClick={() => window.Tawk_API?.toggle()}>
+          <Button onClick={() => window.Tawk_API?.toggle()} className="!bg-white !text-primary-700 hover:!bg-primary-50">
             Fale Conosco!
           </Button>
         </div>

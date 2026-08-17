@@ -657,12 +657,7 @@ export const CourseCreate = () => {
                 onChange={() => togglePlanRestriction(plan.id)}
                 className="w-4 h-4 rounded text-primary-600"
               />
-              <div>
-                <p className="font-medium text-surface-900 dark:text-surface-100">{plan.name}</p>
-                <p className="text-xs text-surface-500 dark:text-surface-300">
-                  {plan.features.length} funcionalidades
-                </p>
-              </div>
+              <p className="font-medium text-surface-900 dark:text-surface-100">{plan.name}</p>
             </label>
           ))}
           {plans.length === 0 && (
@@ -1307,7 +1302,7 @@ export const CourseCreate = () => {
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
       <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
-        <div className="container-app py-4">
+        <div className="px-6 md:px-10 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button
@@ -1357,7 +1352,7 @@ export const CourseCreate = () => {
         </div>
       </div>
 
-      <div className="container-app py-6">
+      <div className="px-6 md:px-10 py-6">
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
         {currentStep === 3 && renderStep3()}

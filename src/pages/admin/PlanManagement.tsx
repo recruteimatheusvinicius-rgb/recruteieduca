@@ -16,7 +16,6 @@ export const PlanManagement = () => {
     name: '',
     courseRestrictions: [] as string[],
     color: '#16a34a',
-    isPopular: false,
   });
 
   const openModal = (plan?: Plan) => {
@@ -26,15 +25,13 @@ export const PlanManagement = () => {
         name: plan.name,
         courseRestrictions: plan.courseRestrictions || [],
         color: plan.color || '#16a34a',
-        isPopular: plan.isPopular || false,
       });
     } else {
       setEditingPlan(null);
-      setFormData({ 
-        name: '', 
-        courseRestrictions: [], 
+      setFormData({
+        name: '',
+        courseRestrictions: [],
         color: '#16a34a',
-        isPopular: false 
       });
     }
     setIsModalOpen(true);
@@ -55,20 +52,16 @@ export const PlanManagement = () => {
       const ok = editingPlan
         ? await updatePlan(editingPlan.id, {
             name: formData.name,
-            features: [],
             courseRestrictions: formData.courseRestrictions,
             formationRestrictions: [],
             color: formData.color,
-            isPopular: formData.isPopular,
           })
         : await addPlan({
             id: crypto.randomUUID(),
             name: formData.name,
-            features: [],
             courseRestrictions: formData.courseRestrictions,
             formationRestrictions: [],
             color: formData.color,
-            isPopular: formData.isPopular,
           });
 
       if (!ok) {
@@ -117,7 +110,7 @@ export const PlanManagement = () => {
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
       <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
-        <div className="container-app py-6">
+        <div className="px-6 md:px-10 py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
@@ -135,7 +128,7 @@ export const PlanManagement = () => {
         </div>
       </div>
 
-      <div className="container-app py-6">
+      <div className="px-6 md:px-10 py-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
             <Card 
@@ -261,19 +254,6 @@ export const PlanManagement = () => {
                     </p>
                   )}
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="isPopular"
-                  checked={formData.isPopular}
-                  onChange={(e) => setFormData({ ...formData, isPopular: e.target.checked })}
-                  className="w-4 h-4 rounded text-primary-600"
-                />
-                <label htmlFor="isPopular" className="text-sm text-surface-700 dark:text-surface-300">
-                  Marcar como plano popular/destaque
-                </label>
               </div>
 
               <div className="flex gap-3 pt-4">
