@@ -255,7 +255,7 @@ export const LessonViewer = () => {
 
     if (!embed) {
       return (
-        <div className="relative aspect-video bg-surface-900 flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center">
           <div className="text-center p-6">
             <FileText size={40} className="mx-auto text-white/40 mb-3" />
             <p className="text-white/70 text-sm">Vídeo não disponível</p>
@@ -267,29 +267,25 @@ export const LessonViewer = () => {
 
     if (embed.kind === 'video') {
       return (
-        <div className="relative aspect-video bg-black">
-          <video
-            key={embed.src}
-            src={embed.src}
-            controls
-            controlsList="nodownload"
-            className="absolute inset-0 w-full h-full"
-          />
-        </div>
+        <video
+          key={embed.src}
+          src={embed.src}
+          controls
+          controlsList="nodownload"
+          className="w-full h-full"
+        />
       );
     }
 
     return (
-      <div className="relative aspect-video bg-black">
-        <iframe
-          key={embed.src}
-          src={embed.src}
-          title={currentLesson.title}
-          className="absolute inset-0 w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowFullScreen
-        />
-      </div>
+      <iframe
+        key={embed.src}
+        src={embed.src}
+        title={currentLesson.title}
+        className="w-full h-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowFullScreen
+      />
     );
   };
 
@@ -755,85 +751,9 @@ export const LessonViewer = () => {
 
       {/* Main Layout - Flex container with sidebar */}
       <div className="flex flex-1 overflow-hidden min-h-0">
-        {/* Main Content - Flex automatically adjusts to fill available space */}
-        <div className="flex-1 min-w-0 overflow-y-auto py-4">
-          <div className="max-w-5xl mx-auto">
-            {/* Content based on lesson type */}
-            {renderContentArea()}
-
-            {/* Lesson Info - Only for video type */}
-            {currentLesson.type === 'video' && (
-              <>
-                <div className="p-6 border-b border-surface-200 dark:border-surface-700">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                      <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
-                        {currentLesson.title}
-                      </h1>
-                      <div className="flex items-center gap-4 mt-2 text-sm text-surface-500 dark:text-surface-300">
-                        <span className="flex items-center gap-1">
-                          <Clock size={14} />
-                          {currentLesson.duration}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Play size={14} />
-                          {currentLesson.type}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => toggleLessonComplete(currentLesson.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
-                          isLessonCompleted(currentLesson.id)
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                            : 'bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600'
-                        }`}
-                      >
-                        {isLessonCompleted(currentLesson.id) ? (
-                          <>
-                            <CheckCircle size={18} />
-                            Concluída
-                          </>
-                        ) : (
-                          <>
-                            <Circle size={18} />
-                            Marcar como concluída
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Material Content — texto complementar inserido pelo admin */}
-                {(currentLesson.videoText || currentLesson.description) && (
-                  <div className="p-6">
-                    <div className="prose max-w-none dark:prose-invert text-surface-700 dark:text-surface-200">
-                      <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-4">
-                        Sobre esta aula
-                      </h3>
-                      {currentLesson.videoText ? (
-                        <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentLesson.videoText) }} />
-                      ) : (
-                        <p className="text-surface-600 dark:text-surface-300 leading-relaxed">
-                          {currentLesson.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Navigation */}
-            {/* Moved to Top Bar - Lesson Navigation */}
-          </div>
-        </div>
-
-        {/* Sidebar - Toggleable on large screens */}
+        {/* Sidebar - Toggleable on large screens, à esquerda ("modo cinema") */}
         <div className={`
-          w-80 shrink-0 overflow-y-auto border-l border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 
+          w-80 shrink-0 overflow-y-auto border-r border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800
           ${isSidebarOpen ? 'hidden lg:block' : 'hidden'}
         `}>
           <div className="p-4 border-b border-surface-200 dark:border-surface-700 bg-gradient-to-r from-primary-50/50 to-transparent dark:from-primary-900/10">
@@ -994,6 +914,71 @@ export const LessonViewer = () => {
             ))}
           </div>
         </div>
+
+        {/* Main Content */}
+        {currentLesson.type === 'video' ? (
+          <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+            {/* Player em modo cinema — preenche a altura disponível em fundo escuro */}
+            <div className="flex-1 min-h-0 bg-[#0F1030] flex items-center justify-center">
+              {renderVideoPlayer()}
+            </div>
+
+            {/* Painel inferior fixo com info da aula */}
+            <div className="shrink-0 max-h-[260px] overflow-y-auto bg-white dark:bg-surface-800 border-t border-surface-200 dark:border-surface-700 p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <div>
+                  <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
+                    {currentLesson.title}
+                  </h1>
+                  <div className="flex items-center gap-4 mt-1 text-sm text-surface-500 dark:text-surface-300">
+                    <span className="flex items-center gap-1">
+                      <Clock size={14} />
+                      {currentLesson.duration}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => toggleLessonComplete(currentLesson.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer flex-shrink-0 ${
+                    isLessonCompleted(currentLesson.id)
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                      : 'bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600'
+                  }`}
+                >
+                  {isLessonCompleted(currentLesson.id) ? (
+                    <>
+                      <CheckCircle size={18} />
+                      Concluída
+                    </>
+                  ) : (
+                    <>
+                      <Circle size={18} />
+                      Marcar como concluída
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {(currentLesson.videoText || currentLesson.description) && (
+                <div className="prose max-w-none dark:prose-invert text-surface-700 dark:text-surface-200">
+                  {currentLesson.videoText ? (
+                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(currentLesson.videoText) }} />
+                  ) : (
+                    <p className="text-surface-600 dark:text-surface-300 leading-relaxed">
+                      {currentLesson.description}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 min-w-0 overflow-y-auto py-4">
+            <div className="max-w-5xl mx-auto">
+              {renderContentArea()}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
