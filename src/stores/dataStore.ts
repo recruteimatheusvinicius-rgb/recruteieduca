@@ -351,9 +351,10 @@ export const useDataStore = create<DataState>((set, get) => ({
   // Category operations
   addCategory: async (category) => {
     if (isSupabaseConfigured()) {
+      const { courseCount, ...rest } = category;
       const { data, error } = await supabase
         .from('categories')
-        .insert([{ ...category, created_at: new Date().toISOString() }])
+        .insert([{ ...rest, course_count: courseCount, created_at: new Date().toISOString() }])
         .select()
         .single();
 

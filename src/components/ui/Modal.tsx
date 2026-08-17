@@ -23,13 +23,17 @@ const overlayVariants = {
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  // onClose costuma ser recriado a cada render do pai; usar ref evita que o
+  // efeito abaixo (e o autofocus) rode de novo a cada keystroke.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   // Esc fecha + body scroll lock + autofocus no primeiro input
   useEffect(() => {
     if (!isOpen) return;
 
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
     };
     document.addEventListener('keydown', handleKey);
 
@@ -49,7 +53,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       document.body.style.overflow = prevOverflow;
       window.clearTimeout(focusTimer);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
