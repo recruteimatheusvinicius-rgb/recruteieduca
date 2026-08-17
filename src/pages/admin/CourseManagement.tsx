@@ -228,7 +228,7 @@ export const CourseManagement = () => {
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
       <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
-        <div className="container-app py-6">
+        <div className="px-6 md:px-10 py-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
@@ -254,7 +254,7 @@ export const CourseManagement = () => {
         </div>
       </div>
 
-      <div className="container-app py-6">
+      <div className="px-6 md:px-10 py-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, index) => (
             <Card key={index} className="p-4">

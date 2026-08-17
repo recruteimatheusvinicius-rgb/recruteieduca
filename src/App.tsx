@@ -6,7 +6,7 @@ import { useDataStore } from './stores/dataStore';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { StudentNavbar } from './components/ui/StudentNavbar';
 import { Footer } from './components/ui/Footer';
-import { AdminNavbar } from './components/ui/AdminNavbar';
+import { AdminSidebar } from './components/ui/AdminSidebar';
 import { ToastProvider } from './components/ui/Toast';
 import { PageTransition } from './components/ui/PageTransition';
 import { ConfirmProvider } from './hooks/useConfirm';
@@ -87,7 +87,55 @@ interface TawkAPI {
 const AUTH_PATHS = ['/login', '/complete-profile', '/forgot-password', '/reset-password'];
 const FOOTER_PATHS = ['/home', '/help', '/my-courses'];
 
-function PersistentChrome({ position }: { position: 'top' | 'bottom' }) {
+function AppRoutes() {
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        <Route path="/" element={<RootRedirect />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/invite/:token" element={<InviteSetup />} />
+        <Route path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        <Route path="/home" element={<StudentHome />} />
+        <Route path="/course/:id" element={<CourseDetail />} />
+        <Route path="/lesson/:id" element={<LessonViewer />} />
+        <Route path="/help" element={<HelpCenter />} />
+
+        <Route path="/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
+        <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/onboarding" element={<ProtectedRoute><OnboardingChecklist /></ProtectedRoute>} />
+        <Route path="/educa/webinars" element={<ProtectedRoute><Webinars /></ProtectedRoute>} />
+        <Route path="/educa/pilulas" element={<ProtectedRoute><Pilulas /></ProtectedRoute>} />
+        <Route path="/educa/materiais" element={<ProtectedRoute><Materiais /></ProtectedRoute>} />
+
+        <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/courses" element={<ProtectedRoute requireAdmin><CourseManagement /></ProtectedRoute>} />
+        <Route path="/admin/courses/create" element={<ProtectedRoute requireAdmin><CourseCreate /></ProtectedRoute>} />
+        <Route path="/admin/courses/:id" element={<ProtectedRoute requireAdmin><CourseCreate /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute requireAdmin><UserManagement /></ProtectedRoute>} />
+        <Route path="/admin/users/:id" element={<ProtectedRoute requireAdmin><UserManagement /></ProtectedRoute>} />
+        <Route path="/admin/plans" element={<ProtectedRoute requireAdmin><PlanManagement /></ProtectedRoute>} />
+        <Route path="/admin/categories" element={<ProtectedRoute requireAdmin><CategoryManagement /></ProtectedRoute>} />
+        <Route path="/admin/formations" element={<ProtectedRoute requireAdmin><FormationManagement /></ProtectedRoute>} />
+        <Route path="/admin/formations/create" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
+        <Route path="/admin/formations/:id" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
+        <Route path="/admin/manage" element={<Navigate to="/admin" replace />} />
+        <Route path="/admin/companies" element={<ProtectedRoute requireAdmin><CompanyManagement /></ProtectedRoute>} />
+        <Route path="/admin/companies/:id/checklist" element={<ProtectedRoute requireAdmin><CompanyChecklistProgress /></ProtectedRoute>} />
+        <Route path="/admin/onboarding-templates" element={<ProtectedRoute requireAdmin><OnboardingTemplateManagement /></ProtectedRoute>} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Suspense>
+  );
+}
+
+// Admin usa uma sidebar escura fixa em vez do menu superior do aluno — troca
+// de layout completa, não só de componente, então fica isolada daqui.
+function AppShell() {
   const location = useLocation();
   const { user } = useAuthStore();
 
@@ -96,18 +144,31 @@ function PersistentChrome({ position }: { position: 'top' | 'bottom' }) {
     AUTH_PATHS.includes(location.pathname) ||
     location.pathname.startsWith('/invite');
 
-  if (isAuthRoute) return null;
+  const showFooter = FOOTER_PATHS.includes(location.pathname);
 
-  if (position === 'top') {
-    const Navbar = user?.role === 'admin' ? AdminNavbar : StudentNavbar;
-    return <Navbar />;
+  if (!isAuthRoute && user?.role === 'admin') {
+    return (
+      <div className="min-h-screen flex flex-col lg:flex-row bg-surface-50 dark:bg-surface-900">
+        <AdminSidebar />
+        <div className="flex-1 min-w-0 flex flex-col">
+          <PageTransition>
+            <AppRoutes />
+          </PageTransition>
+          {showFooter && <Footer />}
+        </div>
+      </div>
+    );
   }
 
-  if (position === 'bottom' && FOOTER_PATHS.includes(location.pathname)) {
-    return <Footer />;
-  }
-
-  return null;
+  return (
+    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
+      {!isAuthRoute && <StudentNavbar />}
+      <PageTransition>
+        <AppRoutes />
+      </PageTransition>
+      {showFooter && <Footer />}
+    </div>
+  );
 }
 
 function CompleteProfileRedirect() {
@@ -277,55 +338,9 @@ function App() {
     <ConfirmProvider>
       <ToastProvider />
       <Router>
-      <ScrollToTop />
-      <CompleteProfileRedirect />
-      <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-900">
-        <PersistentChrome position="top" />
-        <PageTransition>
-          <Suspense fallback={<RouteFallback />}>
-          <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/invite/:token" element={<InviteSetup />} />
-          <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-
-          <Route path="/home" element={<StudentHome />} />
-          <Route path="/course/:id" element={<CourseDetail />} />
-          <Route path="/lesson/:id" element={<LessonViewer />} />
-          <Route path="/help" element={<HelpCenter />} />
-
-          <Route path="/profile" element={<ProtectedRoute><StudentProfile /></ProtectedRoute>} />
-          <Route path="/my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/onboarding" element={<ProtectedRoute><OnboardingChecklist /></ProtectedRoute>} />
-          <Route path="/educa/webinars" element={<ProtectedRoute><Webinars /></ProtectedRoute>} />
-          <Route path="/educa/pilulas" element={<ProtectedRoute><Pilulas /></ProtectedRoute>} />
-          <Route path="/educa/materiais" element={<ProtectedRoute><Materiais /></ProtectedRoute>} />
-
-          <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/courses" element={<ProtectedRoute requireAdmin><CourseManagement /></ProtectedRoute>} />
-          <Route path="/admin/courses/create" element={<ProtectedRoute requireAdmin><CourseCreate /></ProtectedRoute>} />
-          <Route path="/admin/courses/:id" element={<ProtectedRoute requireAdmin><CourseCreate /></ProtectedRoute>} />
-          <Route path="/admin/users" element={<ProtectedRoute requireAdmin><UserManagement /></ProtectedRoute>} />
-          <Route path="/admin/users/:id" element={<ProtectedRoute requireAdmin><UserManagement /></ProtectedRoute>} />
-          <Route path="/admin/plans" element={<ProtectedRoute requireAdmin><PlanManagement /></ProtectedRoute>} />
-          <Route path="/admin/categories" element={<ProtectedRoute requireAdmin><CategoryManagement /></ProtectedRoute>} />
-          <Route path="/admin/formations" element={<ProtectedRoute requireAdmin><FormationManagement /></ProtectedRoute>} />
-          <Route path="/admin/formations/create" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
-          <Route path="/admin/formations/:id" element={<ProtectedRoute requireAdmin><FormationCreate /></ProtectedRoute>} />
-          <Route path="/admin/manage" element={<Navigate to="/admin" replace />} />
-          <Route path="/admin/companies" element={<ProtectedRoute requireAdmin><CompanyManagement /></ProtectedRoute>} />
-          <Route path="/admin/companies/:id/checklist" element={<ProtectedRoute requireAdmin><CompanyChecklistProgress /></ProtectedRoute>} />
-          <Route path="/admin/onboarding-templates" element={<ProtectedRoute requireAdmin><OnboardingTemplateManagement /></ProtectedRoute>} />
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-        </Suspense>
-        </PageTransition>
-        <PersistentChrome position="bottom" />
-      </div>
+        <ScrollToTop />
+        <CompleteProfileRedirect />
+        <AppShell />
       </Router>
     </ConfirmProvider>
   );

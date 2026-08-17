@@ -30,7 +30,7 @@ export const CourseCard = ({ course, progress = 0, showProgress = false }: Cours
       to={`/course/${course.id}`}
       className="group block bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 overflow-hidden card-hover"
     >
-      <div className="relative aspect-video bg-gradient-to-br from-surface-100 to-surface-200 dark:from-surface-700 dark:to-surface-800 overflow-hidden">
+      <div className="relative aspect-video bg-gradient-to-br from-violet-100 to-primary-100 dark:from-surface-700 dark:to-surface-800 overflow-hidden">
         {course.thumbnail ? (
           <img
             src={course.thumbnail}
@@ -49,7 +49,7 @@ export const CourseCard = ({ course, progress = 0, showProgress = false }: Cours
           className="absolute inset-0 flex items-center justify-center"
           style={{ display: course.thumbnail ? 'none' : 'flex' }}
         >
-          <BookOpen size={40} className="text-surface-300 dark:text-surface-600" />
+          <BookOpen size={40} className="text-violet-400 dark:text-surface-600" />
         </div>
         
         <div className="absolute top-3 left-3">

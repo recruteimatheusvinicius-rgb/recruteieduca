@@ -65,7 +65,7 @@ export const StudentHome = () => {
 
   return (
     <div className="min-h-screen bg-surface-50 dark:bg-surface-900">
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white">
+      <div className="bg-gradient-to-br from-primary-600 via-indigo-600 to-violet-600 text-white">
         <div className="container-app py-12 md:py-16">
           <div className="max-w-2xl mx-auto text-center animate-stagger">
             <div className="flex items-center justify-center gap-2 text-primary-200 mb-3">
