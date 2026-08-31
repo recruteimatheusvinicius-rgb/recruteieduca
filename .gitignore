@@ -30,3 +30,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Deploy helper repo (its own git repo, not part of this project)
+claude-deploy-api/
