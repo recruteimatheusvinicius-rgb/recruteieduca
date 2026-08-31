@@ -11,7 +11,11 @@ import { ToastProvider } from './components/ui/Toast';
 import { PageTransition } from './components/ui/PageTransition';
 import { ConfirmProvider } from './hooks/useConfirm';
 import { Login } from './pages/auth/Login';
-import { Landing } from './pages/marketing/Landing';
+import { MarketingLayout } from './pages/marketing/MarketingLayout';
+import { Home } from './pages/marketing/Home';
+import { Cursos } from './pages/marketing/Cursos';
+import { Conteudos } from './pages/marketing/Conteudos';
+import { CriarConta } from './pages/marketing/CriarConta';
 
 // Rotas carregadas sob demanda: reduz o bundle inicial (principalmente as
 // telas de admin, que puxam o editor Tiptap) para quem só usa a área do aluno.
@@ -82,13 +86,19 @@ interface TawkAPI {
 }
 
 const AUTH_PATHS = ['/login', '/complete-profile', '/forgot-password', '/reset-password'];
+const MARKETING_PATHS = ['/', '/cursos', '/conteudos', '/criar-conta'];
 const FOOTER_PATHS = ['/home', '/help', '/my-courses'];
 
 function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<MarketingLayout />}>
+          <Route index element={<Home />} />
+          <Route path="cursos" element={<Cursos />} />
+          <Route path="conteudos" element={<Conteudos />} />
+          <Route path="criar-conta" element={<CriarConta />} />
+        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/invite/:token" element={<InviteSetup />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
@@ -137,7 +147,7 @@ function AppShell() {
   const { user } = useAuthStore();
 
   const isAuthRoute =
-    location.pathname === '/' ||
+    MARKETING_PATHS.includes(location.pathname) ||
     AUTH_PATHS.includes(location.pathname) ||
     location.pathname.startsWith('/invite');
 
