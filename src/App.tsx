@@ -11,6 +11,7 @@ import { ToastProvider } from './components/ui/Toast';
 import { PageTransition } from './components/ui/PageTransition';
 import { ConfirmProvider } from './hooks/useConfirm';
 import { Login } from './pages/auth/Login';
+import { Landing } from './pages/marketing/Landing';
 
 // Rotas carregadas sob demanda: reduz o bundle inicial (principalmente as
 // telas de admin, que puxam o editor Tiptap) para quem só usa a área do aluno.
@@ -40,10 +41,6 @@ const FormationCreate = lazy(() => import('./pages/admin/FormationCreate').then(
 const CompanyManagement = lazy(() => import('./pages/admin/CompanyManagement').then(m => ({ default: m.CompanyManagement })));
 const OnboardingTemplateManagement = lazy(() => import('./pages/admin/OnboardingTemplateManagement').then(m => ({ default: m.OnboardingTemplateManagement })));
 const CompanyChecklistProgress = lazy(() => import('./pages/admin/CompanyChecklistProgress').then(m => ({ default: m.CompanyChecklistProgress })));
-
-function RootRedirect() {
-  return <Navigate to="/login" replace />;
-}
 
 function RouteFallback() {
   return (
@@ -91,7 +88,7 @@ function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<RootRedirect />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/invite/:token" element={<InviteSetup />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
