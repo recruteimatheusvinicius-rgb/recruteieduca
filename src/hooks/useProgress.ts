@@ -225,6 +225,82 @@ export const progressService = {
     }
   },
 
+  /**
+   * Progresso de vídeo (posição/percentual) de UMA aula — usado pelo CourseVideoPlayer
+   * pra retomar de onde parou e pra travar o avanço além do ponto mais assistido.
+   * Reaproveita as colunas `time_spent`/`progress_percentage` já existentes em
+   * user_progress (mesma linha que `saveLessonProgress` usa pro toggle manual).
+   */
+  async getLessonVideoProgress(
+    userId: string,
+    lessonId: string,
+  ): Promise<{ timeSpent: number; progressPercentage: number; completed: boolean } | null> {
+    if (!isSupabaseConfigured()) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_progress')
+        .select('time_spent, progress_percentage, completed')
+        .eq('user_id', userId)
+        .eq('lesson_id', lessonId)
+        .maybeSingle();
+
+      if (error || !data) return null;
+      return {
+        timeSpent: data.time_spent ?? 0,
+        progressPercentage: data.progress_percentage ?? 0,
+        completed: data.completed ?? false,
+      };
+    } catch (error) {
+      console.error('Error fetching lesson video progress:', error);
+      return null;
+    }
+  },
+
+  async saveVideoProgress(
+    userId: string,
+    courseId: string,
+    lessonId: string,
+    currentTime: number,
+    duration: number,
+  ): Promise<{ completed: boolean } | null> {
+    if (!isSupabaseConfigured()) return null;
+
+    try {
+      const progressPercentage = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
+      const completed = progressPercentage >= 90;
+      const now = new Date().toISOString();
+      const payload: Record<string, unknown> = {
+        id: crypto.randomUUID(),
+        user_id: userId,
+        course_id: courseId,
+        lesson_id: lessonId,
+        time_spent: Math.round(currentTime),
+        progress_percentage: Math.round(progressPercentage * 100) / 100,
+        completed,
+        ...(completed ? { completed_at: now } : {}),
+        updated_at: now,
+      };
+
+      const { error } = await supabase
+        .from('user_progress')
+        .upsert(payload, { onConflict: 'user_id,lesson_id', ignoreDuplicates: false });
+
+      if (error) {
+        console.error('Error saving video progress:', error);
+        return null;
+      }
+
+      if (completed) {
+        await this.updateCourseProgress(userId, courseId);
+      }
+      return { completed };
+    } catch (error) {
+      console.error('Error saving video progress:', error);
+      return null;
+    }
+  },
+
   async getNextIncompleteLesson(
     userId: string,
     courseId: string,

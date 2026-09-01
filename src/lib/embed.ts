@@ -9,6 +9,8 @@ export type EmbedKind = 'youtube' | 'vimeo' | 'iframe' | 'video' | 'unknown';
 export interface EmbedInfo {
   src: string;
   kind: EmbedKind;
+  /** Só populado quando kind === 'youtube' — usado pelo CourseVideoPlayer (YouTube IFrame API). */
+  videoId?: string;
 }
 
 export function parseEmbed(input: string | null | undefined): EmbedInfo | null {
@@ -24,7 +26,7 @@ export function parseEmbed(input: string | null | undefined): EmbedInfo | null {
     /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/
   );
   if (ytMatch) {
-    return { src: `https://www.youtube.com/embed/${ytMatch[1]}`, kind: 'youtube' };
+    return { src: `https://www.youtube.com/embed/${ytMatch[1]}`, kind: 'youtube', videoId: ytMatch[1] };
   }
 
   // Vimeo
