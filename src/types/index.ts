@@ -46,6 +46,8 @@ export interface Lesson {
   content?: string;
   embedCode?: string;
   assessmentConfig?: AssessmentConfig;
+  /** Quando false, o aluno não pode arrastar a barra pra além do ponto mais longe já assistido. */
+  allowSeekForward?: boolean;
 }
 
 export interface QuizQuestion {

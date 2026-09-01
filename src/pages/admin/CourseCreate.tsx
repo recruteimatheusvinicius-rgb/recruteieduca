@@ -30,6 +30,7 @@ const createEmptyLesson = (order: number, type: LessonType): Lesson => ({
   duration: '5min',
   videoUrl: '',
   videoText: '',
+  allowSeekForward: true,
   questions: type === 'quiz' ? [] : undefined,
   content: type === 'reading' ? '' : undefined,
   embedCode: type === 'guide' ? '' : undefined,
@@ -780,6 +781,15 @@ export const CourseCreate = () => {
                               placeholder="https://www.youtube.com/watch?v=… ou https://vimeo.com/…"
                             />
                           </div>
+                          <label className="flex items-center gap-2 text-sm text-surface-700 dark:text-surface-300 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={lesson.allowSeekForward ?? true}
+                              onChange={(e) => updateLesson(module.id, lesson.id, { allowSeekForward: e.target.checked })}
+                              className="w-4 h-4 rounded text-primary-600"
+                            />
+                            Permitir que o aluno avance livremente na barra de progresso (só vale pra vídeos do YouTube)
+                          </label>
                           <div>
                             <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
                               Texto Complementar

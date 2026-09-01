@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/Button';
 import type { Course, Lesson } from '../../types';
 import { sanitizeHtml } from '../../lib/sanitize';
 import { parseEmbed } from '../../lib/embed';
+import { CourseVideoPlayer } from '../../components/video/CourseVideoPlayer';
 import {
   Play, ChevronLeft, ChevronRight, CheckCircle, Clock,
   ChevronDown, ChevronUp, Menu, X, Circle, ArrowLeft, FileText,
@@ -81,7 +82,7 @@ export const LessonViewer = () => {
       <div className="min-h-screen bg-surface-50 dark:bg-surface-900 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">Aula não encontrada</h2>
-          <Link to="/" className="text-primary-600 hover:underline cursor-pointer">Voltar para home</Link>
+          <Link to="/home" className="text-primary-600 hover:underline cursor-pointer">Voltar para home</Link>
         </div>
       </div>
     );
@@ -262,6 +263,27 @@ export const LessonViewer = () => {
             <p className="text-white/40 text-xs mt-1">O instrutor ainda não anexou o vídeo desta aula.</p>
           </div>
         </div>
+      );
+    }
+
+    // Player personalizado (YouTube IFrame API + controles próprios) — único elemento
+    // de reprodução; vídeos hospedados fora do YouTube caem no <video>/<iframe> abaixo.
+    if (embed.kind === 'youtube' && embed.videoId) {
+      return (
+        <CourseVideoPlayer
+          key={embed.videoId}
+          youtubeVideoId={embed.videoId}
+          lessonId={currentLesson.id}
+          courseId={currentCourse.id}
+          userId={user?.id}
+          allowSeekForward={currentLesson.allowSeekForward ?? true}
+          onCompleted={() => {
+            if (!isLessonCompleted(currentLesson.id)) {
+              toggleLessonComplete(currentLesson.id);
+            }
+          }}
+          fill
+        />
       );
     }
 
